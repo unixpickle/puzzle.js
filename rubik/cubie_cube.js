@@ -301,6 +301,109 @@
     }
   };
 
+  Edges.prototype.quarterTurn = function(face, turns) {
+    switch (face) {
+    case 1:
+      if (turns === 1) {
+        var ref = this.edges[5];
+        this.edges[5] = this.edges[6];
+        this.edges[6] = this.edges[4];
+        this.edges[4] = this.edges[0];
+        this.edges[0] = ref;
+      } else {
+        var ref = this.edges[0];
+        this.edges[0] = this.edges[4];
+        this.edges[4] = this.edges[6];
+        this.edges[6] = this.edges[5];
+        this.edges[5] = ref;
+      }
+      break;
+    case 2:
+      if (turns === 1) {
+        var ref = this.edges[10];
+        this.edges[10] = this.edges[8];
+        this.edges[8] = this.edges[11];
+        this.edges[11] = this.edges[2];
+        this.edges[2] = ref;
+      } else {
+        var ref = this.edges[2];
+        this.edges[2] = this.edges[11];
+        this.edges[11] = this.edges[8];
+        this.edges[8] = this.edges[10];
+        this.edges[10] = ref;
+      }
+      break;
+    case 3:
+      if (turns === 1) {
+        var ref = this.edges[3];
+        this.edges[3] = this.edges[2];
+        this.edges[2] = this.edges[1];
+        this.edges[1] = this.edges[0];
+        this.edges[0] = ref;
+      } else {
+        var ref = this.edges[0];
+        this.edges[0] = this.edges[1];
+        this.edges[1] = this.edges[2];
+        this.edges[2] = this.edges[3];
+        this.edges[3] = ref;
+      }
+      for (var i = 0; i < 4; ++i) {
+        this.edges[i].flip = !this.edges[i].flip;
+      }
+      break;
+    case 4:
+      if (turns === 1) {
+        var ref = this.edges[7];
+        this.edges[7] = this.edges[8];
+        this.edges[8] = this.edges[9];
+        this.edges[9] = this.edges[6];
+        this.edges[6] = ref;
+      } else {
+        var ref = this.edges[6];
+        this.edges[6] = this.edges[9];
+        this.edges[9] = this.edges[8];
+        this.edges[8] = this.edges[7];
+        this.edges[7] = ref;
+      }
+      for (var i = 6; i < 10; ++i) {
+        this.edges[i].flip = !this.edges[i].flip;
+      }
+      break;
+    case 5:
+      if (turns === 1) {
+        var ref = this.edges[11];
+        this.edges[11] = this.edges[7];
+        this.edges[7] = this.edges[5];
+        this.edges[5] = this.edges[1];
+        this.edges[1] = ref;
+      } else {
+        var ref = this.edges[1];
+        this.edges[1] = this.edges[5];
+        this.edges[5] = this.edges[7];
+        this.edges[7] = this.edges[11];
+        this.edges[11] = ref;
+      }
+      break;
+    case 6:
+      if (turns === 1) {
+        var ref = this.edges[4];
+        this.edges[4] = this.edges[9];
+        this.edges[9] = this.edges[10];
+        this.edges[10] = this.edges[3];
+        this.edges[3] = ref;
+      } else {
+        var ref = this.edges[3];
+        this.edges[3] = this.edges[10];
+        this.edges[10] = this.edges[9];
+        this.edges[9] = this.edges[4];
+        this.edges[4] = ref;
+      }
+      break;
+    default:
+      break;
+    }
+  };
+
   /**
    * An Edge represents a physical edge of a cube.
    *
