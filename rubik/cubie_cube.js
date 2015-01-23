@@ -89,6 +89,14 @@
     }
   };
 
+  Corners.prototype.move = function(m) {
+    if (m.turns === 2) {
+      this.halfTurn(m.face);
+    } else {
+      this.quarterTurn(m.face, m.turns);
+    }
+  };
+
   Corners.prototype.quarterTurn = function(face, turns) {
     switch (face) {
     case 1:
@@ -239,6 +247,21 @@
     this.corners = new Corners();
   }
 
+  Cube.prototype.halfTurn = function(face) {
+    this.corners.halfTurn(face);
+    this.edges.halfTurn(face);
+  };
+
+  Cube.prototype.move = function(m) {
+    this.corners.move(m);
+    this.edges.move(m);
+  };
+
+  Cube.prototype.quarterTurn = function(face, turns) {
+    this.corners.quarterTurn(face, turns);
+    this.edges.quarterTurn(face, turns);
+  };
+
   function Edges() {
     this.edges = [];
     for (var i = 0; i < 12; ++i) {
@@ -298,6 +321,14 @@
       break;
     default:
       break;
+    }
+  };
+
+  Edges.prototype.move = function(m) {
+    if (m.turns === 2) {
+      this.halfTurn(m.face);
+    } else {
+      this.quarterTurn(m.face, m.turns);
     }
   };
 
