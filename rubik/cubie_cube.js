@@ -24,6 +24,10 @@
     this.orientation = orientation;
   }
 
+  Corner.prototype.copy = function() {
+    return new Corner(this.piece, this.orientation);
+  };
+
   /**
    * Corners represent the corners of a cube.
    */
@@ -33,6 +37,14 @@
       this.corners[i] = new Corner(i, 0);
     }
   }
+
+  Corners.prototype.copy = function() {
+    var newCorners = [];
+    for (var i = 0; i < 8; ++i) {
+      newCorners[i] = this.corners[i].copy();
+    }
+    return Object.create(Corners.prototype, {corners: newCorners});
+  };
 
   Corners.prototype.halfTurn = function(face) {
     switch (face) {
@@ -247,6 +259,11 @@
     this.corners = new Corners();
   }
 
+  Cube.prototype.copy = function() {
+    var props = {edges: this.edges.copy(), corners: this.corners.copy()};
+    return Object.create(Cube.prototype, props);
+  };
+
   Cube.prototype.halfTurn = function(face) {
     this.corners.halfTurn(face);
     this.edges.halfTurn(face);
@@ -262,12 +279,38 @@
     this.edges.quarterTurn(face, turns);
   };
 
+  /**
+   * An Edge represents a physical edge of a cube.
+   *
+   * Edges are indexed from 0 through 11 in the following order:
+   * UF, RF, DF, LF, UL, UR, BU, BR, BD, BL, DL, DR.
+   *
+   * The flip field is true if the edge is "bad" in the ZZ color scheme (i.e.
+   * if it requires an F or B move to fix).
+   */
+  function Edge(piece, flip) {
+    this.piece = piece;
+    this.flip = flip;
+  }
+
+  Edge.prototype.copy = function() {
+    return new Edge(this.piece, this.flip);
+  };
+
   function Edges() {
     this.edges = [];
     for (var i = 0; i < 12; ++i) {
       this.edges[i] = new Edge(i, false);
     }
   }
+
+  Edges.prototype.copy = function() {
+    var newEdges = [];
+    for (var i = 0; i < 12; ++i) {
+      newEdges[i] = this.edges[i].copy();
+    }
+    return Object.create(Edges.prototype, {edges: newEdges});
+  };
 
   Edges.prototype.halfTurn = function(face) {
     switch (face) {
@@ -434,20 +477,6 @@
       break;
     }
   };
-
-  /**
-   * An Edge represents a physical edge of a cube.
-   *
-   * Edges are indexed from 0 through 11 in the following order:
-   * UF, RF, DF, LF, UL, UR, BU, BR, BD, BL, DL, DR.
-   *
-   * The flip field is true if the edge is "bad" in the ZZ color scheme (i.e.
-   * if it requires an F or B move to fix).
-   */
-  function Edge(piece, flip) {
-    this.piece = piece;
-    this.flip = flip;
-  }
 
   if ('undefined' !== typeof window) {
     if (!window.puzzlejs) {
