@@ -13,6 +13,18 @@
     }
   };
 
+  Move.prototype.toString = function() {
+    var faces = 'UDFBRL';
+    var face = faces[this.face - 1];
+    if (this.turns === 1) {
+      return face;
+    } else if (this.turns === 2) {
+      return face + '2';
+    } else {
+      return face + "'";
+    }
+  };
+
   function parseMove(s) {
     if (s.length === 1) {
       var faces = ['U', 'D', 'F', 'B', 'R', 'L'];
