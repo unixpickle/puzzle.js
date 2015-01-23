@@ -482,13 +482,24 @@
     if (!window.puzzlejs) {
       window.puzzlejs = {};
     }
-    window.puzzlejs.CubieCube = Cube;
+    if (!window.puzzlejs.rubik) {
+      window.puzzlejs.rubik = {};
+    }
+    window.puzzlejs.rubik.CubieCorner = Corner;
+    window.puzzlejs.rubik.CubieCorners = Corners;
+    window.puzzlejs.rubik.CubieCube = Cube;
+    window.puzzlejs.rubik.CubieEdge = Edge;
+    window.puzzlejs.rubik.CubieEdges = Edges;
   }
   if ('undefined' !== typeof module) {
     if (!module.exports) {
       module.exports = {};
     }
+    module.exports.CubieCorner = Corner;
+    module.exports.CubieCorners = Corners;
     module.exports.CubieCube = Cube;
+    module.exports.CubieEdge = Edge;
+    module.exports.CubieEdges = Edges;
   }
 
 })();
