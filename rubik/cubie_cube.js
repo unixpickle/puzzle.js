@@ -35,7 +35,58 @@
   }
 
   Corners.prototype.halfTurn = function(face) {
-    // TODO: this
+    switch (face) {
+    case 1:
+      var ref = this.corners[2];
+      this.corners[2] = this.corners[7];
+      this.corners[7] = ref;
+      ref = this.corners[3];
+      this.corners[3] = this.corners[6];
+      this.corners[6] = ref;
+      break;
+    case 2:
+      var ref = this.corners[0];
+      this.corners[0] = this.corners[5];
+      this.corners[5] = ref;
+      ref = this.corners[1];
+      this.corners[1] = this.corners[4];
+      this.corners[4] = ref;
+      break;
+    case 3:
+      var ref = this.corners[5];
+      this.corners[5] = this.corners[6];
+      this.corners[6] = ref;
+      ref = this.corners[4];
+      this.corners[4] = this.corners[7];
+      this.corners[7] = ref;
+      break;
+    case 4:
+      var ref = this.corners[0];
+      this.corners[0] = this.corners[3];
+      this.corners[3] = ref;
+      ref = this.corners[1];
+      this.corners[1] = this.corners[2];
+      this.corners[2] = ref;
+      break;
+    case 5:
+      var ref = this.corners[1];
+      this.corners[1] = this.corners[7];
+      this.corners[7] = ref;
+      ref = this.corners[3];
+      this.corners[3] = this.corners[5];
+      this.corners[5] = ref;
+      break;
+    case 6:
+      var ref = this.corners[0];
+      this.corners[0] = this.corners[6];
+      this.corners[6] = ref;
+      ref = this.corners[2];
+      this.corners[2] = this.corners[4];
+      this.corners[4] = ref;
+      break;
+    default:
+      break;
+    }
   };
 
   Corners.prototype.quarterTurn = function(face) {
