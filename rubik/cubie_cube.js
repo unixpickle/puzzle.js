@@ -229,6 +229,8 @@
         }
       }
       break;
+    default:
+      break;
     }
   };
 
@@ -243,6 +245,61 @@
       this.edges[i] = new Edge(i, false);
     }
   }
+
+  Edges.prototype.halfTurn = function(face) {
+    switch (face) {
+    case 1:
+      var ref = this.edges[0];
+      this.edges[0] = this.edges[6];
+      this.edges[6] = ref;
+      ref = this.edges[4];
+      this.edges[4] = this.edges[5];
+      this.edges[5] = ref;
+      break;
+    case 2:
+      var ref = this.edges[2];
+      this.edges[2] = this.edges[8];
+      this.edges[8] = ref;
+      ref = this.edges[10];
+      this.edges[10] = this.edges[11];
+      this.edges[11] = ref;
+      break;
+    case 3:
+      var ref = this.edges[0];
+      this.edges[0] = this.edges[2];
+      this.edges[2] = ref;
+      ref = this.edges[1];
+      this.edges[1] = this.edges[3];
+      this.edges[3] = ref;
+      break;
+    case 4:
+      var ref = this.edges[6];
+      this.edges[6] = this.edges[8];
+      this.edges[8] = ref;
+      ref = this.edges[7];
+      this.edges[7] = this.edges[9];
+      this.edges[9] = ref;
+      break;
+    case 5:
+      var ref = this.edges[1];
+      this.edges[1] = this.edges[7];
+      this.edges[7] = ref;
+      ref = this.edges[5];
+      this.edges[5] = this.edges[11];
+      this.edges[11] = ref;
+      break;
+    case 6:
+      var ref = this.edges[3];
+      this.edges[3] = this.edges[9];
+      this.edges[9] = ref;
+      ref = this.edges[4];
+      this.edges[4] = this.edges[10];
+      this.edges[10] = ref;
+      break;
+    default:
+      break;
+    }
+  };
 
   /**
    * An Edge represents a physical edge of a cube.
