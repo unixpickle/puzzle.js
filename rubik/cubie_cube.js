@@ -112,14 +112,122 @@
       }
       break;
     case 2:
+      if (turns === 1) {
+        var ref = this.corners[4];
+        this.corners[4] = this.corners[0];
+        this.corners[0] = this.corners[1];
+        this.corners[1] = this.corners[5];
+        this.corners[5] = ref;
+      } else {
+        var ref = this.corners[4];
+        this.corners[4] = this.corners[5];
+        this.corners[5] = this.corners[1];
+        this.corners[1] = this.corners[0];
+        this.corners[0] = ref;
+      }
+      var indices = [0, 1, 4, 5];
+      for (var i = 0; i < 4; ++i) {
+        var idx = indices[i];
+        this.corners[idx].orientation = 2 - this.corners[idx].orientation;
+      }
       break;
     case 3:
+      if (turns === 1) {
+        var ref = this.corners[4];
+        this.corners[4] = this.corners[5];
+        this.corners[5] = this.corners[7];
+        this.corners[7] = this.corners[6];
+        this.corners[6] = ref;
+      } else {
+        var ref = this.corners[6];
+        this.corners[6] = this.corners[7];
+        this.corners[7] = this.corners[5];
+        this.corners[5] = this.corners[4];
+        this.corners[4] = ref;
+      }
+      var indices = [0, 1, 4, 5];
+      for (var i = 0; i < 4; ++i) {
+        var p = this.corners[indices[idx]];
+        var o = p.orientation;
+        if (o === 0) {
+          p.orientation = 1;
+        } else if (o === 1) {
+          p.orientation = 0;
+        }
+      }
       break;
     case 4:
+      if (turns === 1) {
+        var ref = this.corners[0];
+        this.corners[0] = this.corners[2];
+        this.corners[2] = this.corners[3];
+        this.corners[3] = this.corners[1];
+        this.corners[1] = ref;
+      } else {
+        var ref = this.corners[1];
+        this.corners[1] = this.corners[3];
+        this.corners[3] = this.corners[2];
+        this.corners[2] = this.corners[0];
+        this.corners[0] = ref;
+      }
+      for (var i = 0; i < 4; ++i) {
+        var p = this.corners[i];
+        var o = p.orientation;
+        if (o === 0) {
+          p.orientation = 1;
+        } else if (o === 1) {
+          p.orientation = 0;
+        }
+      }
       break;
     case 5:
+      if (turns === 1) {
+        var ref = this.corners[5];
+        this.corners[5] = this.corners[1];
+        this.corners[1] = this.corners[3];
+        this.corners[3] = this.corners[7];
+        this.corners[7] = ref;
+      } else {
+        var ref = this.corners[7];
+        this.corners[7] = this.corners[3];
+        this.corners[3] = this.corners[1];
+        this.corners[1] = this.corners[5];
+        this.corners[5] = ref;
+      }
+      var indices = [1, 3, 5, 7];
+      for (var i = 0; i < 4; ++i) {
+        var p = this.corners[indices[i]];
+        var o = p.orientation;
+        if (o === 1) {
+          p.orientation = 2;
+        } else if (o === 2) {
+          p.orientation = 1;
+        }
+      }
       break;
     case 6:
+      if (turns === 1) {
+        var ref = this.corners[4];
+        this.corners[4] = this.corners[6];
+        this.corners[6] = this.corners[2];
+        this.corners[2] = this.corners[0];
+        this.corners[0] = ref;
+      } else {
+        var ref = this.corners[0];
+        this.corners[0] = this.corners[2];
+        this.corners[2] = this.corners[6];
+        this.corners[6] = this.corners[4];
+        this.corners[4] = ref;
+      }
+      for (var i = 0; i < 4; ++i) {
+        var p = this.corners[i * 2];
+        var o = p.orientation;
+        if (o === 1) {
+          p.orientation = 2;
+        } else if (o === 2) {
+          p.orientation = 1;
+        }
+      }
       break;
     }
   };
@@ -150,13 +258,13 @@
     this.flip = flip;
   }
 
-  if 'undefined' !== typeof window {
+  if ('undefined' !== typeof window) {
     if (!window.puzzlejs) {
       window.puzzlejs = {};
     }
     window.puzzlejs.CubieCube = Cube;
   }
-  if 'undefined' !== typeof module {
+  if ('undefined' !== typeof module) {
     if (!module.exports) {
       module.exports = {};
     }

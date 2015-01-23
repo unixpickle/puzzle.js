@@ -1,4 +1,3 @@
-// This utility is helping me port Go to JavaScript
 package main
 
 import (
@@ -13,13 +12,19 @@ func main() {
   }
   sets := os.Args[2:6]
   gets := os.Args[6:10]
+  fmt.Println("      if (turns === 1) {")
   if sets[0] == gets[1] && sets[1] == gets[2] && sets[2] == gets[3] && sets[3] == gets[0] {
     permuteBackwards(os.Args[1], sets)
+    fmt.Println("      } else {")
+    permuteForwards(os.Args[1], sets)
   } else if sets[1] == gets[0] && sets[2] == gets[1] && sets[3] == gets[2] && sets[0] == gets[3] {
     permuteForwards(os.Args[1], sets)
+    fmt.Println("      } else {")
+    permuteBackwards(os.Args[1], sets)
   } else {
     fmt.Println("// Invalid permutation")
   }
+  fmt.Println("      }")
 }
 
 func permuteForwards(listName string, args []string) {
@@ -37,4 +42,3 @@ func permuteBackwards(listName string, args []string) {
   fmt.Println("        " + listName + "[" + args[1] + "] = " + listName + "[" + args[0] + "];")
   fmt.Println("        " + listName + "[" + args[0] + "] = ref;")
 }
-
