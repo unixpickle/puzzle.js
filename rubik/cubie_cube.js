@@ -89,8 +89,39 @@
     }
   };
 
-  Corners.prototype.quarterTurn = function(face) {
-    // TODO: this
+  Corners.prototype.quarterTurn = function(face, turns) {
+    switch (face) {
+    case 1:
+      if (turns === 1) {
+        var ref = this.corners[6];
+        this.corners[6] = this.corners[7];
+        this.corners[7] = this.corners[3];
+        this.corners[3] = this.corners[2];
+        this.corners[2] = ref;
+      } else {
+        var ref = this.corners[6];
+        this.corners[6] = this.corners[2];
+        this.corners[2] = this.corners[3];
+        this.corners[3] = this.corners[7];
+        this.corners[7] = ref;
+      }
+      var indices = [2, 3, 6, 7];
+      for (var i = 0; i < 4; ++i) {
+        var idx = indices[i];
+        this.corners[idx].orientation = 2 - this.corners[idx].orientation;
+      }
+      break;
+    case 2:
+      break;
+    case 3:
+      break;
+    case 4:
+      break;
+    case 5:
+      break;
+    case 6:
+      break;
+    }
   };
 
   function Cube() {
