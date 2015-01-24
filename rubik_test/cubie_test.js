@@ -2,6 +2,20 @@ var cubie = require('../rubik/cubie.js');
 var move = require('../rubik/move.js');
 var assert = require('assert');
 
+function benchmarkMove() {
+  // Setup the cube.
+  var moves = move.parseMoves("B U D B' L2 D' R' F2 L F D2 R2 F' U2 R B2 L' " +
+    "U'");
+  var cube = new cubie.CubieCube();
+  
+  var start = (new Date()).getTime();
+  for (var i = 0; i < 20000000; ++i) {
+    cube.move(moves[i % moves.length]);
+  }
+  var duration = (new Date()).getTime() - start;
+  console.log('Benchmark: ' + Math.ceil(duration/20) + ' ns/move.');
+}
+
 function testMove() {
   // Setup the cube.
   var moves = move.parseMoves("B U D B' L2 D' R' F2 L F D2 R2 F' U2 R B2 L' " +
@@ -16,11 +30,11 @@ function testMove() {
   var orientations = [2, 1, 1, 2, 1, 1, 1, 0];
   for (var i = 0; i < 8; ++i) {
     assert.equal(cube.corners.corners[i].piece, pieces[i],
-      "Bad piece for corner " + i);
+      'Bad piece for corner ' + i);
   }
   for (var i = 0; i < 8; ++i) {
     assert.equal(cube.corners.corners[i].orientation, orientations[i],
-      "Bad orientation for corner " + i);
+      'Bad orientation for corner ' + i);
   }
 
   // Verify the edges.
@@ -29,15 +43,16 @@ function testMove() {
     true, true, false, true];
   for (var i = 0; i < 12; ++i) {
     assert.equal(cube.edges.edges[i].piece, pieces[i],
-      "Bad piece for edge " + i);
+      'Bad piece for edge ' + i);
   }
   for (var i = 0; i < 12; ++i) {
     assert.equal(cube.edges.edges[i].flip, orientations[i],
-      "Bad orientation for edge " + i);
+      'Bad orientation for edge ' + i);
   }
 }
 
 // Run tests.
+benchmarkMove();
 testMove();
-console.log('done');
+console.log('PASS');
 
