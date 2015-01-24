@@ -112,7 +112,7 @@
     if (!window.puzzlejs.rubik) {
       window.puzzlejs.rubik = {};
     }
-    window.puzzlejs.rubik.Move = Cube;
+    window.puzzlejs.rubik.Move = Move;
     window.puzzlejs.rubik.movesToString = movesToString;
     window.puzzlejs.rubik.parseMove = parseMove;
     window.puzzlejs.rubik.parseMoves = parseMoves;
