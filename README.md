@@ -7,7 +7,7 @@ This is going to be a useful library for manipulating various puzzles.
 **puzzle.js** is licensed under the BSD 2-clause license. See [LICENSE](LICENSE).
 
 ```
-Copyright (c) 2014, Alex Nichol.
+Copyright (c) 2015, Alex Nichol.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
