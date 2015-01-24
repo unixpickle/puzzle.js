@@ -4,6 +4,10 @@
     this.face = face;
     this.turns = turns;
   }
+  
+  Move.prototype.axis = function() {
+    return [-1, 1, 1, 2, 2, 0, 0][this.face];
+  };
 
   Move.prototype.inverse = function() {
     if (this.turns === 2) {
@@ -24,6 +28,15 @@
       return face + "'";
     }
   };
+  
+  function allMoves() {
+    // The moves are ordered in descending comfort.
+    return parseMoves("R R' L L' U U' D D' R2 L2 U2 D2 F2 B2 F F' B B'");
+  }
+  
+  function movesToString(moves) {
+    return moves.join(' ');
+  }
 
   function parseMove(s) {
     if (s.length === 1) {
@@ -56,6 +69,37 @@
     }
     return res;
   }
+  
+  function scrambleMoves(len) {
+    var axis = -1;
+    var all = allMoves();
+    var moves = all.slice();
+    var result = [];
+    
+    for (var i = 0; i < len; ++i) {
+      // Pick a random move
+      var moveIdx = Math.floor(Math.random() * moves.length);
+      var move = moves[moveIdx];
+      
+      // Reset the moves and the axis if necessary.
+      if (move.axis() !== axis) {
+        axis = move.axis();
+        moves = all.slice();
+      }
+      
+      // Remove all moves which affect this face
+      for (var j = 0; j < moves.length; ++j) {
+        if (moves[j].face === move.face) {
+          moves.splice(j, 1);
+          --j;
+        }
+      }
+      
+      result[i] = move;
+    }
+    
+    return result;
+  }
 
   if ('undefined' !== typeof window) {
     if (!window.puzzlejs) {
@@ -65,16 +109,20 @@
       window.puzzlejs.rubik = {};
     }
     window.puzzlejs.rubik.Move = Cube;
+    window.puzzlejs.rubik.movesToString = movesToString;
     window.puzzlejs.rubik.parseMove = parseMove;
     window.puzzlejs.rubik.parseMoves = parseMoves;
+    window.puzzlejs.rubik.scrambleMoves = scrambleMoves;
   }
   if ('undefined' !== typeof module) {
     if (!module.exports) {
       module.exports = {};
     }
     module.exports.Move = Move;
+    module.exports.movesToString = movesToString;
     module.exports.parseMove = parseMove;
     module.exports.parseMoves = parseMoves;
+    module.exports.scrambleMoves = scrambleMoves;
   }
 
 })();
