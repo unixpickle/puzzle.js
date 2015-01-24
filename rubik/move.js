@@ -29,9 +29,10 @@
     }
   };
   
+  var _allMovesList;
   function allMoves() {
     // The moves are ordered in descending comfort.
-    return parseMoves("R R' L L' U U' D D' R2 L2 U2 D2 F2 B2 F F' B B'");
+    return _allMovesList.slice();
   }
   
   function movesToString(moves) {
@@ -72,8 +73,7 @@
   
   function scrambleMoves(len) {
     var axis = -1;
-    var all = allMoves();
-    var moves = all.slice();
+    var moves = allMoves();
     var result = [];
     
     for (var i = 0; i < len; ++i) {
@@ -84,7 +84,7 @@
       // Reset the moves and the axis if necessary.
       if (move.axis() !== axis) {
         axis = move.axis();
-        moves = all.slice();
+        moves = allMoves();
       }
       
       // Remove all moves which affect this face
@@ -100,6 +100,10 @@
     
     return result;
   }
+  
+  // Generate a list of every move, ordered by comfort.
+  _allMovesList = parseMoves("R R' L L' U U' D D' R2 L2 U2 D2 F2 B2 F " +
+    "F' B B'");
 
   if ('undefined' !== typeof window) {
     if (!window.puzzlejs) {
