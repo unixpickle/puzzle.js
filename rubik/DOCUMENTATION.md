@@ -4,8 +4,8 @@ This document will briefly highlight the functions and classes in the **rubik** 
 
 Currently, the library includes two APIs:
 
- * [Cubie API](#docs-cubie-api)
- * [Move API](#docs-move-api)
+ * [The Cubie API](#docs-cubie-api)
+ * [The Move API](#docs-move-api)
 
 <a name="docs-cubie-api" />
 # Cubie API
@@ -151,7 +151,7 @@ The class has the following methods:
 <a name="docs-move-api" />
 # Move API
 
-This API is for manipulating, parsing, and generating face turns. This library exposes one class and five methods.
+This API is for manipulating, parsing, and generating face turns. This library exposes one class and five functions.
 
 It exposes the [Move](#docs-move) class.
 
