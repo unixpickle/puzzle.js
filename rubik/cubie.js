@@ -165,9 +165,9 @@
         this.corners[5] = this.corners[4];
         this.corners[4] = ref;
       }
-      var indices = [0, 1, 4, 5];
+      var indices = [4, 5, 6, 7];
       for (var i = 0; i < 4; ++i) {
-        var p = this.corners[indices[idx]];
+        var p = this.corners[indices[i]];
         var o = p.orientation;
         if (o === 0) {
           p.orientation = 1;
