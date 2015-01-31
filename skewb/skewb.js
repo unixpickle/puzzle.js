@@ -141,7 +141,7 @@
       }
     }
     for (var i = 0; i < 8; ++i) {
-      if (this.corners[i].piece !== i || this.corner[i].orientation !== 0) {
+      if (this.corners[i].piece !== i || this.corners[i].orientation !== 0) {
         return false;
       }
     }

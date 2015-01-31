@@ -12,8 +12,36 @@
     return allMoveCounts[encodeCO(state)];
   }
   
+  function depthFirst(start, remaining, lastFace) {
+    if (remaining === 0) {
+      if (!start.solved()) {
+        return null;
+      } else {
+        return [];
+      }
+    } else if (coHeuristic(start.corners) > remaining) {
+      return null;
+    }
+    
+    for (var i = 0; i < 4; ++i) {
+      if (i === lastFace) {
+        continue;
+      }
+      for (var j = 0; j < 2; ++j) {
+        var move = {face: i, clock: j===0};
+        var state = start.copy();
+        state.move(move);
+        var solution = depthFirst(state, remaining-1, i);
+        if (solution !== null) {
+          return [move].concat(solution);
+        }
+      }
+    }
+    return null;
+  }
+  
   function encodeCO(corners) {
-    var res = "";
+    var res = '';
     for (var i = 0; i < 8; ++i) {
       res += corners[i].orientation;
     }
@@ -45,6 +73,16 @@
     return res;
   }
   
+  function solve(state) {
+    for (var i = 0; i < 11; ++i) {
+      var solution = depthFirst(state, i, -1);
+      if (solution !== null) {
+        return solution;
+      }
+    }
+    return null;
+  }
+  
   function solvedSkewb() {
     if ('undefined' !== typeof window) {
       return new window.puzzlejs.skewb.Skewb();
@@ -60,13 +98,13 @@
     if (!window.puzzlejs.skewb) {
       window.puzzlejs.skewb = {};
     }
-    window.puzzlejs.skewb.coHeuristic = coHeuristic;
+    window.puzzlejs.skewb.solve = solve;
   }
   if ('undefined' !== typeof module) {
     if (!module.exports) {
       module.exports = {};
     }
-    module.exports.coHeuristic = coHeuristic;
+    module.exports.solve = solve;
   }
   
   // This was generated using makeCOHeuristic().
