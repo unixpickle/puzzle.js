@@ -27,6 +27,127 @@
     return res;
   };
   
+  Skewb.prototype.move = function(move) {
+    switch (move.face) {
+    case 0:
+      this.turnB(move.clock);
+      break;
+    case 1:
+      this.turnL(move.clock);
+      break;
+    case 2:
+      this.turnR(move.clock);
+      break;
+    case 3:
+      this.turnU(move.clock);
+      break;
+    }
+  };
+  
+  Skewb.prototype.rotateX = function() {
+    // Permute the centers.
+    var ref = this.centers[2];
+    this.centers[2] = this.centers[1];
+    this.centers[1] = this.centers[3];
+    this.centers[3] = this.centers[0];
+    this.centers[0] = ref;
+    
+    // Permute the corners.
+    var ref1 = this.corners[6];
+    this.corners[6] = this.corners[4];
+    this.corners[4] = this.corners[0];
+    this.corners[0] = this.corners[2];
+    this.corners[2] = ref1;
+    ref1 = this.corners[7];
+    this.corners[7] = this.corners[5];
+    this.corners[5] = this.corners[1];
+    this.corners[1] = this.corners[3];
+    this.corners[3] = ref1;
+    
+    // Swap the y and z orientations.
+    for (var i = 0; i < 8; ++i) {
+      if (this.corners[i].orientation === 1) {
+        this.corners[i].orientation = 2;
+      } else if (this.corners[i].orientation === 2) {
+        this.corners[i].orientation = 1;
+      }
+    }
+  };
+  
+  Skewb.prototype.rotateY = function() {
+    // Permute the centers.
+    var ref = this.centers[4];
+    this.centers[4] = this.centers[3];
+    this.centers[3] = this.centers[5];
+    this.centers[5] = this.centers[2];
+    this.centers[2] = ref;
+    
+    // Permute the corners.
+    ref1 = this.corners[6];
+    this.corners[6] = this.corners[7];
+    this.corners[7] = this.corners[3];
+    this.corners[3] = this.corners[2];
+    this.corners[2] = ref1;
+    ref1 = this.corners[4];
+    this.corners[4] = this.corners[5];
+    this.corners[5] = this.corners[1];
+    this.corners[1] = this.corners[0];
+    this.corners[0] = ref1;
+    
+    // Swap the x and z orientations.
+    for (var i = 0; i < 8; ++i) {
+      if (this.corners[i].orientation === 0) {
+        this.corners[i].orientation = 2;
+      } else if (this.corners[i].orientation === 2) {
+        this.corners[i].orientation = 0;
+      }
+    }
+  };
+  
+  Skewb.prototype.rotateZ = function() {
+    // Permute the centers.
+    var ref = this.centers[5];
+    this.centers[5] = this.centers[1];
+    this.centers[1] = this.centers[4];
+    this.centers[4] = this.centers[0];
+    this.centers[0] = ref;
+    
+    // Permute the corners.
+    var ref1 = this.corners[0];
+    this.corners[0] = this.corners[1];
+    this.corners[1] = this.corners[3];
+    this.corners[3] = this.corners[2];
+    this.corners[2] = ref1;
+    ref1 = this.corners[4];
+    this.corners[4] = this.corners[5];
+    this.corners[5] = this.corners[7];
+    this.corners[7] = this.corners[6];
+    this.corners[6] = ref1;
+    
+    // Swap the x and y orientations.
+    for (var i = 0; i < 8; ++i) {
+      if (this.corners[i].orientation === 0) {
+        this.corners[i].orientation = 1;
+      } else if (this.corners[i].orientation === 1) {
+        this.corners[i].orientation = 0;
+      }
+    }
+  };
+  
+  Skewb.prototype.solved = function() {
+    for (var i = 0; i < 6; ++i) {
+      if (this.centers[i] !== i) {
+        return false;
+      }
+    }
+    for (var i = 0; i < 8; ++i) {
+      if (this.corners[i].piece !== i || this.corner[i].orientation !== 0) {
+        return false;
+      }
+    }
+    return true;
+  };
+  
   Skewb.prototype.turnB = function(clock) {
     // Permute corners.
     if (clock) {
