@@ -179,7 +179,7 @@
     var corners = [0, 1, 2, 4];
     for (var idx = 0; idx < 4; ++idx) {
       var i = corners[idx];
-      if clock {
+      if (clock) {
         this.corners[i].orientation = (this.corners[i].orientation + 1) % 3;
       } else {
         this.corners[i].orientation = (this.corners[i].orientation + 2) % 3;
@@ -218,7 +218,7 @@
     var corners = [0, 4, 6, 5];
     for (var idx = 0; idx < 4; ++idx) {
       var i = corners[idx];
-      if clock {
+      if (clock) {
         this.corners[i].orientation = (this.corners[i].orientation + 2) % 3;
       } else {
         this.corners[i].orientation = (this.corners[i].orientation + 1) % 3;
@@ -257,7 +257,7 @@
     var corners = [0, 1, 3, 5];
     for (var idx = 0; idx < 4; ++idx) {
       var i = corners[idx];
-      if clock {
+      if (clock) {
         this.corners[i].orientation = (this.corners[i].orientation + 2) % 3;
       } else {
         this.corners[i].orientation = (this.corners[i].orientation + 1) % 3;
@@ -265,7 +265,7 @@
     }
   };
   
-  Skewb.prototype.turnU = function() {
+  Skewb.prototype.turnU = function(clock) {
     // Permute corners.
     if (clock) {
       var ref = this.corners[3];
@@ -296,7 +296,7 @@
     var corners = [0, 2, 3, 6];
     for (var idx = 0; idx < 4; ++idx) {
       var i = corners[idx];
-      if clock {
+      if (clock) {
         this.corners[i].orientation = (this.corners[i].orientation + 2) % 3;
       } else {
         this.corners[i].orientation = (this.corners[i].orientation + 1) % 3;
