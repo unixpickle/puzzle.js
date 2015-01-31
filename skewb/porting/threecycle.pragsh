@@ -1,0 +1,31 @@
+# This ports a three cycle.
+
+if (! 2 (len $ARGV)) {
+  puts Expected two arguments.
+  exit 1
+}
+
+set nums (match "\\[([0-9])\\]" ([] $ARGV 1))
+if (! (len $nums) 6) {
+  puts Invalid number of matches.
+  exit 1
+}
+
+set num1 ([] $nums 1)
+set num2 ([] $nums 3)
+set num3 ([] $nums 5)
+set name ([] $ARGV 0)
+
+puts
+puts "if (clock) {"
+puts " " var ref = (join $name [ $num3 ];)
+puts " " (join $name [ $num3 ]) = (join $name [ $num2 ];)
+puts " " (join $name [ $num2 ]) = (join $name [ $num1 ];)
+puts " " (join $name [ $num1 ]) = ref;
+puts "} else {"
+puts " " var ref = (join $name [ $num1 ])
+puts " " (join $name [ $num1 ]) = (join $name [ $num2 ];)
+puts " " (join $name [ $num2 ]) = (join $name [ $num3 ];)
+puts " " (join $name [ $num3 ]) = ref;
+puts "}"
+puts
