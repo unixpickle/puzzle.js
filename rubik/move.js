@@ -113,6 +113,7 @@
       window.puzzlejs.rubik = {};
     }
     window.puzzlejs.rubik.Move = Move;
+    window.puzzlejs.rubik.allMoves = allMoves;
     window.puzzlejs.rubik.movesToString = movesToString;
     window.puzzlejs.rubik.parseMove = parseMove;
     window.puzzlejs.rubik.parseMoves = parseMoves;
@@ -123,6 +124,7 @@
       module.exports = {};
     }
     module.exports.Move = Move;
+    module.exports.allMoves = allMoves;
     module.exports.movesToString = movesToString;
     module.exports.parseMove = parseMove;
     module.exports.parseMoves = parseMoves;

@@ -303,5 +303,22 @@
       }
     }
   };
+  
+  // Export the Skewb object.
+  if ('undefined' !== typeof window) {
+    if (!window.puzzlejs) {
+      window.puzzlejs = {};
+    }
+    if (!window.puzzlejs.skewb) {
+      window.puzzlejs.skewb = {};
+    }
+    window.puzzlejs.skewb.Skewb = Skewb;
+  }
+  if ('undefined' !== typeof module) {
+    if (!module.exports) {
+      module.exports = {};
+    }
+    module.exports.Skewb = Skewb;
+  }
 
 })();
