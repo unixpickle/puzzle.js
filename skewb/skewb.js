@@ -312,12 +312,14 @@
     if (!window.puzzlejs.skewb) {
       window.puzzlejs.skewb = {};
     }
+    window.puzzlejs.skewb.Corner = Corner;
     window.puzzlejs.skewb.Skewb = Skewb;
   }
   if ('undefined' !== typeof module) {
     if (!module.exports) {
       module.exports = {};
     }
+    module.exports.Corner = Corner;
     module.exports.Skewb = Skewb;
   }
 
