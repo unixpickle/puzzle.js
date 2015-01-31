@@ -2,7 +2,20 @@ var assert = require('assert');
 var move = require('../skewb/move.js');
 var skewb = require('../skewb/skewb.js');
 
-function testTurns() {
+function benchmarkMove() {
+  var algo = "U' R U' B' R L U' L B L U B' R' U L R' B' U' R U' B R' L' B' L'";
+  var moves = move.parseMoves(algo);
+  var state = new skewb.Skewb();
+  
+  var start = (new Date()).getTime();
+  for (var i = 0; i < 10000000; ++i) {
+    state.move(moves[i % 25]);
+  }
+  var duration = (new Date()).getTime() - start;
+  console.log('Benchmark: ' + Math.floor(duration/10) + ' ns/move.');
+}
+
+function testMove() {
   // Apply some random algorithm to the Skewb.
   var algo = "U' R U' B' R L U' L B L U B' R' U L R' B' U' R U' B R' L' B' L'";
   var moves = move.parseMoves(algo);
@@ -32,5 +45,6 @@ function testTurns() {
   }
 }
 
-testTurns();
+benchmarkMove();
+testMove();
 console.log('PASS');
