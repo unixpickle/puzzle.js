@@ -478,28 +478,26 @@
     }
   };
 
-  if ('undefined' !== typeof window) {
-    if (!window.puzzlejs) {
-      window.puzzlejs = {};
+  var exportModule;
+  if ('undefined' !== typeof window || 'undefined' !== typeof self) {
+    var w = (window || self);
+    if (!w.puzzlejs) {
+      w.puzzlejs = {};
     }
-    if (!window.puzzlejs.rubik) {
-      window.puzzlejs.rubik = {};
+    if (!w.puzzlejs.rubik) {
+      w.puzzlejs.rubik = {};
     }
-    window.puzzlejs.rubik.CubieCorner = Corner;
-    window.puzzlejs.rubik.CubieCorners = Corners;
-    window.puzzlejs.rubik.CubieCube = Cube;
-    window.puzzlejs.rubik.CubieEdge = Edge;
-    window.puzzlejs.rubik.CubieEdges = Edges;
-  }
-  if ('undefined' !== typeof module) {
+    exportModule = w.puzzlejs.rubik;
+  } else if ('undefined' !== typeof module) {
     if (!module.exports) {
       module.exports = {};
     }
-    module.exports.CubieCorner = Corner;
-    module.exports.CubieCorners = Corners;
-    module.exports.CubieCube = Cube;
-    module.exports.CubieEdge = Edge;
-    module.exports.CubieEdges = Edges;
+    exportModule = module.exports;
   }
+  exportModule.CubieCorner = Corner;
+  exportModule.CubieCorners = Corners;
+  exportModule.CubieCube = Cube;
+  exportModule.CubieEdge = Edge;
+  exportModule.CubieEdges = Edges;
 
 })();

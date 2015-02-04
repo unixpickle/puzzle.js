@@ -105,30 +105,27 @@
   _allMovesList = parseMoves("R R' L L' U U' D D' R2 L2 U2 D2 F2 B2 F " +
     "F' B B'");
 
-  if ('undefined' !== typeof window) {
-    if (!window.puzzlejs) {
-      window.puzzlejs = {};
+  var exportModule;
+  if ('undefined' !== typeof window || 'undefined' !== typeof self) {
+    var w = (window || self);
+    if (!w.puzzlejs) {
+      w.puzzlejs = {};
     }
-    if (!window.puzzlejs.rubik) {
-      window.puzzlejs.rubik = {};
+    if (!w.puzzlejs.rubik) {
+      w.puzzlejs.rubik = {};
     }
-    window.puzzlejs.rubik.Move = Move;
-    window.puzzlejs.rubik.allMoves = allMoves;
-    window.puzzlejs.rubik.movesToString = movesToString;
-    window.puzzlejs.rubik.parseMove = parseMove;
-    window.puzzlejs.rubik.parseMoves = parseMoves;
-    window.puzzlejs.rubik.scrambleMoves = scrambleMoves;
-  }
-  if ('undefined' !== typeof module) {
+    exportModule = w.puzzlejs.rubik;
+  } else if ('undefined' !== typeof module) {
     if (!module.exports) {
       module.exports = {};
     }
-    module.exports.Move = Move;
-    module.exports.allMoves = allMoves;
-    module.exports.movesToString = movesToString;
-    module.exports.parseMove = parseMove;
-    module.exports.parseMoves = parseMoves;
-    module.exports.scrambleMoves = scrambleMoves;
+    exportModule = module.exports;
   }
+  exportModule.Move = Move;
+  exportModule.allMoves = allMoves;
+  exportModule.movesToString = movesToString;
+  exportModule.parseMove = parseMove;
+  exportModule.parseMoves = parseMoves;
+  exportModule.scrambleMoves = scrambleMoves;
 
 })();
