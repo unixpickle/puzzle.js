@@ -146,25 +146,25 @@
     }
   }
   
-  if ('undefined' !== typeof window) {
-    if (!window.puzzlejs) {
-      window.puzzlejs = {};
+  var exportModule;
+  if ('undefined' !== typeof window || 'undefined' !== typeof self) {
+    var w = (window || self);
+    if (!w.puzzlejs) {
+      w.puzzlejs = {};
     }
-    if (!window.puzzlejs.skewb) {
-      window.puzzlejs.skewb = {};
+    if (!w.puzzlejs.skewb) {
+      w.puzzlejs.skewb = {};
     }
-    window.puzzlejs.skewb.findCenterCases = findCenterCases;
-    window.puzzlejs.skewb.findCornerCases = findCornerCases;
-    window.puzzlejs.skewb.randomState = randomState;
-  }
-  if ('undefined' !== typeof module) {
+    exportModule = w.puzzlejs.skewb;
+  } else if ('undefined' !== typeof module) {
     if (!module.exports) {
       module.exports = {};
     }
-    module.exports.findCenterCases = findCenterCases;
-    module.exports.findCornerCases = findCornerCases;
-    module.exports.randomState = randomState;
+    exportModule = module.exports;
   }
+  exportModule.findCenterCases = findCenterCases;
+  exportModule.findCornerCases = findCornerCases;
+  exportModule.randomState = randomState;
   
   // This was generated using encodeCenterCases(findCenterCases()).
   var allCenterCases = [

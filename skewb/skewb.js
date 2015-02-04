@@ -305,22 +305,23 @@
   };
   
   // Export the Skewb object.
-  if ('undefined' !== typeof window) {
-    if (!window.puzzlejs) {
-      window.puzzlejs = {};
+  var exportModule;
+  if ('undefined' !== typeof window || 'undefined' !== typeof self) {
+    var w = (window || self);
+    if (!w.puzzlejs) {
+      w.puzzlejs = {};
     }
-    if (!window.puzzlejs.skewb) {
-      window.puzzlejs.skewb = {};
+    if (!w.puzzlejs.skewb) {
+      w.puzzlejs.skewb = {};
     }
-    window.puzzlejs.skewb.Corner = Corner;
-    window.puzzlejs.skewb.Skewb = Skewb;
-  }
-  if ('undefined' !== typeof module) {
+    exportModule = w.puzzlejs.skewb;
+  } else if ('undefined' !== typeof module) {
     if (!module.exports) {
       module.exports = {};
     }
-    module.exports.Corner = Corner;
-    module.exports.Skewb = Skewb;
+    exportModule = module.exports;
   }
+  exportModule.Corner = Corner;
+  exportModule.Skewb = Skewb;
 
 })();

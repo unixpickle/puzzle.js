@@ -2,6 +2,10 @@
 
 This is going to be a useful library for manipulating various puzzles.
 
+# TODO
+
+add webworker imports to skewb api
+
 # License
 
 **puzzle.js** is licensed under the BSD 2-clause license. See [LICENSE](LICENSE).

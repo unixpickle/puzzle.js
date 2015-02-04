@@ -55,28 +55,26 @@
     return moves;
   }
   
-  if ('undefined' !== typeof window) {
-    if (!window.puzzlejs) {
-      window.puzzlejs = {};
+  var exportModule;
+  if ('undefined' !== typeof window || 'undefined' !== typeof self) {
+    var w = (window || self);
+    if (!w.puzzlejs) {
+      w.puzzlejs = {};
     }
-    if (!window.puzzlejs.skewb) {
-      window.puzzlejs.skewb = {};
+    if (!w.puzzlejs.skewb) {
+      w.puzzlejs.skewb = {};
     }
-    window.puzzlejs.skewb.Move = Move;
-    window.puzzlejs.skewb.allMoves = allMoves;
-    window.puzzlejs.skewb.movesToString = movesToString;
-    window.puzzlejs.skewb.parseMove = parseMove;
-    window.puzzlejs.skewb.parseMoves = parseMoves;
-  }
-  if ('undefined' !== typeof module) {
+    exportModule = w.puzzlejs.skewb;
+  } else if ('undefined' !== typeof module) {
     if (!module.exports) {
       module.exports = {};
     }
-    module.exports.Move = Move;
-    module.exports.allMoves = allMoves;
-    module.exports.movesToString = movesToString;
-    module.exports.parseMove = parseMove;
-    module.exports.parseMoves = parseMoves;
+    exportModule = module.exports;
   }
+  exportModule.Move = Move;
+  exportModule.allMoves = allMoves;
+  exportModule.movesToString = movesToString;
+  exportModule.parseMove = parseMove;
+  exportModule.parseMoves = parseMoves;
   
 })();
