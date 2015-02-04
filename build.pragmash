@@ -1,0 +1,24 @@
+if (! 1 (len $ARGV)) {
+  puts "Usage: pragmash build.pragmash <api>"
+}
+
+set api ([] $ARGV 0)
+
+# Read every file in the API and join them.
+set files (glob (join $api /*.js))
+set body ""
+for file $files {
+  set data (read $file)
+  set body (join $body \n $data)
+}
+
+# Indent the body.
+set body (rep $body \n "\n  ")
+
+# Fill in the skeleton.
+set s (read api_skeleton.js)
+set s (rep $s APINAME $api)
+set s (rep $s APIBODY $body)
+
+# Show the user the output.
+puts $s
