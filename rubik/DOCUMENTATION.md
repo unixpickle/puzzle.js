@@ -27,8 +27,8 @@ The `CubieCorner` class represents a physical corner on a cube.
 
 The constructor takes two arguments and can be called as follows from Node.js
 
-    var cubie = require('./cubie.js');
-    new cubie.CubieCorner(piece, orientation);
+    var rubik = require('./build/rubik.js');
+    new rubik.CubieCorner(piece, orientation);
 
 And as follows in browser-side JavaScript:
 
@@ -56,8 +56,8 @@ The `CubieCorners` class represents the physical corners on a cube.
 
 The constructor creates a solved set of corners. It can be called as follows in Node.js:
 
-    var cubie = require('./cubie.js');
-    new cubie.CubieCorners();
+    var rubik = require('./build/rubik.js');
+    new rubik.CubieCorners();
 
 And as follows in browser-side JavaScript:
 
@@ -81,8 +81,8 @@ The `CubieCube` class represents a physical cube consisting of edges and corners
 
 The constructor creates a solved cube. It can be called as follows in Node.js:
 
-    var cubie = require('./cubie.js');
-    new cubie.CubieCube();
+    var rubik = require('./build/rubik.js');
+    new rubik.CubieCube();
 
 And as follows in browser-side JavaScript:
 
@@ -107,8 +107,8 @@ The `CubieEdge` class represents a physical edge on a cube.
 
 The constructor takes two arguments and can be called as follows from Node.js
 
-    var cubie = require('./cubie.js');
-    new cubie.CubieEdge(piece, flip);
+    var rubik = require('./build/rubik.js');
+    new rubik.CubieEdge(piece, flip);
 
 And as follows in browser-side JavaScript:
 
@@ -130,8 +130,8 @@ The `CubieEdges` class represents the physical edges on a cube.
 
 The constructor creates a solved set of edges. It can be called as follows in Node.js:
 
-    var cubie = require('./cubie.js');
-    new cubie.CubieEdges();
+    var rubik = require('./build/rubik.js');
+    new rubik.CubieEdges();
 
 And as follows in browser-side JavaScript:
 
@@ -170,8 +170,8 @@ The `Move` class represents a face turn on the cube.
 
 The constructor takes two arguments and can be called as follows from Node.js
 
-    var move = require('./move.js');
-    new move.Move(face, turns);
+    var rubik = require('./build/rubik.js');
+    new rubik.Move(face, turns);
 
 And as follows in browser-side JavaScript:
 
@@ -195,8 +195,8 @@ The `allMoves` function returns an array of moves corresponding to the following
 
 It can be called from Node.js as follows:
 
-    var move = require('./move.js');
-    move.allMoves();
+    var rubik = require('./build/rubik.js');
+    rubik.allMoves();
 
 And as follows in browser-side JavaScript:
 
@@ -211,8 +211,8 @@ The `movesToString` function takes an array of moves and turns it into an algori
 
 It can be called from Node.js as follows:
 
-    var move = require('./move.js');
-    move.movesToString(moves);
+    var rubik = require('./build/rubik.js');
+    rubik.movesToString(moves);
 
 And as follows in browser-side JavaScript:
 
@@ -225,8 +225,8 @@ The `parseMove` function takes a string representing a single move in WCA notati
 
 It can be called from Node.js as follows:
 
-    var move = require('./move.js');
-    move.parseMove(str);
+    var rubik = require('./build/rubik.js');
+    rubik.parseMove(str);
 
 And as follows in browser-side JavaScript:
 
@@ -241,8 +241,8 @@ The `parseMoves` function takes a string representing a space-delimited list of 
 
 It can be called from Node.js as follows:
 
-    var move = require('./move.js');
-    move.parseMoves(str);
+    var rubik = require('./build/rubik.js');
+    rubik.parseMoves(str);
 
 And as follows in browser-side JavaScript:
 
@@ -257,8 +257,8 @@ The `scrambleMoves` function takes a count argument and returns an array of inst
 
 It can be called from Node.js as follows:
 
-    var move = require('./move.js');
-    move.scrambleMoves(count);
+    var rubik = require('./build/rubik.js');
+    rubik.scrambleMoves(count);
 
 And as follows in browser-side JavaScript:
 

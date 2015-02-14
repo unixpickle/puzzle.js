@@ -1,12 +1,11 @@
-var cubie = require('../rubik/cubie.js');
-var move = require('../rubik/move.js');
+var rubik = require('../build/rubik.js');
 var assert = require('assert');
 
 function benchmarkMove() {
   // Setup the cube.
-  var moves = move.parseMoves("B U D B' L2 D' R' F2 L F D2 R2 F' U2 R B2 L' " +
+  var moves = rubik.parseMoves("B U D B' L2 D' R' F2 L F D2 R2 F' U2 R B2 L' " +
     "U'");
-  var cube = new cubie.CubieCube();
+  var cube = new rubik.CubieCube();
   
   var start = (new Date()).getTime();
   for (var i = 0; i < 20000000; ++i) {
@@ -18,9 +17,9 @@ function benchmarkMove() {
 
 function testMove() {
   // Setup the cube.
-  var moves = move.parseMoves("B U D B' L2 D' R' F2 L F D2 R2 F' U2 R B2 L' " +
+  var moves = rubik.parseMoves("B U D B' L2 D' R' F2 L F D2 R2 F' U2 R B2 L' " +
     "U'");
-  var cube = new cubie.CubieCube();
+  var cube = new rubik.CubieCube();
   for (var i = 0, len = moves.length; i < len; ++i) {
     cube.move(moves[i]);
   }

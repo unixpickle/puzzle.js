@@ -1,13 +1,32 @@
-if (! 1 (len $ARGV)) {
-  puts "Usage: pragmash build.pragmash <api>"
+# Support special use cases
+if 0 (count $ARGV) {
+  puts Compiling all APIs
+  for ARGV (arr rubik skewb) {
+    exec build.pragmash
+  }
+  exit 0
+} else if not 1 (count $ARGV) {
+  puts Usage: pragmash build.pragmash [API |or| clean]
+  exit 1
 }
 
-set api ([] $ARGV 0)
+# The clean command removes the build directory.
+if $ARGV clean {
+  puts Cleaning builds.
+  rmall build
+  exit 0
+}
+
+# Standard build.
+puts Building API $ARGV
+
+if not (exists build) {
+  mkdir build
+}
 
 # Read every file in the API and join them.
-set files (glob (join $api /*.js))
 set body ""
-for file $files {
+for file (glob (join $ARGV /*.js)) {
   set data (read $file)
   set body (join $body \n $data)
 }
@@ -17,8 +36,8 @@ set body (rep $body \n "\n  ")
 
 # Fill in the skeleton.
 set s (read api_skeleton.js)
-set s (rep $s APINAME $api)
+set s (rep $s APINAME $ARGV)
 set s (rep $s APIBODY $body)
 
 # Show the user the output.
-puts $s
+write (join build/ $ARGV .js) $s

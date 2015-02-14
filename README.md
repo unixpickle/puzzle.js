@@ -4,7 +4,8 @@ This is going to be a useful library for manipulating various puzzles.
 
 # TODO
 
-add webworker imports to skewb api
+ * Implement more intelligent random state generator for Skewb.
+ * Create a scramble API that uses WebWorkers
 
 # License
 
