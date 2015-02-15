@@ -1,7 +1,7 @@
 # Support special use cases
 if 0 (count $ARGV) {
   puts Compiling all APIs
-  for ARGV (arr rubik skewb) {
+  for ARGV (arr rubik skewb scrambler) {
     exec build.pragmash
   }
   exit 0
