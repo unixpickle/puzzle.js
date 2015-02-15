@@ -7,7 +7,7 @@
     var w = (window || self);
     if (!w.puzzlejs) {
       w.puzzlejs = {rubik: {}};
-    } else if (w.puzzlejs.rubik) {
+    } else if (!w.puzzlejs.rubik) {
       w.puzzlejs.rubik = {};
     }
     exports = w.puzzlejs.rubik;
@@ -629,7 +629,7 @@
     var w = (window || self);
     if (!w.puzzlejs) {
       w.puzzlejs = {skewb: {}};
-    } else if (w.puzzlejs.skewb) {
+    } else if (!w.puzzlejs.skewb) {
       w.puzzlejs.skewb = {};
     }
     exports = w.puzzlejs.skewb;
@@ -1289,7 +1289,7 @@
     var w = (window || self);
     if (!w.puzzlejs) {
       w.puzzlejs = {scrambler: {}};
-    } else if (w.puzzlejs.scrambler) {
+    } else if (!w.puzzlejs.scrambler) {
       w.puzzlejs.scrambler = {};
     }
     exports = w.puzzlejs.scrambler;

@@ -7,7 +7,7 @@
     var w = (window || self);
     if (!w.puzzlejs) {
       w.puzzlejs = {rubik: {}};
-    } else if (w.puzzlejs.rubik) {
+    } else if (!w.puzzlejs.rubik) {
       w.puzzlejs.rubik = {};
     }
     exports = w.puzzlejs.rubik;

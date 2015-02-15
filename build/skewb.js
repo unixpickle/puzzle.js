@@ -7,7 +7,7 @@
     var w = (window || self);
     if (!w.puzzlejs) {
       w.puzzlejs = {skewb: {}};
-    } else if (w.puzzlejs.skewb) {
+    } else if (!w.puzzlejs.skewb) {
       w.puzzlejs.skewb = {};
     }
     exports = w.puzzlejs.skewb;

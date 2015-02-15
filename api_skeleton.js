@@ -7,7 +7,7 @@
     var w = (window || self);
     if (!w.puzzlejs) {
       w.puzzlejs = {APINAME: {}};
-    } else if (w.puzzlejs.APINAME) {
+    } else if (!w.puzzlejs.APINAME) {
       w.puzzlejs.APINAME = {};
     }
     exports = w.puzzlejs.APINAME;

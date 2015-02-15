@@ -7,7 +7,7 @@
     var w = (window || self);
     if (!w.puzzlejs) {
       w.puzzlejs = {scrambler: {}};
-    } else if (w.puzzlejs.scrambler) {
+    } else if (!w.puzzlejs.scrambler) {
       w.puzzlejs.scrambler = {};
     }
     exports = w.puzzlejs.scrambler;
