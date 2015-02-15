@@ -8,7 +8,8 @@
   if ('undefined' !== typeof window.Worker) {
     // Setup the webworker to call our callbacks.
     scrambleWorker = new window.Worker(workerPath);
-    scrambleWorker.onmessage = function(m) {
+    scrambleWorker.onmessage = function(e) {
+      var m = e.data;
       var cb = callbacks[m.id]
       delete callbacks[m.id];
       cb(m.scramble);

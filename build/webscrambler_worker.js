@@ -2,15 +2,22 @@
 (function() {
 
   var exports;
-  if ('undefined' !== typeof window || 'undefined' !== typeof self) {
-    // Browser or Web Worker.
-    var w = (window || self);
-    if (!w.puzzlejs) {
-      w.puzzlejs = {rubik: {}};
-    } else if (!w.puzzlejs.rubik) {
-      w.puzzlejs.rubik = {};
+  if ('undefined' !== typeof window) {
+    // Browser
+    if (!window.puzzlejs) {
+      window.puzzlejs = {rubik: {}};
+    } else if (!window.puzzlejs.rubik) {
+      window.puzzlejs.rubik = {};
     }
-    exports = w.puzzlejs.rubik;
+    exports = window.puzzlejs.rubik;
+  } else if ('undefined' !== typeof self) {
+    // WebWorker
+    if (!self.puzzlejs) {
+      self.puzzlejs = {rubik: {}};
+    } else if (!self.puzzlejs.rubik) {
+      self.puzzlejs.rubik = {};
+    }
+    exports = self.puzzlejs.rubik;
   } else if ('undefined' !== typeof module) {
     // Node.js
     if (!module.exports) {
@@ -624,15 +631,22 @@
 (function() {
 
   var exports;
-  if ('undefined' !== typeof window || 'undefined' !== typeof self) {
-    // Browser or Web Worker.
-    var w = (window || self);
-    if (!w.puzzlejs) {
-      w.puzzlejs = {skewb: {}};
-    } else if (!w.puzzlejs.skewb) {
-      w.puzzlejs.skewb = {};
+  if ('undefined' !== typeof window) {
+    // Browser
+    if (!window.puzzlejs) {
+      window.puzzlejs = {skewb: {}};
+    } else if (!window.puzzlejs.skewb) {
+      window.puzzlejs.skewb = {};
     }
-    exports = w.puzzlejs.skewb;
+    exports = window.puzzlejs.skewb;
+  } else if ('undefined' !== typeof self) {
+    // WebWorker
+    if (!self.puzzlejs) {
+      self.puzzlejs = {skewb: {}};
+    } else if (!self.puzzlejs.skewb) {
+      self.puzzlejs.skewb = {};
+    }
+    exports = self.puzzlejs.skewb;
   } else if ('undefined' !== typeof module) {
     // Node.js
     if (!module.exports) {
@@ -1284,15 +1298,22 @@
 (function() {
 
   var exports;
-  if ('undefined' !== typeof window || 'undefined' !== typeof self) {
-    // Browser or Web Worker.
-    var w = (window || self);
-    if (!w.puzzlejs) {
-      w.puzzlejs = {scrambler: {}};
-    } else if (!w.puzzlejs.scrambler) {
-      w.puzzlejs.scrambler = {};
+  if ('undefined' !== typeof window) {
+    // Browser
+    if (!window.puzzlejs) {
+      window.puzzlejs = {scrambler: {}};
+    } else if (!window.puzzlejs.scrambler) {
+      window.puzzlejs.scrambler = {};
     }
-    exports = w.puzzlejs.scrambler;
+    exports = window.puzzlejs.scrambler;
+  } else if ('undefined' !== typeof self) {
+    // WebWorker
+    if (!self.puzzlejs) {
+      self.puzzlejs = {scrambler: {}};
+    } else if (!self.puzzlejs.scrambler) {
+      self.puzzlejs.scrambler = {};
+    }
+    exports = self.puzzlejs.scrambler;
   } else if ('undefined' !== typeof module) {
     // Node.js
     if (!module.exports) {
@@ -1406,7 +1427,8 @@
 
 })();
 
-self.onmessage = function(m) {
+self.onmessage = function(e) {
+  var m = e.data;
   var puzzle = m.puzzle;
   var scrambler = m.scrambler;
   var moves = m.moves;

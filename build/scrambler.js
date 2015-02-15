@@ -2,15 +2,22 @@
 (function() {
 
   var exports;
-  if ('undefined' !== typeof window || 'undefined' !== typeof self) {
-    // Browser or Web Worker.
-    var w = (window || self);
-    if (!w.puzzlejs) {
-      w.puzzlejs = {scrambler: {}};
-    } else if (!w.puzzlejs.scrambler) {
-      w.puzzlejs.scrambler = {};
+  if ('undefined' !== typeof window) {
+    // Browser
+    if (!window.puzzlejs) {
+      window.puzzlejs = {scrambler: {}};
+    } else if (!window.puzzlejs.scrambler) {
+      window.puzzlejs.scrambler = {};
     }
-    exports = w.puzzlejs.scrambler;
+    exports = window.puzzlejs.scrambler;
+  } else if ('undefined' !== typeof self) {
+    // WebWorker
+    if (!self.puzzlejs) {
+      self.puzzlejs = {scrambler: {}};
+    } else if (!self.puzzlejs.scrambler) {
+      self.puzzlejs.scrambler = {};
+    }
+    exports = self.puzzlejs.scrambler;
   } else if ('undefined' !== typeof module) {
     // Node.js
     if (!module.exports) {

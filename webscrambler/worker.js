@@ -1,4 +1,5 @@
-self.onmessage = function(m) {
+self.onmessage = function(e) {
+  var m = e.data;
   var puzzle = m.puzzle;
   var scrambler = m.scrambler;
   var moves = m.moves;
