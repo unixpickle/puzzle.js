@@ -2,10 +2,36 @@
 
 This is going to be a useful library for manipulating various puzzles.
 
+# Usage
+
+The built source code can be found in [build/](build/). If you do not plan on modifying the library, you can use the pre-built sources without concern.
+
+Puzzle.js can run in the browser, in Node.js, and even in a WebWorker. If you want to use this library in HTML, I recommend copying the **build/** directory and renaming it to "puzzlejs". Then, you can include everything using &lt;script&gt; tags:
+
+    <script src="puzzlejs/rubik.js"></script>
+    <script src="puzzlejs/skewb.js"></script>
+    <script src="puzzlejs/scrambler.js"></script>
+    <script src="puzzlejs/webscrambler.js"></script>
+
+Note that the order of the files matters, since the scrambler depends on the "rubik" and "skewb" APIs and the "webscrambler" API depends on the "scrambler" API.
+
+# Building
+
+The puzzle.js source code is stored in a way that makes it simple to modify, search, and maintain. However, this code structure is not ideal for production. Thus, there are a few build scripts which turn the source code into usable code.
+
+The [build.pragmash](build.pragmash) script is written in a language called pragmash. You can install pragmash by following the instructions in the [pragmash](https://github.com/unixpickle/pragmash) repository. Once you have pragmash, you can re-build the library as follows:
+
+    $ pragmash build.pragmash
+
+The build scripts are used to concatenate files and to provide a simple import/export mechanism.
+
 # TODO
 
- * Implement more intelligent random state generator for Skewb.
- * Create a scramble API that uses WebWorkers
+ * Implement more intelligent random state generator for Skewb
+ * Detect script path in webscrambler
+ * Generate 2x2x2 random state scrambles
+ * Generate 3x3x3 random state scrambles
+ * Add usage documentation to README
 
 # License
 
