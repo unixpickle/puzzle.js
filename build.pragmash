@@ -1,7 +1,7 @@
 # Support special use cases
 if 0 (count $ARGV) {
   puts Compiling all APIs
-  for ARGV (arr rubik skewb scrambler) {
+  for ARGV (arr rubik skewb scrambler webscrambler) {
     exec build.pragmash
   }
   exit 0
@@ -14,6 +14,14 @@ if 0 (count $ARGV) {
 if $ARGV clean {
   puts Cleaning builds.
   rmall build
+  exit 0
+}
+
+# See if the API has a custom build script.
+if (exists (path $ARGV build.pragmash)) {
+  set scriptPath (path $ARGV build.pragmash)
+  set ARGV (arr (path $DIR build) (path $DIR $ARGV))
+  exec $scriptPath
   exit 0
 }
 
