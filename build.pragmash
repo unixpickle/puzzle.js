@@ -34,7 +34,7 @@ if not (exists build) {
 
 # Read every file in the API and join them.
 set body ""
-for file (glob (join $ARGV /*.js)) {
+for file (glob (path $ARGV *.js)) {
   set data (read $file)
   set body (join $body \n $data)
 }

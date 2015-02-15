@@ -6,7 +6,7 @@ This is going to be a useful library for manipulating various puzzles.
 
 The built source code can be found in [build/](build/). If you do not plan on modifying the library, you can use the pre-built sources without concern.
 
-Puzzle.js can run in the browser, in Node.js, and even in a WebWorker. If you want to use this library in HTML, I recommend copying the **build/** directory and renaming it to "puzzlejs". Then, you can include everything using &lt;script&gt; tags:
+Puzzle.js can run in the browser, in Node.js, or in a WebWorker. If you want to use this library in HTML, I recommend copying the **build/** directory and renaming it to "puzzlejs". Then, you can include everything using `<script>` tags:
 
     <script src="puzzlejs/rubik.js"></script>
     <script src="puzzlejs/skewb.js"></script>
@@ -28,10 +28,8 @@ The build scripts are used to concatenate files and to provide a simple import/e
 # TODO
 
  * Implement more intelligent random state generator for Skewb
- * Detect script path in webscrambler
  * Generate 2x2x2 random state scrambles
  * Generate 3x3x3 random state scrambles
- * Add usage documentation to README
 
 # License
 
