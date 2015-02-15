@@ -1,4 +1,4 @@
-// This is the skeleton of an API.
+// This is the compiled APINAME API.
 (function() {
 
   var exports;

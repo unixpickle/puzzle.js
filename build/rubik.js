@@ -1,4 +1,4 @@
-// This is the skeleton of an API.
+// This is the compiled rubik API.
 (function() {
 
   var exports;
