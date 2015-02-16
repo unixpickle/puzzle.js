@@ -70,6 +70,20 @@ EOHeuristic.prototype.lookup = function(cube) {
   return this.table[encodeEO(cube.edges)];
 };
 
+function P1Heuristic() {
+  this.co = new COHeuristic();
+  this.eo = new EOHeuristic();
+}
+
+P1Heuristic.prototype.generate = function() {
+  this.co.generate();
+  this.eo.generate();
+};
+
+P1Heuristic.prototype.lookup = function(cube) {
+  return Math.max(this.co.lookup(cube), this.eo.lookup(cube));
+};
+
 function encodeCO(corners) {
   var res = 0;
   var mul = 1;
@@ -91,3 +105,4 @@ function encodeEO(edges) {
 
 exports.COHeuristic = COHeuristic;
 exports.EOHeuristic = EOHeuristic;
+exports.P1Heuristic = P1Heuristic;
