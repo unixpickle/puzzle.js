@@ -283,6 +283,16 @@
     }
   };
   
+  Corners.prototype.solved = function() {
+    for (var i = 0; i < 7; ++i) {
+      var corner = this.corners[i];
+      if (corner.piece !== i || corner.orientation !== 0) {
+        return false;
+      }
+    }
+    return true;
+  };
+  
   function Cube() {
     this.edges = new Edges();
     this.corners = new Corners();
@@ -308,6 +318,10 @@
   Cube.prototype.quarterTurn = function(face, turns) {
     this.corners.quarterTurn(face, turns);
     this.edges.quarterTurn(face, turns);
+  };
+  
+  Cube.prototype.solved = function() {
+    return this.corners.solved() && this.edges.solved();
   };
   
   /**
@@ -511,6 +525,16 @@
     }
   };
   
+  Edges.prototype.solved = function() {
+    for (var i = 0; i < 11; ++i) {
+      var edge = this.edges[i];
+      if (edge.piece !== i || edge.flip) {
+        return false;
+      }
+    }
+    return true;
+  };
+  
   exports.CubieCorner = Corner;
   exports.CubieCorners = Corners;
   exports.CubieCube = Cube;
@@ -673,6 +697,78 @@
     return Math.max(a, Math.max(b, c));
   };
   
+  function P2CornersHeuristic() {
+    this.table = {};
+  }
+  
+  P2CornersHeuristic.prototype.generate = function() {
+    // Use breadth-first search to generate a heuristic.
+    var queue = new Queue({state: new Corners(), depth: 0});
+    var moves = phase2Moves();
+    while (!queue.empty()) {
+      var node = queue.shift();
+      
+      var key = encodeP2Corners(node.state);
+      if (this.table.hasOwnProperty(key)) {
+        continue;
+      }
+      this.table[key] = node.depth;
+      
+      for (var i = 0, len = moves.length; i < len; ++i) {
+        var newState = node.state.copy();
+        newState.move(moves[i]);
+        queue.push({state: newState, depth: node.depth+1});
+      }
+    }
+  };
+  
+  P2CornersHeuristic.prototype.lookup = function(cube) {
+    return this.table[encodeP2Corners(cube.corners)];
+  };
+  
+  function P2Heuristic() {
+    this.corners = new P2CornersHeuristic();
+    this.edges = new P2OuterEdgesHeuristic();
+  }
+  
+  P2Heuristic.prototype.generate = function() {
+    this.corners.generate();
+    this.edges.generate();
+  };
+  
+  P2Heuristic.prototype.lookup = function(cube) {
+    return Math.max(this.corners.lookup(cube), this.edges.lookup(cube));
+  };
+  
+  function P2OuterEdgesHeuristic() {
+    this.table = {};
+  }
+  
+  P2OuterEdgesHeuristic.prototype.generate = function() {
+    // Use breadth-first search to generate a heuristic.
+    var queue = new Queue({state: new Edges(), depth: 0});
+    var moves = phase2Moves();
+    while (!queue.empty()) {
+      var node = queue.shift();
+      
+      var key = encodeP2OuterEdges(node.state);
+      if (this.table.hasOwnProperty(key)) {
+        continue;
+      }
+      this.table[key] = node.depth;
+      
+      for (var i = 0, len = moves.length; i < len; ++i) {
+        var newState = node.state.copy();
+        newState.move(moves[i]);
+        queue.push({state: newState, depth: node.depth+1});
+      }
+    }
+  };
+  
+  P2OuterEdgesHeuristic.prototype.lookup = function(cube) {
+    return this.table[encodeP2OuterEdges(cube.edges)];
+  };
+  
   function Queue(start) {
     this.first = {data: start, next: null};
     this.last = this.first;
@@ -748,13 +844,35 @@
     return result;
   }
   
+  function encodeP2Corners(corners) {
+    var res = "";
+    for (var i = 0; i < 7; ++i) {
+      res += ' ' + corners.corners[i].piece;
+    }
+    return res;
+  }
+  
+  function encodeP2OuterEdges(edges) {
+    var res = "";
+    var indices = [1, 3, 4, 5, 7, 8, 10, 11];
+    for (var i = 0; i < 8; ++i) {
+      var edge = edges.edges[indices[i]];
+      res += ' ' + edge.piece;
+    }
+    return res;
+  }
+  
   exports.COHeuristic = COHeuristic;
   exports.EOHeuristic = EOHeuristic;
   exports.EOMHeuristic = EOMHeuristic;
   exports.MHeuristic = MHeuristic;
   exports.P1Heuristic = P1Heuristic;
+  exports.P2CornersHeuristic = P2CornersHeuristic;
+  exports.P2Heuristic = P2Heuristic;
+  exports.P2OuterEdgesHeuristic = P2OuterEdgesHeuristic;
   
   var _allMovesList;
+  var _p2MovesList;
   
   function Move(face, turns) {
     this.face = face;
@@ -826,6 +944,10 @@
     return res;
   }
   
+  function phase2Moves() {
+    return _p2MovesList.slice();
+  }
+  
   function scrambleMoves(len) {
     var axis = -1;
     var moves = allMoves();
@@ -860,11 +982,15 @@
   _allMovesList = parseMoves("R R' L L' U U' D D' R2 L2 U2 D2 F2 B2 F " +
     "F' B B'");
   
+  // Generate a list of every Phase-2 move.
+  _p2MovesList = parseMoves("R R' R2 L L' L2 U2 D2 F2 B2");
+  
   exports.Move = Move;
   exports.allMoves = allMoves;
   exports.movesToString = movesToString;
   exports.parseMove = parseMove;
   exports.parseMoves = parseMoves;
+  exports.phase2Moves = phase2Moves;
   exports.scrambleMoves = scrambleMoves;
   
   function phase1Search(cube, heuristic, moves, depth, cb) {
@@ -927,7 +1053,7 @@
   }
   
   function solvePhase1(cube, heuristic, cb) {
-    for (var depth = 0; depth < 20; ++depth) {
+    for (var depth = 0; depth < 13; ++depth) {
       if (!phase1Search(cube, heuristic, [], depth, cb)) {
         break;
       }
@@ -936,6 +1062,49 @@
   
   exports.phase1Solved = phase1Solved;
   exports.solvePhase1 = solvePhase1;
+  
+  function phase2Search(cube, heuristic, moves, depth, cb) {
+    // If we are done, check if it's solved and run the callback.
+    if (moves.length === depth) {
+      if (!cube.solved()) {
+        return true;
+      }
+      if (cb(moves.slice()) === true) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    
+    // Check the heuristic.
+    if (heuristic.lookup(cube) > depth-moves.length) {
+      return true;
+    }
+    
+    // Apply each move and go deeper.
+    var turns = phase2Moves();
+    for (var i = 0, len = turns.length; i < len; ++i) {
+      var newState = cube.copy();
+      newState.move(turns[i]);
+      moves.push(turns[i]);
+      if (!phase2Search(newState, heuristic, moves, depth, cb)) {
+        return false;
+      }
+      moves.splice(moves.length-1, 1);
+    }
+    return true;
+  }
+  
+  function solvePhase2(cube, heuristic, cb) {
+    for (var depth = 0; depth < 19; ++depth) {
+      console.log('p2 depth', depth);
+      if (!phase2Search(cube, heuristic, [], depth, cb)) {
+        break;
+      }
+    }
+  }
+  
+  exports.solvePhase2 = solvePhase2;
   
 
 })();

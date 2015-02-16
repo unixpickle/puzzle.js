@@ -1,4 +1,5 @@
 var _allMovesList;
+var _p2MovesList;
 
 function Move(face, turns) {
   this.face = face;
@@ -70,6 +71,10 @@ function parseMoves(s) {
   return res;
 }
 
+function phase2Moves() {
+  return _p2MovesList.slice();
+}
+
 function scrambleMoves(len) {
   var axis = -1;
   var moves = allMoves();
@@ -104,9 +109,13 @@ function scrambleMoves(len) {
 _allMovesList = parseMoves("R R' L L' U U' D D' R2 L2 U2 D2 F2 B2 F " +
   "F' B B'");
 
+// Generate a list of every Phase-2 move.
+_p2MovesList = parseMoves("R R' R2 L L' L2 U2 D2 F2 B2");
+
 exports.Move = Move;
 exports.allMoves = allMoves;
 exports.movesToString = movesToString;
 exports.parseMove = parseMove;
 exports.parseMoves = parseMoves;
+exports.phase2Moves = phase2Moves;
 exports.scrambleMoves = scrambleMoves;

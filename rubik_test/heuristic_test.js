@@ -42,10 +42,34 @@ function benchmarkP1Heuristic() {
   console.log('Benchmark: ' + duration + ' ms/P1Heuristic');
 }
 
+function benchmarkP2CornersHeuristic() {
+  var start = new Date().getTime();
+  new rubik.P2CornersHeuristic().generate();
+  var duration = new Date().getTime() - start;
+  console.log('Benchmark: ' + duration + ' ms/P2CornersHeuristic');
+}
+
+function benchmarkP2Heuristic() {
+  var start = new Date().getTime();
+  new rubik.P2Heuristic().generate();
+  var duration = new Date().getTime() - start;
+  console.log('Benchmark: ' + duration + ' ms/P2Heuristic');
+}
+
+function benchmarkP2OuterEdges() {
+  var start = new Date().getTime();
+  new rubik.P2OuterEdgesHeuristic().generate();
+  var duration = new Date().getTime() - start;
+  console.log('Benchmark: ' + duration + ' ms/P2OuterEdgesHeuristic');
+}
+
 // Run tests.
 benchmarkCOHeuristic();
 benchmarkEOHeuristic();
 benchmarkEOMHeuristic();
 benchmarkMHeuristic();
 benchmarkP1Heuristic();
+benchmarkP2CornersHeuristic();
+benchmarkP2Heuristic();
+benchmarkP2OuterEdges();
 console.log('PASS');

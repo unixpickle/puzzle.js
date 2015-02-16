@@ -154,6 +154,78 @@ P1Heuristic.prototype.lookup = function(cube) {
   return Math.max(a, Math.max(b, c));
 };
 
+function P2CornersHeuristic() {
+  this.table = {};
+}
+
+P2CornersHeuristic.prototype.generate = function() {
+  // Use breadth-first search to generate a heuristic.
+  var queue = new Queue({state: new Corners(), depth: 0});
+  var moves = phase2Moves();
+  while (!queue.empty()) {
+    var node = queue.shift();
+    
+    var key = encodeP2Corners(node.state);
+    if (this.table.hasOwnProperty(key)) {
+      continue;
+    }
+    this.table[key] = node.depth;
+    
+    for (var i = 0, len = moves.length; i < len; ++i) {
+      var newState = node.state.copy();
+      newState.move(moves[i]);
+      queue.push({state: newState, depth: node.depth+1});
+    }
+  }
+};
+
+P2CornersHeuristic.prototype.lookup = function(cube) {
+  return this.table[encodeP2Corners(cube.corners)];
+};
+
+function P2Heuristic() {
+  this.corners = new P2CornersHeuristic();
+  this.edges = new P2OuterEdgesHeuristic();
+}
+
+P2Heuristic.prototype.generate = function() {
+  this.corners.generate();
+  this.edges.generate();
+};
+
+P2Heuristic.prototype.lookup = function(cube) {
+  return Math.max(this.corners.lookup(cube), this.edges.lookup(cube));
+};
+
+function P2OuterEdgesHeuristic() {
+  this.table = {};
+}
+
+P2OuterEdgesHeuristic.prototype.generate = function() {
+  // Use breadth-first search to generate a heuristic.
+  var queue = new Queue({state: new Edges(), depth: 0});
+  var moves = phase2Moves();
+  while (!queue.empty()) {
+    var node = queue.shift();
+    
+    var key = encodeP2OuterEdges(node.state);
+    if (this.table.hasOwnProperty(key)) {
+      continue;
+    }
+    this.table[key] = node.depth;
+    
+    for (var i = 0, len = moves.length; i < len; ++i) {
+      var newState = node.state.copy();
+      newState.move(moves[i]);
+      queue.push({state: newState, depth: node.depth+1});
+    }
+  }
+};
+
+P2OuterEdgesHeuristic.prototype.lookup = function(cube) {
+  return this.table[encodeP2OuterEdges(cube.edges)];
+};
+
 function Queue(start) {
   this.first = {data: start, next: null};
   this.last = this.first;
@@ -229,8 +301,29 @@ function encodeM(edges) {
   return result;
 }
 
+function encodeP2Corners(corners) {
+  var res = "";
+  for (var i = 0; i < 7; ++i) {
+    res += ' ' + corners.corners[i].piece;
+  }
+  return res;
+}
+
+function encodeP2OuterEdges(edges) {
+  var res = "";
+  var indices = [1, 3, 4, 5, 7, 8, 10, 11];
+  for (var i = 0; i < 8; ++i) {
+    var edge = edges.edges[indices[i]];
+    res += ' ' + edge.piece;
+  }
+  return res;
+}
+
 exports.COHeuristic = COHeuristic;
 exports.EOHeuristic = EOHeuristic;
 exports.EOMHeuristic = EOMHeuristic;
 exports.MHeuristic = MHeuristic;
 exports.P1Heuristic = P1Heuristic;
+exports.P2CornersHeuristic = P2CornersHeuristic;
+exports.P2Heuristic = P2Heuristic;
+exports.P2OuterEdgesHeuristic = P2OuterEdgesHeuristic;

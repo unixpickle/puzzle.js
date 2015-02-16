@@ -33,7 +33,7 @@ function benchmarkPhase1() {
     });
   }
   var duration = new Date().getTime() - start;
-  console.log('Benchmark: ' + duration/10 + ' ms/solvePhase1');
+  console.log('Benchmark: ' + duration/scrambles.length + ' ms/solvePhase1');
 }
 
 function testPhase1() {

@@ -254,6 +254,16 @@ Corners.prototype.quarterTurn = function(face, turns) {
   }
 };
 
+Corners.prototype.solved = function() {
+  for (var i = 0; i < 7; ++i) {
+    var corner = this.corners[i];
+    if (corner.piece !== i || corner.orientation !== 0) {
+      return false;
+    }
+  }
+  return true;
+};
+
 function Cube() {
   this.edges = new Edges();
   this.corners = new Corners();
@@ -279,6 +289,10 @@ Cube.prototype.move = function(m) {
 Cube.prototype.quarterTurn = function(face, turns) {
   this.corners.quarterTurn(face, turns);
   this.edges.quarterTurn(face, turns);
+};
+
+Cube.prototype.solved = function() {
+  return this.corners.solved() && this.edges.solved();
 };
 
 /**
@@ -480,6 +494,16 @@ Edges.prototype.quarterTurn = function(face, turns) {
   default:
     break;
   }
+};
+
+Edges.prototype.solved = function() {
+  for (var i = 0; i < 11; ++i) {
+    var edge = this.edges[i];
+    if (edge.piece !== i || edge.flip) {
+      return false;
+    }
+  }
+  return true;
 };
 
 exports.CubieCorner = Corner;

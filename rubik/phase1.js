@@ -58,7 +58,7 @@ function phase1Solved(cube) {
 }
 
 function solvePhase1(cube, heuristic, cb) {
-  for (var depth = 0; depth < 20; ++depth) {
+  for (var depth = 0; depth < 13; ++depth) {
     if (!phase1Search(cube, heuristic, [], depth, cb)) {
       break;
     }

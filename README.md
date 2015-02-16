@@ -30,6 +30,7 @@ The build scripts are used to concatenate files and to provide a simple import/e
  * Implement more intelligent random state generator for Skewb
  * Generate 2x2x2 random state scrambles
  * Generate 3x3x3 random state scrambles
+ * Don't copy all moves in search
 
 # License
 
