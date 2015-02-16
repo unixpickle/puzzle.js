@@ -18,17 +18,28 @@ function benchmarkEOHeuristic() {
   console.log('Benchmark: ' + duration/10 + ' ms/EOHeuristic.');
 }
 
-function benchmarkP1Heuristic() {
+function benchmarkMHeuristic() {
   var start = new Date().getTime();
   for (var i = 0; i < 10; ++i) {
-    new rubik.P1Heuristic().generate();
+    new rubik.MHeuristic().generate();
   }
+  
   var duration = new Date().getTime() - start;
-  console.log('Benchmark: ' + duration/10 + ' ms/P1Heuristic.');
+  console.log('Benchmark: ' + duration/10 + ' ms/MHeuristic.');
+}
+
+function benchmarkP1Heuristic() {
+  var start = new Date().getTime();
+  //for (var i = 0; i < 5; ++i) {
+    new rubik.P1Heuristic().generate();
+    //}
+  var duration = new Date().getTime() - start;
+  console.log('Benchmark: ' + duration + ' ms/P1Heuristic.');
 }
 
 // Run tests.
 benchmarkCOHeuristic();
 benchmarkEOHeuristic();
+benchmarkMHeuristic();
 benchmarkP1Heuristic();
 console.log('PASS');
