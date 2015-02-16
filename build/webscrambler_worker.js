@@ -70,7 +70,9 @@
     for (var i = 0; i < 8; ++i) {
       newCorners[i] = this.corners[i].copy();
     }
-    return Object.create(Corners.prototype, {corners: newCorners});
+    var res = Object.create(Corners.prototype);
+    res.corners = newCorners;
+    return res;
   };
   
   Corners.prototype.halfTurn = function(face) {
@@ -287,8 +289,10 @@
   }
   
   Cube.prototype.copy = function() {
-    var props = {edges: this.edges.copy(), corners: this.corners.copy()};
-    return Object.create(Cube.prototype, props);
+    var res = Object.create(Cube.prototype);
+    res.edges = this.edges.copy();
+    res.corners = this.corners.copy();
+    return res;
   };
   
   Cube.prototype.halfTurn = function(face) {
@@ -336,7 +340,9 @@
     for (var i = 0; i < 12; ++i) {
       newEdges[i] = this.edges[i].copy();
     }
-    return Object.create(Edges.prototype, {edges: newEdges});
+    var res = Object.create(Edges.prototype);
+    res.edges = newEdges;
+    return res;
   };
   
   Edges.prototype.halfTurn = function(face) {
@@ -510,6 +516,54 @@
   exports.CubieCube = Cube;
   exports.CubieEdge = Edge;
   exports.CubieEdges = Edges;
+  
+  function COHeuristic() {
+    this.table = [];
+    
+    // We populate the table a) so every cell is marked invalid, and b) so the
+    // array doesn't become "sparse" under V8.
+    for (var i = 0; i < 2187; ++i) {
+      this.table[i] = -1;
+    }
+  }
+  
+  COHeuristic.prototype.generate = function() {
+    // Use breadth-first search to generate a heuristic.
+    var nodes = [{state: new Corners(), depth: 0}];
+    var moves = allMoves();
+    while (nodes.length > 0) {
+      var node = nodes[0];
+      nodes.splice(0, 1);
+      
+      var idx = encodeCO(node.state);
+      if (this.table[idx] >= 0) {
+        continue
+      }
+      this.table[idx] = node.depth;
+      
+      for (var i = 0, len = moves.length; i < len; ++i) {
+        var newState = node.state.copy();
+        newState.move(moves[i]);
+        nodes.push({state: newState, depth: node.depth+1});
+      }
+    }
+  };
+  
+  COHeuristic.prototype.lookup = function(cube) {
+    return this.table[encodeCO(cube.corners)];
+  };
+  
+  function encodeCO(corners) {
+    var res = 0;
+    var mul = 1;
+    for (var i = 0; i < 7; ++i) {
+      res += mul * corners.corners[i].orientation;
+      mul *= 3;
+    }
+    return res;
+  }
+  
+  exports.COHeuristic = COHeuristic;
   
   var _allMovesList;
   

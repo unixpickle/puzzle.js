@@ -41,7 +41,9 @@ Corners.prototype.copy = function() {
   for (var i = 0; i < 8; ++i) {
     newCorners[i] = this.corners[i].copy();
   }
-  return Object.create(Corners.prototype, {corners: newCorners});
+  var res = Object.create(Corners.prototype);
+  res.corners = newCorners;
+  return res;
 };
 
 Corners.prototype.halfTurn = function(face) {
@@ -258,8 +260,10 @@ function Cube() {
 }
 
 Cube.prototype.copy = function() {
-  var props = {edges: this.edges.copy(), corners: this.corners.copy()};
-  return Object.create(Cube.prototype, props);
+  var res = Object.create(Cube.prototype);
+  res.edges = this.edges.copy();
+  res.corners = this.corners.copy();
+  return res;
 };
 
 Cube.prototype.halfTurn = function(face) {
@@ -307,7 +311,9 @@ Edges.prototype.copy = function() {
   for (var i = 0; i < 12; ++i) {
     newEdges[i] = this.edges[i].copy();
   }
-  return Object.create(Edges.prototype, {edges: newEdges});
+  var res = Object.create(Edges.prototype);
+  res.edges = newEdges;
+  return res;
 };
 
 Edges.prototype.halfTurn = function(face) {
