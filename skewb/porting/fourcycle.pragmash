@@ -1,12 +1,12 @@
 # This ports a four cycle.
 
-if (! 2 (len $ARGV)) {
+if (! 2 (count $ARGV)) {
   puts Expected two arguments.
   exit 1
 }
 
 set nums (match "\\[([0-9])\\]" ([] $ARGV 1))
-if (! (len $nums) 8) {
+if (! (count $nums) 8) {
   puts Invalid number of matches.
   exit 1
 }
