@@ -29,7 +29,6 @@ function benchmarkPhase1() {
     
     // Solve phase 1.
     rubik.solvePhase1(cube, heuristic, function(moves) {
-      console.log(rubik.movesToString(moves));
       return false;
     });
   }

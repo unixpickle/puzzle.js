@@ -529,11 +529,10 @@
   
   COHeuristic.prototype.generate = function() {
     // Use breadth-first search to generate a heuristic.
-    var nodes = [{state: new Corners(), depth: 0}];
+    var queue = new Queue({state: new Corners(), depth: 0});
     var moves = allMoves();
-    while (nodes.length > 0) {
-      var node = nodes[0];
-      nodes.splice(0, 1);
+    while (!queue.empty()) {
+      var node = queue.shift();
       
       var idx = encodeCO(node.state);
       if (this.table[idx] >= 0) {
@@ -544,7 +543,7 @@
       for (var i = 0, len = moves.length; i < len; ++i) {
         var newState = node.state.copy();
         newState.move(moves[i]);
-        nodes.push({state: newState, depth: node.depth+1});
+        queue.push({state: newState, depth: node.depth+1});
       }
     }
   };
@@ -565,11 +564,10 @@
   
   EOHeuristic.prototype.generate = function() {
     // Use breadth-first search to generate a heuristic.
-    var nodes = [{state: new Edges(), depth: 0}];
+    var queue = new Queue({state: new Edges(), depth: 0});
     var moves = allMoves();
-    while (nodes.length > 0) {
-      var node = nodes[0];
-      nodes.splice(0, 1);
+    while (!queue.empty()) {
+      var node = queue.shift();
       
       var idx = encodeEO(node.state);
       if (this.table[idx] >= 0) {
@@ -580,7 +578,7 @@
       for (var i = 0, len = moves.length; i < len; ++i) {
         var newState = node.state.copy();
         newState.move(moves[i]);
-        nodes.push({state: newState, depth: node.depth+1});
+        queue.push({state: newState, depth: node.depth+1});
       }
     }
   };
@@ -596,11 +594,10 @@
   
   EOMHeuristic.prototype.generate = function() {
     // Use breadth-first search to generate a heuristic.
-    var nodes = [{state: new Edges(), depth: 0}];
+    var queue = new Queue({state: new Edges(), depth: 0});
     var moves = allMoves();
-    while (nodes.length > 0) {
-      var node = nodes[0];
-      nodes.splice(0, 1);
+    while (!queue.empty()) {
+      var node = queue.shift();
       
       var key = encodeEOM(node.state);
       if (this.table.hasOwnProperty(key)) {
@@ -615,7 +612,7 @@
       for (var i = 0, len = moves.length; i < len; ++i) {
         var newState = node.state.copy();
         newState.move(moves[i]);
-        nodes.push({state: newState, depth: node.depth+1});
+        queue.push({state: newState, depth: node.depth+1});
       }
     }
   };
@@ -634,11 +631,10 @@
   
   MHeuristic.prototype.generate = function() {
     // Use breadth-first search to generate a heuristic.
-    var nodes = [{state: new Edges(), depth: 0}];
+    var queue = new Queue({state: new Edges(), depth: 0});
     var moves = allMoves();
-    while (nodes.length > 0) {
-      var node = nodes[0];
-      nodes.splice(0, 1);
+    while (!queue.empty()) {
+      var node = queue.shift();
       
       var key = encodeM(node.state);
       if (this.table.hasOwnProperty(key)) {
@@ -649,7 +645,7 @@
       for (var i = 0, len = moves.length; i < len; ++i) {
         var newState = node.state.copy();
         newState.move(moves[i]);
-        nodes.push({state: newState, depth: node.depth+1});
+        queue.push({state: newState, depth: node.depth+1});
       }
     }
   };
@@ -677,6 +673,34 @@
     return Math.max(a, Math.max(b, c));
   };
   
+  function Queue(start) {
+    this.first = {data: start, next: null};
+    this.last = this.first;
+  }
+  
+  Queue.prototype.empty = function() {
+    return this.first === null;
+  };
+  
+  Queue.prototype.push = function(data) {
+    if (this.last !== null) {
+      this.last.next = {data: data, next: null};
+      this.last = this.last.next;
+    } else {
+      this.last = {data: data, next: null};
+      this.first = this.last;
+    }
+  };
+  
+  Queue.prototype.shift = function() {
+    var data = this.first.data;
+    this.first = this.first.next;
+    if (this.first === null) {
+      this.last = null;
+    }
+    return data;
+  };
+  
   function encodeCO(corners) {
     var res = 0;
     var mul = 1;
@@ -697,7 +721,17 @@
   }
   
   function encodeEOM(edges) {
-    return encodeM(edges) + encodeEO(edges);
+    var sliceEdges = [0, 2, 6, 8];
+    var result = "";
+    for (var i = 0; i < 12; ++i) {
+      var edge = edges.edges[i];
+      if (sliceEdges.indexOf(edge.piece) >= 0) {
+        result += (edge.flip ? "t" : "f");
+      } else {
+        result += (edge.flip ? "1" : "0");
+      }
+    }
+    return result;
   }
   
   function encodeM(edges) {

@@ -20,9 +20,9 @@ function benchmarkEOHeuristic() {
 
 function benchmarkEOMHeuristic() {
   var start = new Date().getTime();
-  new rubik.EOMHeuristic(5).generate();
+  new rubik.EOMHeuristic(6).generate();
   var duration = new Date().getTime() - start;
-  console.log('Benchmark: ' + duration + ' ms/EOMHeuristic(5)');
+  console.log('Benchmark: ' + duration + ' ms/EOMHeuristic(6)');
 }
 
 function benchmarkMHeuristic() {
