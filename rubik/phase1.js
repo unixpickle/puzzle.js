@@ -40,7 +40,7 @@ function phase1Solved(cube) {
   
   // All edges must be oriented.
   for (var i = 0; i < 11; ++i) {
-    if (cube.edges.edges[i].filp) {
+    if (cube.edges.edges[i].flip) {
       return false;
     }
   }
