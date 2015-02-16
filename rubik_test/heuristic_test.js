@@ -6,7 +6,7 @@ function benchmarkCOHeuristic() {
     new rubik.COHeuristic().generate();
   }
   var duration = new Date().getTime() - start;
-  console.log('Benchmark: ' + duration/10 + ' ms/COHeuristic.');
+  console.log('Benchmark: ' + duration/10 + ' ms/COHeuristic');
 }
 
 function benchmarkEOHeuristic() {
@@ -15,7 +15,14 @@ function benchmarkEOHeuristic() {
     new rubik.EOHeuristic().generate();
   }
   var duration = new Date().getTime() - start;
-  console.log('Benchmark: ' + duration/10 + ' ms/EOHeuristic.');
+  console.log('Benchmark: ' + duration/10 + ' ms/EOHeuristic');
+}
+
+function benchmarkEOMHeuristic() {
+  var start = new Date().getTime();
+  new rubik.EOMHeuristic(5).generate();
+  var duration = new Date().getTime() - start;
+  console.log('Benchmark: ' + duration + ' ms/EOMHeuristic(5)');
 }
 
 function benchmarkMHeuristic() {
@@ -25,21 +32,20 @@ function benchmarkMHeuristic() {
   }
   
   var duration = new Date().getTime() - start;
-  console.log('Benchmark: ' + duration/10 + ' ms/MHeuristic.');
+  console.log('Benchmark: ' + duration/10 + ' ms/MHeuristic');
 }
 
 function benchmarkP1Heuristic() {
   var start = new Date().getTime();
-  //for (var i = 0; i < 5; ++i) {
-    new rubik.P1Heuristic().generate();
-    //}
+  new rubik.P1Heuristic().generate();
   var duration = new Date().getTime() - start;
-  console.log('Benchmark: ' + duration + ' ms/P1Heuristic.');
+  console.log('Benchmark: ' + duration + ' ms/P1Heuristic');
 }
 
 // Run tests.
 benchmarkCOHeuristic();
 benchmarkEOHeuristic();
+benchmarkEOMHeuristic();
 benchmarkMHeuristic();
 benchmarkP1Heuristic();
 console.log('PASS');

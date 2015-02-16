@@ -70,6 +70,45 @@ EOHeuristic.prototype.lookup = function(cube) {
   return this.table[encodeEO(cube.edges)];
 };
 
+function EOMHeuristic(maxDepth) {
+  this.maxDepth = maxDepth;
+  this.table = {};
+}
+
+EOMHeuristic.prototype.generate = function() {
+  // Use breadth-first search to generate a heuristic.
+  var nodes = [{state: new Edges(), depth: 0}];
+  var moves = allMoves();
+  while (nodes.length > 0) {
+    var node = nodes[0];
+    nodes.splice(0, 1);
+    
+    var key = encodeEOM(node.state);
+    if (this.table.hasOwnProperty(key)) {
+      continue;
+    }
+    this.table[key] = node.depth;
+    
+    if (node.depth === this.maxDepth) {
+      continue;
+    }
+    
+    for (var i = 0, len = moves.length; i < len; ++i) {
+      var newState = node.state.copy();
+      newState.move(moves[i]);
+      nodes.push({state: newState, depth: node.depth+1});
+    }
+  }
+};
+
+EOMHeuristic.prototype.lookup = function(cube) {
+  var key = encodeEOM(cube.edges);
+  if (!this.table.hasOwnProperty(key)) {
+    return this.maxDepth+1;
+  }
+  return this.table[key];
+};
+
 function MHeuristic() {
   this.table = {};
 }
@@ -103,19 +142,19 @@ MHeuristic.prototype.lookup = function(cube) {
 function P1Heuristic() {
   this.co = new COHeuristic();
   this.eo = new EOHeuristic();
-  this.m = new MHeuristic();
+  this.eom = new EOMHeuristic(5);
 }
 
 P1Heuristic.prototype.generate = function() {
   this.co.generate();
   this.eo.generate();
-  this.m.generate();
+  this.eom.generate();
 };
 
 P1Heuristic.prototype.lookup = function(cube) {
   var a = this.co.lookup(cube);
   var b = this.eo.lookup(cube);
-  var c = this.m.lookup(cube);
+  var c = this.eom.lookup(cube);
   return Math.max(a, Math.max(b, c));
 };
 
@@ -138,6 +177,10 @@ function encodeEO(edges) {
   return res;
 }
 
+function encodeEOM(edges) {
+  return encodeM(edges) + encodeEO(edges);
+}
+
 function encodeM(edges) {
   var sliceEdges = [0, 2, 6, 8];
   var result = "";
@@ -154,5 +197,6 @@ function encodeM(edges) {
 
 exports.COHeuristic = COHeuristic;
 exports.EOHeuristic = EOHeuristic;
+exports.EOMHeuristic = EOMHeuristic;
 exports.MHeuristic = MHeuristic;
 exports.P1Heuristic = P1Heuristic;
