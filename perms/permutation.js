@@ -2,6 +2,72 @@ var factorials = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800,
   39916800, 479001600, 6227020800];
 
 /**
+ * This generates all the permutations of a given length [size].
+ */
+function allPerms(size) {
+  if (size === 0) {
+    return [[]];
+  } else if (size === 1) {
+    return [[0]];
+  }
+  
+  // Recursively generate permutations
+  var result = [];
+  var subPermutations = allPerms(size-1);
+  for (var start = 0; start < size; ++start) {
+    for (var i = 0, len = subPermutations.length; i < len; ++i) {
+      var aPerm = [start].concat(subPermutations[i]);
+      // Increment values which are >= start in the sub-permutation.
+      for (var j = 1, l = aPerm.length; j < l; ++j) {
+        if (aPerm[j] >= start) {
+          ++aPerm[j];
+        }
+      }
+      result.push(aPerm);
+    }
+  }
+  return result;
+}
+
+/**
+ * Encode a permutation with a perfect-mapping hash function, destroying the
+ * permutation array in the process.
+ */
+function encodeDestructablePerm(permutation) {
+  if (permutation.length <= 1) {
+    return 0;
+  }
+  
+  var result = 0;
+  for (var i = 0, len = permutation.length-1; i < len; ++i) {
+    var current = permutation[i];
+    
+    // If the first item of the sub-permutation does not belong at the
+    // beginning, we need to offset our result.
+    if (current !== 0) {
+      var tailCount = factorial(len-i);
+      result += tailCount*current;
+    }
+    
+    // Get rid of any trace of "current" from the sub-permutation .
+    for (var j = i+1; j < len; ++j) {
+      if (permutation[j] > current) {
+        --permutation[j];
+      }
+    }
+  }
+  
+  return result;
+}
+
+/**
+ * Encode a permutation with a perfect-mapping hash function.
+ */
+function encodePerm(permutation) {
+  return encodeDestructablePerm(permutation.slice());
+}
+
+/**
  * Compute the factorial of [n].
  */
 function factorial(n) {
@@ -90,6 +156,9 @@ function randomPermParity(len, p) {
   return res;
 }
 
+exports.allPerms = allPerms;
+exports.encodeDestructablePerm = encodeDestructablePerm;
+exports.encodePerm = encodePerm;
 exports.factorial = factorial;
 exports.parity = parity;
 exports.paritySort = paritySort;

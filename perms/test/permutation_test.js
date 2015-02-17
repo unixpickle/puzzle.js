@@ -1,6 +1,17 @@
 var assert = require('assert');
 var perms = require('../../build/perms.js');
 
+function benchmarkEncodePerm() {
+  var testSet = perms.allPerms(8);
+  var start = new Date().getTime();
+  for (var i = 0, len = testSet.length; i < len; ++i) {
+    perms.encodePerm(testSet[i]);
+  }
+  var duration = new Date().getTime() - start;
+  console.log('Benchmark: ' + Math.round(duration*1000000/40320) +
+    ' ns/encodePerm');
+}
+
 function benchmarkParity() {
   var list = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
   var start = new Date().getTime();
@@ -19,6 +30,15 @@ function benchmarkParity() {
   duration = new Date().getTime() - start;
   
   console.log('Benchmark: ' + duration + ' ns/parity [best]');
+}
+
+function testEncodePerm() {
+  for (var i = 0; i < 8; ++i) {
+    var testSet = perms.allPerms(i);
+    for (var j = 0, len = testSet.length; j < len; ++j) {
+      assert.equal(j, perms.encodePerm(testSet[j]));
+    }
+  }
 }
 
 function testFactorial() {
@@ -75,7 +95,9 @@ function testRandomPermParity() {
   }
 }
 
+benchmarkEncodePerm();
 benchmarkParity();
+testEncodePerm();
 testFactorial();
 testParity();
 testRandomPermParity();

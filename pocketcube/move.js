@@ -30,8 +30,11 @@ Move.prototype.toString = function() {
 };
 
 function allMoves() {
-  // The moves are ordered in descending comfort.
   return _allMovesList.slice();
+}
+
+function basisMoves() {
+  return _basisMovesList.slice();
 }
 
 function movesToString(moves) {
@@ -74,8 +77,12 @@ function parseMoves(s) {
 _allMovesList = parseMoves("R R' L L' U U' D D' R2 L2 U2 D2 F2 B2 F " +
   "F' B B'");
 
+// Generate a list of the standard basis moves.
+_basisMovesList = parseMoves("R R' R2 U U' U2 F F' F2");
+
 exports.Move = Move;
 exports.allMoves = allMoves;
+exports.basisMoves = basisMoves;
 exports.movesToString = movesToString;
 exports.parseMove = parseMove;
 exports.parseMoves = parseMoves;
