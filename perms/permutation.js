@@ -1,10 +1,14 @@
+var factorials = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800,
+  39916800, 479001600, 6227020800];
+
 /**
- * Compute the factorial of [number], which must satisfy 0 <= number <= 13.
+ * Compute the factorial of [n].
  */
-function factorial(number) {
-  var table = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800,
-    39916800, 479001600, 6227020800];
-  return table[number];
+function factorial(n) {
+  if (n >= factorials.length) {
+    return n * factorial(n-1);
+  }
+  return factorials[n];
 }
 
 /**
@@ -44,6 +48,50 @@ function paritySort(list) {
   return parity;
 }
 
+/**
+ * Generates a random permutation of length [len].
+ */
+function randomPerm(len) {
+  // Generate a list of symbols.
+  var symbols = [];
+  for (var i = 0; i < len; ++i) {
+    symbols[i] = i;
+  }
+  
+  // Picking random symbols from the list and add them to the result.
+  var result = [];
+  while (symbols.length > 0) {
+    var idx = Math.floor(Math.random() * symbols.length);
+    var value = symbols[idx];
+    symbols.splice(idx, 1);
+    result.push(value);
+  }
+  
+  return result;
+}
+
+/**
+ * Generates a random permutation of length [len] with parity [parity].
+ */
+function randomPermParity(len, parity) {
+  if (len <= 1 && parity === false) {
+    throw new Error('cannot generate odd permutation on ' + len + ' symbols');
+  }
+  
+  var res = randomPerm(len);
+  
+  // Do a swap if the parity is wrong.
+  if (parity(res) !== parity) {
+    var first = res[0];
+    res[0] = res[1];
+    res[1] = first;
+  }
+  
+  return res;
+}
+
 exports.factorial = factorial;
 exports.parity = parity;
 exports.paritySort = paritySort;
+exports.randomPerm = randomPerm;
+exports.randomPermParity = randomPermParity;
