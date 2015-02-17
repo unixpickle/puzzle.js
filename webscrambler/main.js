@@ -6,6 +6,7 @@
   var workerPath = null;
 
   var scrambleWorker = null;
+  var workerUnavailable = false;
   var callbacks = {};
   var ticketId = 0;
 
@@ -26,7 +27,38 @@
         workerPath = 'webscrambler_worker.js';
       }
     }
-    
+  }
+
+  function generateScramble(puzzle, scrambler, moves, cb) {
+    if (scrambleWorker === null) {
+      if ('undefined' === typeof window.Worker || workerUnavailable) {
+        // No WebWorker support; generate scramble on main thread.
+        setTimeout(function() {
+          var genScram = window.puzzlejs.scrambler.generateScramble;
+          var res = genScram(puzzle, scrambler, moves);
+          cb(res);
+        }, 10);
+        return;
+      }
+      
+      // Create the WebWorker.
+      try {
+        setupWorker();
+      } catch (e) {
+        workerUnavailable = true;
+        generateScramble(puzzle, scrambler, moves, cb);
+        return;
+      }
+    }
+
+    // Send a request to the WebWorker.
+    var ticket = ticketId++;
+    callbacks[ticket] = cb;
+    scrambleWorker.postMessage({puzzle: puzzle, scrambler: scrambler,
+      moves: moves, id: ticket});
+  }
+  
+  function setupWorker() {
     // Setup the webworker to call our callbacks.
     scrambleWorker = new window.Worker(workerPath);
     scrambleWorker.onmessage = function(e) {
@@ -35,24 +67,6 @@
       delete callbacks[m.id];
       cb(m.scramble);
     }
-  }
-
-  function generateScramble(puzzle, scrambler, moves, cb) {
-    // We may need to compute the scramble synchronously.
-    if (scrambleWorker === null) {
-      setTimeout(function() {
-        var res = window.puzzlejs.scrambler.generateScramble(puzzle, scrambler,
-          moves);
-        cb(res);
-      }, 10);
-      return;
-    }
-
-    // Post the request and wait for the response asynchronously.
-    var ticket = ticketId++;
-    callbacks[ticket] = cb;
-    scrambleWorker.postMessage({puzzle: puzzle, scrambler: scrambler,
-      moves: moves, id: ticket});
   }
 
   if (!window.puzzlejs) {

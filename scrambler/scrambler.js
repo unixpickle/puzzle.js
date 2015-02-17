@@ -1,6 +1,9 @@
 var RubikAPI = includeAPI('rubik');
 var SkewbAPI = includeAPI('skewb');
+var PocketAPI = includeAPI('pocketcube');
 var scramblers;
+
+var pocketHeuristic = null;
 
 function allPuzzles() {
   var res = [];
@@ -35,6 +38,17 @@ function generateScramble(puzzle, scrambler, moves) {
   }
 }
 
+function pocketState() {
+  var basis = PocketAPI.basisMoves();
+  if (pocketHeuristic === null) {
+    pocketHeuristic = new PocketAPI.FullHeuristic(5);
+    pocketHeuristic.generate(basis);
+  }
+  var state = PocketAPI.randomState();
+  var solution = PocketAPI.solve(state, pocketHeuristic, basis);
+  return PocketAPI.movesToString(solution);
+}
+
 function rubikMoves(count) {
   var moves = RubikAPI.scrambleMoves(count);
   return RubikAPI.movesToString(moves);
@@ -61,6 +75,16 @@ function skewbState() {
 }
 
 scramblers = [
+  {
+    name: "2x2x2",
+    scramblers: [
+      {
+        f: pocketState,
+        moves: false,
+        name: "State"
+      }
+    ]
+  },
   {
     name: "3x3x3",
     scramblers: [

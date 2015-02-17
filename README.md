@@ -18,15 +18,14 @@ Once you build the source code, you're ready to use the library.
 
 Puzzle.js can run in the browser, in Node.js, or in a WebWorker. If you want to use this library in HTML, you can copy the **build/** directory to your project (and possibly rename it to "puzzlejs" or something like that). Then, you can include everything using a `<script>` tag:
     
-    <script src="puzzlejs/puzzle.web.0.0.1.js"></script>
+    <script src="puzzlejs/puzzle.web.0.1.0.js"></script>
 
-Note that you should replace "0.0.1" with the actual version number. Note also that you should not use an async `<script>` tag; the "webscrambler" API locates its WebWorker script in a way which depends on a synchronous import.
+Note that you should replace "0.1.0" with the actual version number. Note also that you should not use an async `<script>` tag; the "webscrambler" API locates its WebWorker script in a way which depends on a synchronous import.
 
 # TODO
 
  * Implement more intelligent random state generator for Skewb
  * Re-write the entire 3x3x3 solver
- * Generate 2x2x2 random state scrambles
  * Don't run webscrambler WebWorker until first scramble is requested
 
 # License

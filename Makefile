@@ -43,6 +43,8 @@ test: all
 	node perms/test/choose_test.js
 	node skewb/test/skewb_test.js
 	node pocketcube/test/cubie_test.js
+	node pocketcube/test/heuristics_test.js
+	node pocketcube/test/solve_test.js
 	node rubik/test/move_test.js
 	node rubik/test/cubie_test.js
 
