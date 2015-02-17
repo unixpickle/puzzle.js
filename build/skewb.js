@@ -25,8 +25,7 @@
     }
     exports = module.exports;
   }
-  
-  
+
   function Move(face, clock) {
     this.face = face;
     this.clock = clock;
@@ -87,7 +86,6 @@
   exports.movesToString = movesToString;
   exports.parseMove = parseMove;
   exports.parseMoves = parseMoves;
-  
   // Generate this using encodeCenterCases(findCenterCases()).
   var allCenterCases = null;
   
@@ -224,7 +222,6 @@
   exports.randomCenters = randomCenters;
   exports.randomCorners = randomCorners;
   exports.randomState = randomState;
-  
   function Corner(piece, orientation) {
     this.piece = piece;
     this.orientation = orientation;
@@ -531,7 +528,6 @@
   
   exports.Corner = Corner;
   exports.Skewb = Skewb;
-  
   // Generate this using makeCenterHeuristic().
   var centerHeuristicData = null;
   
@@ -661,6 +657,5 @@
   }
   
   exports.solve = solve;
-  
 
 })();

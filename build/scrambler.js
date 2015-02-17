@@ -25,8 +25,7 @@
     }
     exports = module.exports;
   }
-  
-  
+
   var RubikAPI = null;
   var SkewbAPI = null;
   
@@ -40,7 +39,6 @@
     RubikAPI = require('./rubik.js');
     SkewbAPI = require('./skewb.js');
   }
-  
   var scramblers;
   
   function allPuzzles() {
@@ -127,6 +125,5 @@
   exports.allPuzzles = allPuzzles;
   exports.generateScramble = generateScramble;
   exports.scramblersForPuzzle = scramblersForPuzzle;
-  
 
 })();

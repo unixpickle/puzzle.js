@@ -25,8 +25,7 @@
     }
     exports = module.exports;
   }
-  
-  
+
   /**
    * A Corner stores the piece index and orientation of a corner.
    *
@@ -540,7 +539,6 @@
   exports.CubieCube = Cube;
   exports.CubieEdge = Edge;
   exports.CubieEdges = Edges;
-  
   function COHeuristic() {
     this.table = [];
     
@@ -870,7 +868,6 @@
   exports.P2CornersHeuristic = P2CornersHeuristic;
   exports.P2Heuristic = P2Heuristic;
   exports.P2OuterEdgesHeuristic = P2OuterEdgesHeuristic;
-  
   var _allMovesList;
   var _p2MovesList;
   
@@ -992,7 +989,6 @@
   exports.parseMoves = parseMoves;
   exports.phase2Moves = phase2Moves;
   exports.scrambleMoves = scrambleMoves;
-  
   function phase1Search(cube, heuristic, moves, depth, cb) {
     // If we are done, check if it's solved and run the callback.
     if (moves.length === depth) {
@@ -1062,7 +1058,6 @@
   
   exports.phase1Solved = phase1Solved;
   exports.solvePhase1 = solvePhase1;
-  
   function phase2Search(cube, heuristic, moves, depth, cb) {
     // If we are done, check if it's solved and run the callback.
     if (moves.length === depth) {
@@ -1097,7 +1092,6 @@
   
   function solvePhase2(cube, heuristic, cb) {
     for (var depth = 0; depth < 19; ++depth) {
-      console.log('p2 depth', depth);
       if (!phase2Search(cube, heuristic, [], depth, cb)) {
         break;
       }
@@ -1105,6 +1099,5 @@
   }
   
   exports.solvePhase2 = solvePhase2;
-  
 
 })();

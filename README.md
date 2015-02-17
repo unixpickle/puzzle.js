@@ -13,24 +13,23 @@ Puzzle.js can run in the browser, in Node.js, or in a WebWorker. If you want to 
     <script src="puzzlejs/scrambler.js"></script>
     <script src="puzzlejs/webscrambler.js"></script>
 
-Note that the order of the files matters, since the scrambler depends on the "rubik" and "skewb" APIs and the "webscrambler" API depends on the "scrambler" API.
+Note that the order of the files matters, since the "scrambler" API depends on the "rubik" and "skewb" APIs and the "webscrambler" API depends on the "scrambler" API.
 
 # Building
 
-The puzzle.js source code is stored in a way that makes it simple to modify, search, and maintain. However, this code structure is not ideal for production. Thus, there are a few build scripts which turn the source code into usable code.
+The puzzle.js source code is stored in a way that makes it simple to modify, search, and maintain. However, this code structure is not ideal for production. A Makefile is used to turn the source code into usable code.
 
-The [build.pragmash](build.pragmash) script is written in a language called pragmash. You can install pragmash by following the instructions in the [pragmash](https://github.com/unixpickle/pragmash) repository. Once you have pragmash, you can re-build the library as follows:
+In order to build puzzle.js, you must have `make` and `sh` installed. You can then build like this:
 
-    $ pragmash build.pragmash
+    $ make clean && make
 
-The build scripts are used to concatenate files and to provide a simple import/export mechanism.
+This command will re-generate the entire build directory.
 
 # TODO
 
  * Implement more intelligent random state generator for Skewb
+ * Re-write the entire 3x3x3 solver
  * Generate 2x2x2 random state scrambles
- * Generate 3x3x3 random state scrambles
- * Don't copy all moves in search
 
 # License
 
