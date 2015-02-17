@@ -71,17 +71,17 @@ function randomPerm(len) {
 }
 
 /**
- * Generates a random permutation of length [len] with parity [parity].
+ * Generates a random permutation of length [len] with parity [p].
  */
-function randomPermParity(len, parity) {
-  if (len <= 1 && parity === false) {
+function randomPermParity(len, p) {
+  if (len <= 1 && p === false) {
     throw new Error('cannot generate odd permutation on ' + len + ' symbols');
   }
   
   var res = randomPerm(len);
   
   // Do a swap if the parity is wrong.
-  if (parity(res) !== parity) {
+  if (parity(res) !== p) {
     var first = res[0];
     res[0] = res[1];
     res[1] = first;
