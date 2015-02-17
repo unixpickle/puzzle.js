@@ -1,5 +1,5 @@
 var assert = require('assert');
-var perms = require('../build/perms.js');
+var perms = require('../../build/perms.js');
 
 function benchmarkParity() {
   var list = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];

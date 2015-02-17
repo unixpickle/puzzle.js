@@ -1,5 +1,5 @@
 var assert = require('assert');
-var perms = require('../build/perms.js');
+var perms = require('../../build/perms.js');
 
 function benchmarkEncodeChoose() {
   var cases = [];

@@ -1,4 +1,4 @@
-var pocketcube = require('../build/pocketcube.js');
+var pocketcube = require('../../build/pocketcube.js');
 var assert = require('assert');
 
 function benchmarkMove() {

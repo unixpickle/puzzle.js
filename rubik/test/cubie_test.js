@@ -1,4 +1,4 @@
-var rubik = require('../build/rubik.js');
+var rubik = require('../../build/rubik.js');
 var assert = require('assert');
 
 function benchmarkMove() {

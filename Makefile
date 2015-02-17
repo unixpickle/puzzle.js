@@ -39,12 +39,12 @@ $(BUILD):
 	mkdir $(BUILD)
 
 test: all
-	node perms_test/permutation_test.js
-	node perms_test/choose_test.js
-	node skewb_test/skewb_test.js
-	node pocketcube_test/cubie_test.js
-	node rubik_test/move_test.js
-	node rubik_test/cubie_test.js
+	node perms/test/permutation_test.js
+	node perms/test/choose_test.js
+	node skewb/test/skewb_test.js
+	node pocketcube/test/cubie_test.js
+	node rubik/test/move_test.js
+	node rubik/test/cubie_test.js
 
 clean:
 	$(RM) -r $(BUILD)
