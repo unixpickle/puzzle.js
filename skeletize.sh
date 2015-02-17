@@ -40,6 +40,18 @@ echo "// This is the compiled ${APINAME} API.
     }
     exports = module.exports;
   }
+  
+  function includeAPI(name) {
+    if ('undefined' !== typeof window) {
+      return window.puzzlejs[name];
+    } else if ('undefined' !== typeof self) {
+      return self.puzzlejs[name];
+    } else if ('function' === typeof require) {
+      return require('./' + name + '.js');
+    } else {
+      throw new Error('Unable to include: ' + name);
+    }
+  }
 " >$TEMPFILE
 
 # Read the source file and indent it.

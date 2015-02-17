@@ -16,23 +16,18 @@ This command will generate a build directory.
 
 Once you build the source code, you're ready to use the library.
 
-Puzzle.js can run in the browser, in Node.js, or in a WebWorker. If you want to use this library in HTML, you can copy the **build/** directory to your project (and possibly rename it to "puzzlejs" or something like that). Then, you can include everything using `<script>` tags:
+Puzzle.js can run in the browser, in Node.js, or in a WebWorker. If you want to use this library in HTML, you can copy the **build/** directory to your project (and possibly rename it to "puzzlejs" or something like that). Then, you can include everything using a `<script>` tag:
+    
+    <script src="puzzlejs/puzzle.web.0.0.1.js"></script>
 
-    <script src="puzzlejs/rubik.js"></script>
-    <script src="puzzlejs/skewb.js"></script>
-    <script src="puzzlejs/scrambler.js"></script>
-    <script src="puzzlejs/webscrambler.js"></script>
-    <script src="puzzlejs/perms.js"></script>
-
-Note that the order of the files matters, since the "scrambler" API depends on the "rubik" and "skewb" APIs and the "webscrambler" API depends on the "scrambler" API. Note also that "webscrambler_worker.js" needs to be in the same directory as "webscrambler.js" so that the webscrambler WebWorker can be launched properly.
-
-The above script tags are superfluous if you want to use every API that puzzle.js provides. In this case, all you need is "puzzle.web.VERSION.js" and "webscrambler_worker.js".
+Note that you should replace "0.0.1" with the actual version number. Note also that you should not use an async `<script>` tag; the "webscrambler" API locates its WebWorker script in a way which depends on a synchronous import.
 
 # TODO
 
  * Implement more intelligent random state generator for Skewb
  * Re-write the entire 3x3x3 solver
  * Generate 2x2x2 random state scrambles
+ * Don't run webscrambler WebWorker until first scramble is requested
 
 # License
 

@@ -1,3 +1,5 @@
+var RubikAPI = includeAPI('rubik');
+var SkewbAPI = includeAPI('skewb');
 var scramblers;
 
 function allPuzzles() {
