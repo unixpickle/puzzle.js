@@ -38,6 +38,11 @@ function generateScramble(puzzle, scrambler, moves) {
   }
 }
 
+function pocketMoves(count) {
+  var moves = PocketAPI.scrambleMoves(count);
+  return PocketAPI.movesToString(moves);
+}
+
 function pocketState() {
   var basis = PocketAPI.basisMoves();
   if (pocketHeuristic === null) {
@@ -82,6 +87,11 @@ scramblers = [
         f: pocketState,
         moves: false,
         name: "State"
+      },
+      {
+        f: pocketMoves,
+        moves: true,
+        name: "Moves"
       }
     ]
   },

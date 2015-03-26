@@ -73,6 +73,23 @@ function parseMoves(s) {
   return res;
 }
 
+function scrambleMoves(count) {
+  // Faces 1, 3, and 5 are U, F, and R respectively.
+  var moves = [];
+  var lastFace = 0;
+  for (var i = 0; i < count; ++i) {
+    var faces = [1, 3, 5];
+    if (i > 0) {
+      faces.splice(faces.indexOf(lastFace), 1);
+    }
+    var face = faces[Math.floor(Math.random() * faces.length)];
+    var turns = Math.floor(Math.random()*3) || -1;
+    moves.push(new Move(face, turns));
+    lastFace = face;
+  }
+  return moves;
+}
+
 // Generate a list of every move, ordered by comfort.
 _allMovesList = parseMoves("R R' L L' U U' D D' R2 L2 U2 D2 F2 B2 F " +
   "F' B B'");
@@ -86,3 +103,4 @@ exports.basisMoves = basisMoves;
 exports.movesToString = movesToString;
 exports.parseMove = parseMove;
 exports.parseMoves = parseMoves;
+exports.scrambleMoves = scrambleMoves;

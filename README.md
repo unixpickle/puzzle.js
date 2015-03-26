@@ -6,7 +6,7 @@ This is going to be a useful library for manipulating various puzzles.
 
 The puzzle.js source code is stored in a way that makes it simple to modify, search, and maintain. However, this code structure is not ideal for production. A Makefile is used to turn the source code into usable code.
 
-In order to build puzzle.js, you must have `make` and `sh` installed. You can then build like this:
+In order to build puzzle.js, you must have `make` and `bash` installed. You can then build like this:
 
     $ make clean && make
 
@@ -16,17 +16,16 @@ This command will generate a build directory.
 
 Once you build the source code, you're ready to use the library.
 
-Puzzle.js can run in the browser, in Node.js, or in a WebWorker. If you want to use this library in HTML, you can copy the **build/** directory to your project (and possibly rename it to "puzzlejs" or something like that). Then, you can include everything using a `<script>` tag:
+Puzzle.js can run in the browser, in Node.js, or in a WebWorker. If you want to use this library in a webpage, you can copy the **build/puzzle.web.0.2.0.js** file to your project. Then, you can include it using a `<script>` tag:
     
-    <script src="puzzlejs/puzzle.web.0.1.0.js"></script>
+    <script src="puzzlejs/puzzle.web.0.2.0.js"></script>
 
-Note that you should replace "0.1.0" with the actual version number. Note also that you should not use an async `<script>` tag; the "webscrambler" API locates its WebWorker script in a way which depends on a synchronous import.
+Note that you should replace "0.2.0" with the actual version number. Note also that you should not use an async `<script>` tag; the "webscrambler" API locates its WebWorker script in a way which depends on a synchronous import.
 
 # TODO
 
  * Implement more intelligent random state generator for Skewb
  * Re-write the entire 3x3x3 solver
- * Don't run webscrambler WebWorker until first scramble is requested
 
 # License
 

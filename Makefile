@@ -5,15 +5,8 @@ VERSION=$(shell cat VERSION)
 
 all: $(BUILD) $(BUILD)/puzzle.web.$(VERSION).js
 
-$(BUILD)/puzzle.web.$(VERSION).js: $(BUILD)/perms.js $(BUILD)/pocketcube.js $(BUILD)/rubik.js $(BUILD)/skewb.js $(BUILD)/scrambler.js $(BUILD)/webscrambler.js
-	cat $+ >$@
-
-$(BUILD)/webscrambler.js: $(BUILD)/webscrambler_worker.js
-	cp webscrambler/main.js $@
-
-$(BUILD)/webscrambler_worker.js: $(BUILD)/perms.js $(BUILD)/pocketcube.js $(BUILD)/rubik.js $(BUILD)/skewb.js $(BUILD)/scrambler.js
-	cat $+ >$@
-	cat webscrambler/worker.js >>$@
+$(BUILD)/puzzle.web.$(VERSION).js: $(BUILD)/perms.js $(BUILD)/pocketcube.js $(BUILD)/rubik.js $(BUILD)/skewb.js $(BUILD)/scrambler.js
+	cat $+ webscrambler/main.js webscrambler/worker.js >$@
 
 $(BUILD)/scrambler.js: $(BUILD)/rubik.js $(BUILD)/skewb.js
 	cat scrambler/*.js >$@
@@ -44,6 +37,7 @@ test: all
 	node skewb/test/skewb_test.js
 	node pocketcube/test/cubie_test.js
 	node pocketcube/test/heuristics_test.js
+	node pocketcube/test/move_test.js
 	node pocketcube/test/solve_test.js
 	node rubik/test/move_test.js
 	node rubik/test/cubie_test.js

@@ -1,8 +1,12 @@
 (function() {
+  
+  // If this is not in the browser, we do nothing.
+  if ('undefined' === typeof window || 'undefined' === typeof document) {
+    return;
+  }
 
   // Uncomment the following line and put in the webworker path if necessary.
   // var workerPath = 'puzzlejs/webscrambler_worker.js';
-  
   var workerPath = null;
 
   var scrambleWorker = null;
@@ -19,13 +23,7 @@
       if (scripts.length === 0) {
         throw new Error('unable to find worker path');
       }
-      var scriptPath = scripts[scripts.length-1].src.split('?')[0];
-      var slashIdx = scriptPath.lastIndexOf('/');
-      if (slashIdx >= 0) {
-        workerPath = scriptPath.slice(0, slashIdx) + '/webscrambler_worker.js';
-      } else {
-        workerPath = 'webscrambler_worker.js';
-      }
+      workerPath = scripts[scripts.length-1].src.split('?')[0];
     }
   }
 
