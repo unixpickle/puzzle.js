@@ -73,6 +73,11 @@ function scramblersForPuzzle(puzzle) {
   throw new Error('unknown puzzle: ' + puzzle);
 }
 
+function skewbMoves(count) {
+  var moves = SkewbAPI.scrambleMoves(count);
+  return SkewbAPI.movesToString(moves);
+}
+
 function skewbState() {
   var state = SkewbAPI.randomState();
   var solution = SkewbAPI.solve(state);
@@ -112,6 +117,11 @@ scramblers = [
         f: skewbState,
         moves: false,
         name: "State"
+      },
+      {
+        f: skewbMoves,
+        moves: true,
+        name: "Moves"
       }
     ]
   }

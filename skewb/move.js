@@ -53,8 +53,24 @@ function parseMoves(str) {
   return moves;
 }
 
+function scrambleMoves(len) {
+  var moves = [];
+  var lastAxis = -1;
+  for (var i = 0; i < len; ++i) {
+    var faces = [0, 1, 2, 3];
+    if (i !== 0) {
+      faces.splice(lastAxis, 1);
+    }
+    var idx = Math.floor(Math.random() * faces.length);
+    lastAxis = faces[idx];
+    moves.push(new Move(lastAxis, Math.random() < 0.5));
+  }
+  return moves;
+}
+
 exports.Move = Move;
 exports.allMoves = allMoves;
 exports.movesToString = movesToString;
 exports.parseMove = parseMove;
 exports.parseMoves = parseMoves;
+exports.scrambleMoves = scrambleMoves;
