@@ -10,23 +10,23 @@ $(BUILD)/puzzle.web.$(VERSION).js: $(BUILD)/perms.js $(BUILD)/pocketcube.js $(BU
 
 $(BUILD)/scrambler.js: $(BUILD)/rubik.js $(BUILD)/skewb.js
 	cat scrambler/*.js >$@
-	sh skeletize.sh scrambler $@
+	bash skeletize.sh scrambler $@
 
 $(BUILD)/skewb.js: $(BUILD)/perms.js
 	cat skewb/*.js >$@
-	sh skeletize.sh skewb $@
+	bash skeletize.sh skewb $@
 
 $(BUILD)/rubik.js: $(BUILD)/pocketcube.js
 	cat rubik/*.js >$@
-	sh skeletize.sh rubik $@
+	bash skeletize.sh rubik $@
 
 $(BUILD)/pocketcube.js:
 	cat pocketcube/*.js >$@
-	sh skeletize.sh pocketcube $@
+	bash skeletize.sh pocketcube $@
 
 $(BUILD)/perms.js:
 	cat perms/*.js >$@
-	sh skeletize.sh perms $@
+	bash skeletize.sh perms $@
 
 $(BUILD):
 	mkdir $(BUILD)
