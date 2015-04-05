@@ -140,14 +140,14 @@ Phase1Cube.prototype.xEO = function() {
   var parity = false;
   for (var i = 0; i < 10; ++i) {
     var idx = xEdgeIndices[i];
-    if ((p.fbEO & (1 << idx)) !== 0) {
+    if ((this.fbEO & (1 << idx)) !== 0) {
       res |= 1 << i;
       parity = !parity;
     }
   }
   
   // If the last thing in the translated bitmap would be a 1, flip the parity.
-  if ((p.fbEO & (1 << xEdgeIndices[11])) !== 0) {
+  if ((this.fbEO & (1 << xEdgeIndices[11])) !== 0) {
     parity = !parity;
   }
   
@@ -436,7 +436,7 @@ function encodeXZCO(corners) {
   var x = [];
   var z = [];
   var xVal = 0;
-  var yVal = 0;
+  var zVal = 0;
   
   // For each corner, find the direction of the x and z stickers.
   for (var i = 0; i < 8; ++i) {
