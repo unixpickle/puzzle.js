@@ -5,7 +5,7 @@ function benchmarkSolve() {
   var cube = new pocketcube.Cube();
   var heuristic = new pocketcube.FullHeuristic(5);
   
-  var count = 10;
+  var count = 50;
   
   var start = new Date().getTime();
   for (var i = 0; i < count; ++i) {

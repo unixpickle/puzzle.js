@@ -4,6 +4,7 @@ var PocketAPI = includeAPI('pocketcube');
 var scramblers;
 
 var pocketHeuristic = null;
+var skewbHeuristic = null;
 
 function allPuzzles() {
   var res = [];
@@ -86,8 +87,11 @@ function skewbMoves(count) {
 }
 
 function skewbState() {
+  if (skewbHeuristic === null) {
+    skewbHeuristic = new SkewbAPI.Heuristic();
+  }
   var state = SkewbAPI.randomState();
-  var solution = SkewbAPI.solve(state);
+  var solution = SkewbAPI.solve(state, skewbHeuristic);
   return SkewbAPI.movesToString(solution);
 }
 
