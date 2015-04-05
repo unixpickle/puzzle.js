@@ -124,10 +124,10 @@ Edges.prototype.halfTurn = function(face) {
 };
 
 Edges.prototype.move = function(m) {
-  if (m.turns === 2) {
-    this.halfTurn(m.face);
+  if (m.turns() === 2) {
+    this.halfTurn(m.face());
   } else {
-    this.quarterTurn(m.face, m.turns);
+    this.quarterTurn(m.face(), m.turns());
   }
 };
 

@@ -21,9 +21,9 @@ function scrambleMoves(len) {
       moves = allMoves();
     }
     
-    // Remove all moves which affect this face
+    // Remove all moves which affect this face to prevent redundant moves.
     for (var j = 0; j < moves.length; ++j) {
-      if (moves[j].face === move.face) {
+      if (moves[j].face() === move.face()) {
         moves.splice(j, 1);
         --j;
       }

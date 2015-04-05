@@ -1,41 +1,40 @@
-/**
- * A Corner stores the piece index and orientation of a corner.
- *
- * To understand the meaning of a Corner's fields, you must first
- * understand the coordinate system. There are there axes, x, y, and z.
- * The x axis is 0 at the L face and 1 at the R face.
- * The y axis is 0 at the D face and 1 at the U face.
- * The z axis is 0 at the B face and 1 at the F face.
- *
- * A corner piece's index is determined by it's original position on the
- * cube. The index is a binary number of the form ZYX, where Z is the most
- * significant digit. Thus, the BLD corner is 0, the BRU corner is 3, the
- * FRU corner is 7, etc.
- *
- * The orientation of a corner tells how it is twisted. It is an axis number
- * 0, 1, or 2 for x, y, or z respectively. It indicates the direction normal
- * to the red or orange sticker (i.e. the sticker that is usually normal to
- * the x axis).
- */
+// A Corner stores the piece index and orientation of a corner.
+//
+// To understand the meaning of a Corner's fields, you must first
+// understand the coordinate system. There are there axes, x, y, and z.
+// The x axis is 0 at the L face and 1 at the R face.
+// The y axis is 0 at the D face and 1 at the U face.
+// The z axis is 0 at the B face and 1 at the F face.
+//
+// A corner piece's index is determined by it's original position on the
+// cube. The index is a binary number of the form ZYX, where Z is the most
+// significant digit. Thus, the BLD corner is 0, the BRU corner is 3, the
+// FRU corner is 7, etc.
+//
+// The orientation of a corner tells how it is twisted. It is an axis number
+// 0, 1, or 2 for x, y, or z respectively. It indicates the direction normal
+// to the white or yellow sticker (i.e. the sticker that is usually normal to
+// the y axis). Oriented corners have an orientation of 1.
 function Corner(piece, orientation) {
   this.piece = piece;
   this.orientation = orientation;
 }
 
+// copy returns a copy of this corner.
 Corner.prototype.copy = function() {
   return new Corner(this.piece, this.orientation);
 };
 
-/**
- * Cube represent the corners of a cube.
- */
+// A Cube represent the corners of a cube.
+// This constructor returns a solved Cube.
 function Cube() {
   this.corners = [];
   for (var i = 0; i < 8; ++i) {
-    this.corners[i] = new Corner(i, 0);
+    this.corners[i] = new Corner(i, 1);
   }
 }
 
+// copy returns a deep copy of the Cube.
 Cube.prototype.copy = function() {
   var newCube = [];
   for (var i = 0; i < 8; ++i) {
@@ -46,6 +45,7 @@ Cube.prototype.copy = function() {
   return res;
 };
 
+// halfTurn applies a half turn on a given face.
 Cube.prototype.halfTurn = function(face) {
   switch (face) {
   case 1:
@@ -101,14 +101,16 @@ Cube.prototype.halfTurn = function(face) {
   }
 };
 
+// move applies a move to a Cube.
 Cube.prototype.move = function(m) {
-  if (m.turns === 2) {
-    this.halfTurn(m.face);
+  if (m.turns() === 2) {
+    this.halfTurn(m.face());
   } else {
-    this.quarterTurn(m.face, m.turns);
+    this.quarterTurn(m.face(), m.turns());
   }
 };
 
+// quarterTurn applies a quarter turn to a Cube.
 Cube.prototype.quarterTurn = function(face, turns) {
   switch (face) {
   case 1:
@@ -254,10 +256,12 @@ Cube.prototype.quarterTurn = function(face, turns) {
   }
 };
 
+// solved returns true if the first 7 corners are solved. The eighth corner must
+// be solved if the first 7 are.
 Cube.prototype.solved = function() {
   for (var i = 0; i < 7; ++i) {
     var corner = this.corners[i];
-    if (corner.piece !== i || corner.orientation !== 0) {
+    if (corner.piece !== i || corner.orientation !== 1) {
       return false;
     }
   }

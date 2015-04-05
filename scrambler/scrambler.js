@@ -43,14 +43,21 @@ function pocketMoves(count) {
   return PocketAPI.movesToString(moves);
 }
 
-function pocketState() {
-  var basis = PocketAPI.basisMoves();
+function pocketOptState() {
   if (pocketHeuristic === null) {
     pocketHeuristic = new PocketAPI.FullHeuristic(5);
-    pocketHeuristic.generate(basis);
   }
   var state = PocketAPI.randomState();
-  var solution = PocketAPI.solve(state, pocketHeuristic, basis);
+  var solution = PocketAPI.solve(state, pocketHeuristic);
+  return PocketAPI.movesToString(solution);
+}
+
+function pocketState() {
+  if (pocketHeuristic === null) {
+    pocketHeuristic = new PocketAPI.FullHeuristic(5);
+  }
+  var state = PocketAPI.randomState();
+  var solution = PocketAPI.solve(state, pocketHeuristic, 8);
   return PocketAPI.movesToString(solution);
 }
 
@@ -92,6 +99,11 @@ scramblers = [
         f: pocketState,
         moves: false,
         name: "State"
+      },
+      {
+        f: pocketOptState,
+        moves: false,
+        name: "Optimal"
       },
       {
         f: pocketMoves,

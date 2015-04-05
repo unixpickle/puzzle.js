@@ -41,6 +41,7 @@ test: all
 	node pocketcube/test/solve_test.js
 	node rubik/test/move_test.js
 	node rubik/test/cubie_test.js
+	node scrambler/test/scrambler.js
 
 clean:
 	$(RM) -r $(BUILD)

@@ -26,7 +26,7 @@ function testMove() {
 
   // Verify the pieces.
   var pieces = [5, 7, 4, 3, 0, 2, 6, 1];
-  var orientations = [2, 1, 1, 2, 1, 1, 1, 0];
+  var orientations = [0, 2, 2, 0, 0, 0, 2, 1];
   for (var i = 0; i < 8; ++i) {
     assert.equal(cube.corners[i].piece, pieces[i],
       'Bad piece for corner ' + i);

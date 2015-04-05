@@ -24,23 +24,23 @@ function randomState() {
   }
   for (var i = 0; i < 7; ++i) {
     var thisOrientation = orientations[i];
-    var nextOrientation = orientations[i + 1];
+    var nextOrientation = orientations[i+1];
     // Twist thisOrientation to be solved, affecting the next corner in the
     // sequence.
-    if (thisOrientation === 1) {
+    if (thisOrientation === 2) {
       // y -> x, x -> z, z -> y
-      orientations[i + 1] = (nextOrientation+2) % 3;
-    } else if (thisOrientation === 2) {
+      orientations[i+1] = (nextOrientation + 2) % 3;
+    } else if (thisOrientation === 0) {
       // z -> x, x -> y, y -> z
-      orientations[i + 1] = (nextOrientation+1) % 3;
+      orientations[i+1] = (nextOrientation + 1) % 3;
     }
   }
   // The twist of the last corner is the inverse of what it should be in the
   // scramble.
-  if (orientations[7] === 1) {
+  if (orientations[7] === 0) {
     result.corners[7].orientation = 2;
   } else if (orientations[7] === 2) {
-    result.corners[7].orientation = 1;
+    result.corners[7].orientation = 0;
   }
   
   return result;
