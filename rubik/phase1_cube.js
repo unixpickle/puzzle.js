@@ -85,20 +85,20 @@ Phase1Cube.prototype.move = function(move, table) {
   var m = move.number;
   
   // Apply the move to the y-axis cube.
-  this.yCO = table.co[this.yCO][m];
-  this.fbEO = table.eo[this.fbEO][m];
-  this.eSlice = table.slice[this.eSlice][m];
+  this.yCO = table.co[this.yCO*18 + m];
+  this.fbEO = table.eo[this.fbEO*18 + m];
+  this.eSlice = table.slice[this.eSlice*18 + m];
   
   // Apply the move to the z-axis cube.
   var zMove = zMoveTranslation[m];
-  this.zCO = table.co[this.zCO][zMove];
-  this.udEO = table.eo[this.udEO][zMove];
-  this.sSlice = table.slice[this.sSlice][zMove];
+  this.zCO = table.co[this.zCO*18 + zMove];
+  this.udEO = table.eo[this.udEO*18 + zMove];
+  this.sSlice = table.slice[this.sSlice*18 + zMove];
   
   // Apply the move to the x-axis cube.
   var xMove = xMoveTranslation[m];
-  this.xCO = table.co[this.xCO][xMove];
-  this.mSlice = table.slice[this.mSlice][xMove];
+  this.xCO = table.co[this.xCO*18 + xMove];
+  this.mSlice = table.slice[this.mSlice*18 + xMove];
 };
 
 // solved returns an array with three booleans, [x, y, z], which indicates
@@ -177,17 +177,14 @@ function Phase1Moves() {
 
 Phase1Moves.prototype._generateCO = function() {
   // Set all elements to -1.
-  for (var i = 0; i < 2187; ++i) {
-    this.co[i] = [];
-    for (var j = 0; j < 18; ++j) {
-      this.co[i][j] = -1;
-    }
+  for (var i = 0; i < 2187*18; ++i) {
+    this.co[i] = -1;
   }
   
   for (var i = 0; i < 2187; ++i) {
     var corners = decodeCO(i);
     for (var m = 0; m < 18; ++m) {
-      if (this.co[i][m] >= 0) {
+      if (this.co[i*18 + m] >= 0) {
         continue;
       }
       
@@ -195,27 +192,24 @@ Phase1Moves.prototype._generateCO = function() {
       var aCase = corners.copy();
       aCase.move(new Move(m));
       var endState = encodeCO(aCase);
-      this.co[i][m] = endState;
+      this.co[i*18 + m] = endState;
       
       // Set the inverse in the table.
-      this.co[endState][new Move(m).inverse().number] = i;
+      this.co[endState*18 + new Move(m).inverse().number] = i;
     }
   }
 };
 
 Phase1Moves.prototype._generateEO = function() {
   // Set all elements to -1.
-  for (var i = 0; i < 2048; ++i) {
-    this.eo[i] = [];
-    for (var j = 0; j < 18; ++j) {
-      this.eo[i][j] = -1;
-    }
+  for (var i = 0; i < 2048*18; ++i) {
+    this.eo[i] = -1;
   }
   
   for (var i = 0; i < 2048; ++i) {
     var edges = decodeEO(i);
     for (var m = 0; m < 18; ++m) {
-      if (this.eo[i][m] >= 0) {
+      if (this.eo[i*18 + m] >= 0) {
         continue;
       }
       
@@ -223,21 +217,18 @@ Phase1Moves.prototype._generateEO = function() {
       var aCase = edges.copy();
       aCase.move(new Move(m));
       var endState = encodeEO(aCase);
-      this.eo[i][m] = endState;
+      this.eo[i*18 + m] = endState;
       
       // Set the inverse in the table.
-      this.eo[endState][new Move(m).inverse().number] = i;
+      this.eo[endState*18 + new Move(m).inverse().number] = i;
     }
   }
 };
 
 Phase1Moves.prototype._generateESlice = function() {
   // Set all elements to -1.
-  for (var i = 0; i < 495; ++i) {
-    this.slice[i] = [];
-    for (var j = 0; j < 18; ++j) {
-      this.slice[i][j] = -1;
-    }
+  for (var i = 0; i < 495*18; ++i) {
+    this.slice[i] = -1;
   }
   
   // Generate the E slice cases by looping through all the possible ways to
@@ -254,7 +245,7 @@ Phase1Moves.prototype._generateESlice = function() {
           state.edges[y].piece = -1;
           state.edges[z].piece = -1;
           for (var m = 0; m < 18; ++m) {
-            if (this.slice[sliceCase][m] >= 0) {
+            if (this.slice[sliceCase*18 + m] >= 0) {
               continue;
             }
             
@@ -262,10 +253,10 @@ Phase1Moves.prototype._generateESlice = function() {
             var aCase = state.copy();
             aCase.move(new Move(m));
             var encoded = encodeBogusSlice(aCase);
-            this.slice[sliceCase][m] = encoded;
+            this.slice[sliceCase*18 + m] = encoded;
             
             // Set the inverse in the table.
-            this.slice[encoded][new Move(m).inverse().number] = sliceCase;
+            this.slice[encoded*18 + new Move(m).inverse().number] = sliceCase;
           }
           ++sliceCase;
         }
