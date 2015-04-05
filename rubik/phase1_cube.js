@@ -1,3 +1,5 @@
+var encodeChoose = includeAPI('perms').encodeChoose;
+
 // xCornerIndices are the indexes of the corners on the Y axis cube which
 // correspond to the corners on the X axis cube. An index in this array
 // corresponds to the physical slot in the X axis cube. A value in this array
@@ -119,3 +121,99 @@ Phase1Cube.prototype.xEO = function() {
   
   return res;
 };
+
+// Phase1Moves is a table containing the necessary data to efficiently perform
+// moves on a Phase1Cube.
+// Note that only one move table is needed for all 3 axes (i.e. all three
+// phase-1 goals). Thus, the move tables apply directly to the Y-oriented
+// phase-1 goal. Moves much be translated for the X-oriented and Z-oriented
+// goals.
+function Phase1Moves() {
+  this.eSlice = [];
+  this.eo = [];
+  this.co = [];
+  
+  this._generateCO();
+  this._generateEO();
+  this._generateESlice();
+}
+
+Phase1Moves.prototype._generateCO = function() {
+  // Set all elements to -1.
+  for (var i = 0; i < 2187; ++i) {
+    this.co[i] = [];
+    for (var j = 0; j < 18; ++j) {
+      this.co[i][j] = -1;
+    }
+  }
+  
+  // TODO: this.
+  throw new Error('Not yet implemented.');
+};
+
+Phase1Moves.prototype._generateEO = function() {
+  // Set all elements to -1.
+  for (var i = 0; i < 2048; ++i) {
+    this.eo[i] = [];
+    for (var j = 0; j < 18; ++j) {
+      this.eo[i][j] = -1;
+    }
+  }
+  
+  // TODO: this.
+  throw new Error('Not yet implemented.');
+};
+
+Phase1Moves.prototype._generateESlice = function() {
+  // Set all elements to -1.
+  for (var i = 0; i < 495; ++i) {
+    this.eSlice[i] = [];
+    for (var j = 0; j < 18; ++j) {
+      this.eSlice[i][j] = -1;
+    }
+  }
+  
+  // Generate the E slice cases by looping through all the possible ways to
+  // choose 4 elements from a set of 12.
+  var sliceCase = 0;
+  for (var w = 0; w < 12; ++w) {
+    for (var x = w + 1; x < 12; ++x) {
+      for (var y = x + 1; y < 12; ++y) {
+        for (var z = y + 1; z < 12; ++z) {
+          // Create a state which has bogus edges at the slice indices.
+          var state = new Edges();
+          state.edges[w].piece = -1;
+          state.edges[x].piece = -1;
+          state.edges[y].piece = -1;
+          state.edges[z].piece = -1;
+          for (var m = 0; m < 18; ++m) {
+            if (this.eSlice[sliceCase][m] >= 0) {
+              continue;
+            }
+            
+            // Set the end state in the table.
+            var aCase = state.copy();
+            aCase.move(new Move(m));
+            var encoded = encodeBogusSlice(aCase);
+            this.eSlice[sliceCase][m] = encoded;
+            
+            // Set the inverse in the table.
+            this.eSlice[encoded][new Move(m).inverse().number] = sliceCase;
+          }
+          ++sliceCase;
+        }
+      }
+    }
+  }
+};
+
+function encodeBogusSlice(edges) {
+  var list = [];
+  for (var i = 0; i < 12; ++i) {
+    list[i] = (edges.edges[i].piece === -1);
+  }
+  return encodeChoose(list);
+}
+
+exports.Phase1Cube = Phase1Cube;
+exports.Phase1Moves = Phase1Moves;
