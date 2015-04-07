@@ -166,9 +166,9 @@ Phase1Cube.prototype.xEO = function() {
 // phase-1 goal. Moves much be translated for the X-oriented and Z-oriented
 // goals.
 function Phase1Moves() {
-  this.slice = [];
-  this.eo = [];
-  this.co = [];
+  this.slice = new Uint16Array(495 * 18);
+  this.eo = new Uint16Array(2048 * 18);
+  this.co = new Uint16Array(2187 * 18);
   
   this._generateCO();
   this._generateEO();
