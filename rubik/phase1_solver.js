@@ -22,9 +22,17 @@ function Solver(heuristic, moves, cb, deadline, depth) {
   // to avoid memory allocation in some browsers.
   this.solution = [];
   for (var i = 0; i < depth; ++i) {
-    this.solution[i] = 0;
+    this.solution[i] = new Move(0);
   }
 }
+
+// deepen increases the depth of this solver by 1.
+Solver.prototype.deepen = function() {
+  var i = this.depth;
+  this.depth++;
+  this.preAllocCubes[i] = new Phase1Cube();
+  this.solution[i] = new Move(0);
+};
 
 // solve finds solutions for the cube.
 Solver.prototype.solve = function(cube) {
@@ -64,7 +72,7 @@ Solver.prototype._search = function(cube, depth, lastFace) {
     
     // this._expired allocates memory and thus consumes time. Luckily, short
     // circuit evaluation makes this a three-liner.
-    if (depth >= 7 && this._expired()) {
+    if (this._depth - depth >= 7 && this._expired()) {
       return false;
     }
   }
@@ -85,11 +93,12 @@ Solver.prototype._expired = function() {
 function solvePhase1(cube, heuristic, moves, cb, timeout) {
   var deadline = new Date().getTime() + (timeout || 1000000);
   var depth = 0;
+  var solver = new Solver(heuristic, moves, cb, deadline, 0);
   while (true) {
-    var solver = new Solver(heuristic, moves, cb, deadline, depth);
     if (!solver.solve(cube)) {
       return;
     }
+    solver.deepen();
     ++depth;
   }
 }
