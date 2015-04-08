@@ -1,3 +1,35 @@
+// NodeQueue acts as a linked list for breadth-first search.
+function NodeQueue(initial) {
+  this.first = initial;
+  this.last = initial;
+  initial.next = null;
+}
+
+// empty returns whether or not the queue is empty.
+NodeQueue.prototype.empty = function() {
+  return this.first === null;
+};
+
+// push adds a node to the queue.
+NodeQueue.prototype.push = function(p) {
+  if (this.first === null) {
+    this.first = p;
+    this.last = p;
+    p.next = null;
+    return;
+  }
+  this.last.next = p;
+  this.last = p;
+  p.next = null;
+};
+
+// shift removes the first node from the queue and returns it.
+NodeQueue.prototype.shift = function() {
+  var res = this.first;
+  this.first = this.first.next;
+  return res;
+};
+
 // Phase1Heuristic stores the data needed to effectively prune the search for a
 // solution for phase-1.
 function Phase1Heuristic(moves) {
@@ -62,9 +94,9 @@ Phase1Heuristic.prototype._computeEOSlice = function(moves) {
   for (var i = 0; i < 1013760; ++i) {
     this.eoSlice[i] = -1;
   }
-  var nodes = [{eo: 0, slice: 220, depth: 0, hash: 220 * 2048}];
+  var nodes = new NodeQueue({eo: 0, slice: 220, depth: 0, hash: 220 * 2048});
   var visited = new Uint8Array(1013760);
-  while (nodes.length > 0) {
+  while (!nodes.empty()) {
     var node = nodes.shift();
     if (this.eoSlice[node.hash] !== -1) {
       continue;
@@ -79,7 +111,8 @@ Phase1Heuristic.prototype._computeEOSlice = function(moves) {
       var hash = newSlice*2048 + newEO;
       if (visited[hash] === 0) {
         visited[hash] = 1;
-        nodes.push({eo: newEO, co: newEO, hash: hash, depth: node.depth + 1});
+        nodes.push({eo: newEO, slice: newSlice, hash: hash,
+          depth: node.depth + 1});
       }
     }
   }

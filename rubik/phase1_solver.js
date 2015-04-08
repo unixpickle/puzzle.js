@@ -11,7 +11,7 @@ Solver.prototype.solve = function(cube, preMoves, depth, lastFace) {
       if (this._expired()) {
         return false;
       }
-      return this.cb(preMoves.slice());
+      return this.cb(preMoves.slice(), cube);
     }
     return true;
   } else if (this.heuristic.lowerBound(cube) > depth) {
