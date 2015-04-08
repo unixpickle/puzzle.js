@@ -1,5 +1,3 @@
-var encodeChoose = includeAPI('perms').encodeChoose;
-
 // xCornerIndices are the indexes of the corners on the Y axis cube which
 // correspond to the corners on the X axis cube. An index in this array
 // corresponds to the physical slot in the X axis cube. A value in this array
@@ -358,7 +356,7 @@ function encodeBogusSlice(edges) {
   for (var i = 0; i < 12; ++i) {
     list[i] = (edges.edges[i].piece === -1);
   }
-  return encodeChoose(list);
+  return perms.encodeChoose(list);
 }
 
 // encodeCO encodes the CO case of a given set of Corners.
@@ -394,7 +392,7 @@ function encodeESlice(edges) {
       list[i] = false;
     }
   }
-  return encodeChoose(list);
+  return perms.encodeChoose(list);
 }
 
 // encodeMSSlice encodes the M and S slices of Edges.
@@ -419,7 +417,7 @@ function encodeMSSlice(edges) {
       sChoice[i] = false;
     }
   }
-  return [encodeChoose(mChoice), encodeChoose(sChoice)];
+  return [perms.encodeChoose(mChoice), perms.encodeChoose(sChoice)];
 }
 
 // encodeUDEO encodes the UD EO case of Edges.

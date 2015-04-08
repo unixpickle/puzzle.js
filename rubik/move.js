@@ -1,10 +1,3 @@
-var MoveSource = includeAPI('pocketcube');
-var Move = MoveSource.Move;
-var allMoves = MoveSource.allMoves;
-var movesToString = MoveSource.movesToString;
-var parseMove = MoveSource.parseMove;
-var parseMoves = MoveSource.parseMoves;
-
 function scrambleMoves(len) {
   var axis = -1;
   var moves = allMoves();
@@ -35,9 +28,4 @@ function scrambleMoves(len) {
   return result;
 }
 
-exports.Move = Move;
-exports.allMoves = allMoves;
-exports.movesToString = movesToString;
-exports.parseMove = parseMove;
-exports.parseMoves = parseMoves;
 exports.scrambleMoves = scrambleMoves;

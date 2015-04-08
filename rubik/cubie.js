@@ -1,7 +1,3 @@
-var PocketCube = includeAPI('pocketcube');
-var Corner = PocketCube.Corner;
-var Corners = PocketCube.Cube;
-
 function Cube() {
   this.edges = new Edges();
   this.corners = new Corners();
