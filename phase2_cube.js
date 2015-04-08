@@ -41,12 +41,48 @@ Phase2Moves.prototype._generateCornerMoves = function(perm8) {
 };
 
 Phase2Moves.prototype._generateEdgeMoves = function(perm8) {
-  // TODO: this
+  for (var i = 0; i < 403200; ++i) {
+    this.edgeMoves[i] = 0xffff;
+  }
+  
+  // Apply every move to every edge state.
+  for (var state = 0; state < 40320; ++state) {
+    var perm = perm8[state];
+    var edges = new Edges();
+    // Permute the UD edges for the current case.
+    for (var j = 0; j < 8; ++j) {
+      var slot = [6, 5, 0, 4, 8, 11, 2, 10][j];
+      var piece = [6, 5, 0, 4, 8, 11, 2, 10][perm[j]];
+      edges[slot].piece = piece;
+    }
+    // Apply all 10 moves to the cube.
+    for (var m = 0; m < 10; ++m) {
+      if (this.edgeMoves[state*10 + m] !== 0xffff) {
+        continue;
+      }
+      
+      var e = edges.copy();
+      e.move(p2MoveMove(m, 1));
+      var endState = encodeUDEdges(e);
+      this.edgeMoves[state*10 + m] = endState;
+      
+      // Set the inverse of this state.
+      this.edgeMoves[endState*10 + p2MoveInverse(m)] = state;
+    }
+  }
 };
 
 Phase2Moves.prototype._generateSliceMoves = function() {
   // TODO: this
 };
+
+function encodeUDEdges(edges) {
+  // TODO: this
+}
+
+function encodeYCornerPerm(corners) {
+  // TODO: this
+}
 
 // p2MoveFace returns the face of a phase-2 move.
 function p2MoveFace(m) {
