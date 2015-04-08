@@ -71,9 +71,9 @@ Phase1Heuristic.prototype._computeCO = function(moves) {
   for (var i = 0; i < 2187; ++i) {
     this.co[i] = -1;
   }
-  var nodes = [{co: 1093, depth: 0}];
+  var nodes = new NodeQueue({co: 1093, depth: 0, next: null});
   var visited = new Uint8Array(2187);
-  while (nodes.length > 0) {
+  while (!nodes.empty()) {
     var node = nodes.shift();
     if (this.co[node.co] !== -1) {
       continue;
@@ -83,7 +83,7 @@ Phase1Heuristic.prototype._computeCO = function(moves) {
       var applied = moves.co[node.corners*18 + i];
       if (visited[applied] === 0) {
         visited[applied] = 1;
-        nodes.push({co: applied, depth: node.depth + 1});
+        nodes.push({co: applied, depth: node.depth + 1, next: null});
       }
     }
   }
@@ -94,7 +94,8 @@ Phase1Heuristic.prototype._computeEOSlice = function(moves) {
   for (var i = 0; i < 1013760; ++i) {
     this.eoSlice[i] = -1;
   }
-  var nodes = new NodeQueue({eo: 0, slice: 220, depth: 0, hash: 220 * 2048});
+  var nodes = new NodeQueue({eo: 0, slice: 220, depth: 0, hash: 220 * 2048,
+    next: null});
   var visited = new Uint8Array(1013760);
   while (!nodes.empty()) {
     var node = nodes.shift();
@@ -112,7 +113,7 @@ Phase1Heuristic.prototype._computeEOSlice = function(moves) {
       if (visited[hash] === 0) {
         visited[hash] = 1;
         nodes.push({eo: newEO, slice: newSlice, hash: hash,
-          depth: node.depth + 1});
+          depth: node.depth + 1, next: null});
       }
     }
   }
