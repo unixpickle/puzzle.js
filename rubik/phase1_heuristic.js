@@ -43,27 +43,26 @@ function Phase1Heuristic(moves) {
 // lowerBound returns the minimum number of moves needed to solve at least one
 // phase-1 axis.
 Phase1Heuristic.prototype.lowerBound = function(c) {
-  var result = 127;
+  var slice0 = this.eoSlice[c.mSlice*2048 + c.xEO()];
+  var slice1 = this.eoSlice[c.eSlice*2048 + c.fbEO];
+  var slice2 = this.eoSlice[c.sSlice*2048 + c.udEO];
+  var co0 = this.co[c.xCO];
+  var co1 = this.co[c.yCO];
+  var co2 = this.co[c.zCO];
   
-  // The coordinates for each of the three axes.
-  var sliceValues = [
-    c.mSlice*2048 + c.xEO(),
-    c.eSlice*2048 + c.fbEO,
-    c.sSlice*2048 + c.udEO
-  ];
-  var coValues = [c.xCO, c.yCO, c.zCO];
-  
-  // Go through each axis and check the heuristic value.
-  for (var axis = 0; axis < 3; ++axis) {
-    var coRes = this.co[coValues[axis]];
-    var sliceRes = this.eoSlice[sliceValues[axis]];
-    if (sliceRes < 0) {
-      sliceRes = 8;
-    }
-    result = Math.min(result, Math.max(sliceRes, coRes));
+  // The slice heuristic is not complete; a value of -1 means depth 8.
+  if (slice0 < 0) {
+    slice0 = 8;
+  }
+  if (slice1 < 0) {
+    slice1 = 8;
+  }
+  if (slice2 < 0) {
+    slice2 = 8;
   }
   
-  return result;
+  return Math.min(Math.max(slice0, co0), Math.max(slice1, co1),
+    Math.max(slice2, co2));
 };
 
 // _computeCO generates the CO table.
