@@ -24,7 +24,7 @@ Solver.prototype.solve = function(cube, preMoves, depth, lastFace) {
       continue;
     }
     var newCube = cube.copy();
-    newCube.move(move);
+    newCube.move(move, this.moves);
     preMoves.push(move);
     if (!this.solve(newCube, preMoves, depth-1, move.face())) {
       return false;
@@ -46,7 +46,7 @@ function solvePhase1(cube, heuristic, moves, cb, timeout) {
   var solver = new Solver(heuristic, moves, cb, new Date().getTime() + timeout);
   var depth = 0;
   while (true) {
-    if (!solver.search(cube, [], depth, 0)) {
+    if (!solver.solve(cube, [], depth, 0)) {
       return;
     }
     ++depth;

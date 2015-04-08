@@ -80,6 +80,27 @@ Phase1Cube.prototype.anySolved = function() {
   return false;
 };
 
+// copy returns a copy of the Phase1Cube.
+Phase1Cube.prototype.copy = function() {
+  var res = Object.create(Phase1Cube.prototype);
+
+  // These are the initial corner orientations.
+  res.xCO = this.xCO;
+  res.yCO = this.yCO;
+  res.zCO = this.zCO;
+
+  // These are the initial edge orientations.
+  res.fbEO = this.fbEO;
+  res.udEO = this.udEO;
+
+  // These are the initial slice permutations.
+  res.mSlice = this.mSlice;
+  res.eSlice = this.eSlice;
+  res.sSlice = this.sSlice;
+
+  return res;
+};
+
 // move applies a move to the Phase1Cube.
 Phase1Cube.prototype.move = function(move, table) {
   var m = move.number;
