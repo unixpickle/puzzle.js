@@ -32,17 +32,7 @@ $(BUILD):
 	mkdir $(BUILD)
 
 test: all
-	node perms/test/permutation_test.js
-	node perms/test/choose_test.js
-	node skewb/test/skewb_test.js
-	node pocketcube/test/cubie_test.js
-	node pocketcube/test/heuristics_test.js
-	node pocketcube/test/move_test.js
-	node pocketcube/test/solve_test.js
-	node rubik/test/move_test.js
-	node rubik/test/cubie_test.js
-	node rubik/test/phase1_cube_test.js
-	node scrambler/test/scrambler_test.js
+	bash test.sh
 
 clean:
 	$(RM) -r $(BUILD)

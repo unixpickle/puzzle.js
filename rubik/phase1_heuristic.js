@@ -84,3 +84,5 @@ Phase1Heuristic.prototype._computeEOSlice = function(moves) {
     }
   }
 };
+
+exports.Phase1Heuristic = Phase1Heuristic;
