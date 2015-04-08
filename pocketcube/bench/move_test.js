@@ -9,6 +9,4 @@ function benchmarkScramble() {
   console.log('Benchmark: ' + duration*10 + ' ns/scramble.');
 }
 
-// Run tests.
 benchmarkScramble();
-console.log('PASS');

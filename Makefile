@@ -34,5 +34,8 @@ $(BUILD):
 test: all
 	bash test.sh
 
+bench: test
+	bash bench.sh
+
 clean:
 	$(RM) -r $(BUILD)
