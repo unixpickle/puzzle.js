@@ -18,12 +18,13 @@ Solver.prototype.solve = function(cube, preMoves, depth, lastFace) {
     return true;
   }
 
+  var newCube = new Phase1Cube();
   for (var i = 0; i < 18; ++i) {
     var move = new Move(i);
     if (move.face() === lastFace) {
       continue;
     }
-    var newCube = cube.copy();
+    newCube.set(cube);
     newCube.move(move, this.moves);
     preMoves.push(move);
     if (!this.solve(newCube, preMoves, depth-1, move.face())) {

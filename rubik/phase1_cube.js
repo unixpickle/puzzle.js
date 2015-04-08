@@ -84,16 +84,11 @@ Phase1Cube.prototype.anySolved = function() {
 Phase1Cube.prototype.copy = function() {
   var res = Object.create(Phase1Cube.prototype);
 
-  // These are the initial corner orientations.
   res.xCO = this.xCO;
   res.yCO = this.yCO;
   res.zCO = this.zCO;
-
-  // These are the initial edge orientations.
   res.fbEO = this.fbEO;
   res.udEO = this.udEO;
-
-  // These are the initial slice permutations.
   res.mSlice = this.mSlice;
   res.eSlice = this.eSlice;
   res.sSlice = this.sSlice;
@@ -120,6 +115,18 @@ Phase1Cube.prototype.move = function(move, table) {
   var xMove = xMoveTranslation[m];
   this.xCO = table.co[this.xCO*18 + xMove];
   this.mSlice = table.slice[this.mSlice*18 + xMove];
+};
+
+// set updates this object's fields to reflect a given Phase1Cube.
+Phase1Cube.prototype.set = function(obj) {
+  this.xCO = obj.xCO;
+  this.yCO = obj.yCO;
+  this.zCO = obj.zCO;
+  this.fbEO = obj.fbEO;
+  this.udEO = obj.udEO;
+  this.mSlice = obj.mSlice;
+  this.eSlice = obj.eSlice;
+  this.sSlice = obj.sSlice;
 };
 
 // solved returns an array with three booleans, [x, y, z], which indicates
