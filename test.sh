@@ -3,5 +3,5 @@
 for f in */test/*.js
 do
   echo \*\*\* $f \*\*\*
-  node $f
+  node $f || exit
 done

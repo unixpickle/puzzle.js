@@ -11,6 +11,7 @@ function testSolver() {
       for (var j = 0; j < length; ++j) {
         cube.move(scramble[j], moves);
       }
+      var solved = false;
       rubik.solvePhase1(cube, heuristic, moves, function(solution) {
         // Apply the moves
         for (var j = 0; j < solution.length; ++j) {
@@ -19,8 +20,10 @@ function testSolver() {
         assert(cube.anySolved());
         assert(solution.length <= length, 'Solution too long: ' +
           solution.join(' '));
+        solved = true;
         return false;
       }, 10000);
+      assert(solved);
     }
   }
 }
