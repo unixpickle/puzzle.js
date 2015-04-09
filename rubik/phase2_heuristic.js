@@ -32,7 +32,8 @@ Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
     this.cornersSlice[i] = -1;
   }
   
-  var queue = new NodeQueue({corners: 0, slice: 0, hash: 0, depth: 0});
+  var queue = new NodeQueue({corners: 0, slice: 0, hash: 0, depth: 0,
+    next: null});
   var visited = new Uint8Array(967680);
   while (!queue.empty()) {
     var node = queue.shift();
@@ -49,7 +50,7 @@ Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
       var hash = corners*24 + slice;
       if (visited[hash] === 0) {
         queue.push({corners: corners, slice: slice, hash: hash,
-          depth: node.depth + 1});
+          depth: node.depth + 1, next: null});
         visited[hash] = 1;
       }
     }
@@ -61,7 +62,8 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
     this.edgesSlice[i] = -1;
   }
   
-  var queue = new NodeQueue({edges: 0, slice: 0, hash: 0, depth: 0});
+  var queue = new NodeQueue({edges: 0, slice: 0, hash: 0, depth: 0,
+    next: null});
   var visited = new Uint8Array(967680);
   while (!queue.empty()) {
     var node = queue.shift();
@@ -78,7 +80,7 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
       var hash = edges*24 + slice;
       if (visited[hash] === 0) {
         queue.push({edges: edges, slice: slice, hash: hash,
-          depth: node.depth + 1});
+          depth: node.depth + 1, next: null});
         visited[hash] = 1;
       }
     }
