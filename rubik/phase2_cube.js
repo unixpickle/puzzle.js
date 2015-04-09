@@ -78,8 +78,82 @@ function encodeYCornerPerm(corners) {
   // TODO: this
 }
 
+function moveUDEdgePerm(perm, move) {
+  var p = perm.slice();
+  var temp;
+  switch (move) {
+  case 0:
+    temp = p[2];
+    p[2] = p[6];
+    p[6] = temp;
+    break;
+  case 1:
+    temp = p[0];
+    p[0] = p[4];
+    p[4] = temp;
+    break;
+  case 2:
+    temp = p[1];
+    p[1] = p[5];
+    p[5] = temp;
+    break;
+  case 3:
+    temp = p[3];
+    p[3] = p[7];
+    p[7] = temp;
+    break;
+  case 4:
+    temp = p[3];
+    p[3] = p[2];
+    p[2] = p[1];
+    p[1] = p[0];
+    p[0] = temp;
+    break;
+  case 5:
+    temp = p[3];
+    p[3] = p[0];
+    p[0] = p[1];
+    p[1] = p[2];
+    p[2] = temp;
+    break;
+  case 6:
+    temp = p[0];
+    p[0] = p[2];
+    p[2] = temp;
+    temp = p[1];
+    p[1] = p[3];
+    p[3] = temp;
+    break;
+  case 7:
+    temp = p[7];
+    p[7] = p[4];
+    p[4] = p[5];
+    p[5] = p[6];
+    p[6] = temp;
+    break;
+  case 8:
+    temp = p[7];
+    p[7] = p[6];
+    p[6] = p[5];
+    p[5] = p[4];
+    p[4] = temp;
+    break;
+  case 9:
+    temp = p[4];
+    p[4] = p[6];
+    p[6] = temp;
+    temp = p[5];
+    p[5] = p[7];
+    p[7] = temp;
+    break;
+  default:
+    break;
+  }
+  return perms.encodeDestructablePerm(p);
+}
+
 function moveYCornerPerm(perm, move) {
-  var p = perm.splice();
+  var p = perm.slice();
   var temp;
   switch (move) {
   case 0:
@@ -161,7 +235,7 @@ function moveYCornerPerm(perm, move) {
   default:
     break;
   }
-  return perms.encodeChoose(p);
+  return perms.encodeDestructablePerm(p);
 }
 
 // p2MoveFace returns the face of a phase-2 move.
