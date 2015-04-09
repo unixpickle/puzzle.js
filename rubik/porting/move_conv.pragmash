@@ -2,4 +2,37 @@ set contents (read moves.txt)
 set expr "\\n\\s*p\\[([0-9])\\], p\\[([0-9])\\] = p\\[.*\\], p\\[.*\\]"
 set replacement "\n  temp = p[$1];\n  p[$1] = p[$2];\n  p[$2] = temp;"
 set contents (repreg $contents $expr $replacement)
+
+# permutations of four things
+set expr "\\n\\s*p\\[([0-9])\\], p\\[([0-9])\\], p\\[([0-9])\\], p\\[([0-9])\\] = p\\[([0-9])\\], p\\[.*\\], p\\[.*\\], p\\[.*\\]"
+set matches (match $expr $contents)
+set i 0
+while (< $i (count $matches)) {
+  set a (subarr $matches $i)
+  for j (range 1 6) {
+    set (join a $j) ([] $a $j)
+  }
+  if $a4 $a5 {
+    # p[...], p[...], p[...], p[x] = p[x], p[...], ...
+    # 1 2 3 4 = 4 1 2 3
+    set code (join "\n  temp = p[" $a4 ];\n\
+      "  p[" $a4 "] = p[" $a3 ];\n\
+      "  p[" $a3 "] = p[" $a2 ];\n\
+      "  p[" $a2 "] = p[" $a1 ];\n\
+      "  p[" $a1 "] = temp;\n")
+  } else {
+    # p[...], p[x], p[...], p[...] = p[x], p[...}, ...
+    # 1 2 3 4 = 2 3 4 1
+    set code (join "\n  temp = p[" $a1 ];\n\
+      "  p[" $a1 "] = p[" $a2 ];\n\
+      "  p[" $a2 "] = p[" $a3 ];\n\
+      "  p[" $a3 "] = p[" $a4 ];\n\
+      "  p[" $a4 "] = temp;\n")
+  }
+  set contents (rep $contents ([] $a 0) $code)
+  set i (+ $i 6)
+}
+
+set contents (rep (join \n $contents) \n "\n  ")
 print $contents
+
