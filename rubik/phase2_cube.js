@@ -14,6 +14,13 @@ Phase2Cube.prototype.move = function(m, moves) {
   this.slicePerm = moves.sliceMoves[this.slicePerm*10 + m];
 };
 
+// set updates this cube's coordinates to match the given cube.
+Phase2Cube.prototype.set = function(c) {
+  this.cornerPerm = s.cornerPerm;
+  this.edgePerm = c.edgePerm;
+  this.slicePerm = c.slicePerm;
+};
+
 // solved returns true if the Phase2Cube is solved.
 Phase2Cube.prototype.solved = function() {
   return p.cornerPerm === 0 && p.edgePerm === 0 && p.slicePerm === 0;

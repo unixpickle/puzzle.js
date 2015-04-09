@@ -39,6 +39,10 @@ Solver.prototype.solve = function(cube) {
   return this._search(cube, 0, 0);
 }
 
+Solver.prototype._expired = function() {
+  return new Date().getTime() > this.deadline;
+};
+
 Solver.prototype._search = function(cube, depth, lastFace) {
   if (depth === this.depth) {
     if (cube.anySolved()) {
@@ -78,10 +82,6 @@ Solver.prototype._search = function(cube, depth, lastFace) {
   }
 
   return true;
-};
-
-Solver.prototype._expired = function() {
-  return new Date().getTime() > this.deadline;
 };
 
 // solvePhase1 uses iterative deepening to solve the cube.
