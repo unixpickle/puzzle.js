@@ -19,15 +19,11 @@
 // This is useful for tests where you need to perform an operation evenly on a
 // fixed number of test inputs for the benchmark to be fair.
 
-// MIN_TIME is the minimum number of milliseconds that a benchmark must take.
-var MIN_TIME = 500;
+// MIN_TIME is the minimum number of nanoseconds that a benchmark must take.
+var MIN_TIME = 500000000;
 
 // PRECISION is the number of significant figures to show.
 var PRECISION = 3;
-
-function time() {
-  return new Date().getTime();
-}
 
 module.exports = function(name, coefficient, f) {
   if ('undefined' === typeof f) {
@@ -39,9 +35,10 @@ module.exports = function(name, coefficient, f) {
   var power = 0;
   while (true) {
     var count = coefficient * Math.pow(2, power);
-    var start = time();
+    var start = process.hrtime();
     f(count);
-    var duration = Math.max(time() - start, 0);
+    var end = process.hrtime();
+    var duration = (end[0] - start[0])*1000000000 + (end[1] - start[1]);
     
     // If the duration was less than MIN_TIME, we increase it as needed.
     if (duration < MIN_TIME && power < 31) {
@@ -55,7 +52,7 @@ module.exports = function(name, coefficient, f) {
     }
     
     // Compute the amount of time and print it out.
-    var scaledDuration = duration*(1000000/count);
+    var scaledDuration = duration / count;
     var unit;
     if (scaledDuration < 1000) {
       unit = 'ns';
