@@ -1,4 +1,5 @@
 var rubik = require('../../build/rubik.js');
+var bench = require('../../bench.js');
 
 function benchmarkSolver() {
   // Some of these scrambles are random, while others were selected with the
@@ -19,22 +20,20 @@ function benchmarkSolver() {
   
   var moves = new rubik.Phase1Moves();
   var heuristic = new rubik.Phase1Heuristic(moves);
-  var count = scrambles.length;
   
-  var start = new Date().getTime();
-  for (var i = 0; i < count; ++i) {
-    var scramble = rubik.parseMoves(scrambles[i]);
-    var cube = new rubik.Phase1Cube();
-    for (var j = 0; j < scramble.length; ++j) {
-      cube.move(scramble[j], moves);
+  var len = scrambles.length;
+  bench('solvePhase1', len, function(count) {
+    for (var i = 0; i < count; ++i) {
+      var scramble = rubik.parseMoves(scrambles[i % len]);
+      var cube = new rubik.Phase1Cube();
+      for (var j = 0; j < scramble.length; ++j) {
+        cube.move(scramble[j], moves);
+      }
+      rubik.solvePhase1(cube, heuristic, moves, function(solution) {
+        return false;
+      }, 1000000);
     }
-    rubik.solvePhase1(cube, heuristic, moves, function(solution) {
-      return false;
-    }, 1000000);
-  }
-  var duration = new Date().getTime() - start;
-  
-  console.log('Benchmark: ' + Math.ceil(duration/count) + ' ms/solvePhase1');
+  });
 }
 
 benchmarkSolver();

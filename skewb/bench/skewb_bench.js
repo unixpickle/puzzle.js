@@ -1,16 +1,12 @@
-var assert = require('assert');
 var skewb = require('../../build/skewb.js');
+var bench = require('../../bench.js');
 
 function benchmarkHeuristic() {
-  var count = 10;
-  
-  var start = (new Date()).getTime();
-  for (var i = 0; i < count; ++i) {
-    new skewb.Heuristic();
-  }
-  var duration = (new Date()).getTime() - start;
-  
-  console.log('Benchmark: ' + Math.floor(duration/count) + ' ms/heuristic');
+  bench('heuristic', function(count) {
+    while (count--) {
+      new skewb.Heuristic();
+    }
+  });
 }
 
 function benchmarkMove() {
@@ -18,25 +14,21 @@ function benchmarkMove() {
   var moves = skewb.parseMoves(algo);
   var state = new skewb.Skewb();
   
-  var start = (new Date()).getTime();
-  for (var i = 0; i < 10000000; ++i) {
-    state.move(moves[i % 25]);
-  }
-  var duration = (new Date()).getTime() - start;
-  console.log('Benchmark: ' + Math.floor(duration/10) + ' ns/move');
+  bench('move', 25, function(count) {
+    for (var i = 0; i < count; ++i) {
+      state.move(moves[i % 25]);
+    }
+  });
 }
 
 function benchmarkSolve() {
-  var count = 10;
   var heuristic = new skewb.Heuristic();
   
-  var start = (new Date()).getTime();
-  for (var i = 0; i < count; ++i) {
-    skewb.solve(skewb.randomState(), heuristic);
-  }
-  var duration = (new Date()).getTime() - start;
-  
-  console.log('Benchmark: ' + Math.floor(duration/count) + ' ms/solve');
+  bench('solve', function(count) {
+    while (count--) {
+      skewb.solve(skewb.randomState(), heuristic);
+    }
+  });
 }
 
 benchmarkHeuristic();

@@ -1,5 +1,5 @@
 var pocketcube = require('../../build/pocketcube.js');
-var assert = require('assert');
+var bench = require('../../bench.js');
 
 function benchmarkMove() {
   // Setup the cube.
@@ -7,13 +7,12 @@ function benchmarkMove() {
     "B2 L' U'");
   var cube = new pocketcube.Cube();
   
-  var start = (new Date()).getTime();
-  for (var i = 0; i < 20000000; ++i) {
-    cube.move(moves[i % moves.length]);
-  }
-  var duration = (new Date()).getTime() - start;
-  console.log('Benchmark: ' + Math.ceil(duration/20) + ' ns/move.');
+  var len = moves.length;
+  bench('move', len, function(count) {
+    for (var i = 0; i < count; ++i) {
+      cube.move(moves[i % len]);
+    }
+  });
 }
 
 benchmarkMove();
-

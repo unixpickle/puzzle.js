@@ -1,4 +1,5 @@
 var rubik = require('../../build/rubik.js');
+var bench = require('../../bench.js');
 
 function benchmarkMove() {
   // Setup the cube.
@@ -6,12 +7,12 @@ function benchmarkMove() {
     "U'");
   var cube = new rubik.CubieCube();
   
-  var start = (new Date()).getTime();
-  for (var i = 0; i < 20000000; ++i) {
-    cube.move(moves[i % moves.length]);
-  }
-  var duration = (new Date()).getTime() - start;
-  console.log('Benchmark: ' + Math.ceil(duration/20) + ' ns/move.');
+  var len = moves.length;
+  bench('move', len, function(count) {
+    for (var i = 0; i < count; ++i) {
+      cube.move(moves[i % len]);
+    }
+  });
 }
 
 benchmarkMove();

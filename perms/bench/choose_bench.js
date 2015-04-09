@@ -1,4 +1,5 @@
 var perms = require('../../build/perms.js');
+var bench = require('../../bench.js');
 
 function benchmarkEncodeChoose() {
   var cases = [];
@@ -18,16 +19,15 @@ function benchmarkEncodeChoose() {
     }
   }
   
-  var start = new Date().getTime();
-  for (var i = 0; i < 1000; ++i) {
-    for (var j = 0, len = cases.length; j < len; ++j) {
-      perms.encodeChoose(cases[j]);
+  bench('encodeChoose', cases.length, function(count) {
+    var len = cases.length;
+    var count = Math.round(count / len);
+    while (count--) {
+      for (var i = 0; i < len; ++i) {
+        perms.encodeChoose(cases[i]);
+      }
     }
-  }
-  var duration = new Date().getTime() - start;
-  
-  console.log('Benchmark: ' + Math.round(duration*1000000/495000) +
-    ' ns/encodeChoose');
+  });
 }
 
 benchmarkEncodeChoose();
