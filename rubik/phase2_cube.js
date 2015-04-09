@@ -17,10 +17,6 @@ Phase2Moves.prototype._generateCornerMoves = function(perm8) {
   // Apply every move to every corner state.
   for (var state = 0; state < 40320; ++state) {
     var perm = perm8[state];
-    var corners = new Corners();
-    for (var j = 0; j < 8; ++j) {
-      corners.corners[j].piece = perm[j];
-    }
     
     // Loop through all 10 moves and apply them.
     for (var m = 0; m < 10; ++m) {
@@ -29,9 +25,7 @@ Phase2Moves.prototype._generateCornerMoves = function(perm8) {
       }
       
       // Record the end state of this move.
-      var c = corners.copy();
-      c.move(p2MoveMove(m, 1));
-      var endState = encodeYCornerPerm(c);
+      var endState = moveYCornerPerm(perm, m);
       res.cornerMoves[state*10 + m] = endState;
       
       // Set the inverse of this state.
@@ -82,6 +76,92 @@ function encodeUDEdges(edges) {
 
 function encodeYCornerPerm(corners) {
   // TODO: this
+}
+
+function moveYCornerPerm(perm, move) {
+  var p = perm.splice();
+  var temp;
+  switch (move) {
+  case 0:
+    temp = p[5];
+    p[5] = p[6];
+    p[6] = temp;
+    temp = p[4];
+    p[4] = p[7];
+    p[7] = temp;
+    break;
+  case 1:
+    temp = p[1];
+    p[1] = p[2];
+    p[2] = temp;
+    temp = p[0];
+    p[0] = p[3];
+    p[3] = temp;
+    break;
+  case 2:
+    temp = p[1];
+    p[1] = p[7];
+    p[7] = temp;
+    temp = p[3];
+    p[3] = p[5];
+    p[5] = temp;
+    break;
+  case 3:
+    temp = p[0];
+    p[0] = p[6];
+    p[6] = temp;
+    temp = p[2];
+    p[2] = p[4];
+    p[4] = temp;
+    break;
+  case 4:
+    temp = p[6];
+    p[6] = p[7];
+    p[7] = p[3];
+    p[3] = p[2];
+    p[2] = temp;
+    break;
+  case 5:
+    temp = p[6];
+    p[6] = p[2];
+    p[2] = p[3];
+    p[3] = p[7];
+    p[7] = temp;
+    break;
+  case 6:
+    temp = p[2];
+    p[2] = p[7];
+    p[7] = temp;
+    temp = p[3];
+    p[3] = p[6];
+    p[6] = temp;
+    break;
+  case 7:
+    temp = p[0];
+    p[0] = p[1];
+    p[1] = p[5];
+    p[5] = p[4];
+    p[4] = temp;
+    break;
+  case 8:
+    temp = p[0];
+    p[0] = p[4];
+    p[4] = p[5];
+    p[5] = p[1];
+    p[1] = temp;
+    break;
+  case 9:
+    temp = p[0];
+    p[0] = p[5];
+    p[5] = temp;
+    temp = p[1];
+    p[1] = p[4];
+    p[4] = temp;
+    break;
+  default:
+    break;
+  }
+  return perms.encodeChoose(p);
 }
 
 // p2MoveFace returns the face of a phase-2 move.
