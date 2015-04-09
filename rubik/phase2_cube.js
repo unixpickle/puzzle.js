@@ -96,6 +96,131 @@ Phase2Moves.prototype._generateSliceMoves = function() {
   }
 };
 
+// convertCubieToPhase2 converts a Cube to a Phase2Cube on a given axis.
+function convertCubieToPhase2(cube, axis) {
+  var res = new Phase2Cube();
+  if (axis === 0) {
+    res.cornerPerm = encodeXCornerPerm(cube.corners);
+    res.edgePerm = encodeRLEdges(cube.edges);
+    res.slicePerm = encodeMSlicePerm(cube.edges);
+  } else if (axis === 1) {
+    res.cornerPerm = encodeYCornerPerm(cube.corners);
+    res.edgePerm = encodeUDEdges(cube.edges);
+    res.slicePerm = encodeESlicePerm(cube.edges);
+  } else if (axis === 2) {
+    res.cornerPerm = encodeZCornerPerm(cube.corners);
+    res.edgePerm = encodeFBEdges(cube.edges);
+    res.slicePerm = encodeSSlicePerm(cube.edges);
+  }
+  return res;
+}
+
+function encodeESlicePerm(e) {
+  var perm = [];
+  for (var i = 0; i < 4; ++i) {
+    var slot = [1, 3, 7, 9][i];
+    var piece = e.edges[slot].piece;
+    perm[i] = [-1, 0, -1, 1, -1, -1, -1, 2, -1, 3, -1, -1][piece];
+    if (perm[i] < 0) {
+      throw new Error('invalid piece in slice: ' + piece);
+    }
+  }
+  return perms.encodeDestructablePerm(perm);
+}
+
+function encodeFBEdges(e) {
+  var perm = [];
+  for (var i = 0; i < 8; ++i) {
+    var slot = [0, 1, 2, 3, 6, 7, 8, 9][i];
+    var piece = e.edges[slot].piece;
+    perm[i] = [0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1][piece];
+    if (perm[i] < 0) {
+      throw new Error('unexpected edge piece: ' + piece);
+    }
+  }
+  return perms.encodeDestructablePerm(perm);
+}
+
+function encodeMSlicePerm(e) {
+  var perm = [];
+  for (var i = 0; i < 4; ++i) {
+    var slot = [0, 2, 6, 8][i];
+    var piece = e.edges[slot].piece;
+    perm[i] = [0, -1, 1, -1, -1, -1, 2, -1, 3, -1, -1, -1][piece];
+    if (perm[i] < 0) {
+      throw new Error('invalid piece in slice: ' + piece);
+    }
+  }
+  return perms.encodeDestructablePerm(perm);
+}
+
+function encodeRLEdges(e) {
+  var perm = [];
+  for (var i = 0; i < 8; ++i) {
+    var slot = [9, 4, 3, 10, 7, 5, 1, 11][i];
+    var piece = e.edges[slot].piece;
+    perm[i] = [-1, 6, -1, 2, 1, 5, -1, 4, -1, 0, 3, 7][piece];
+    if (perm[i] < 0) {
+      throw new Error('unexpected edge piece: ' + piece);
+    }
+  }
+  return perms.encodeDestructablePerm(perm);
+}
+
+function encodeSSlicePerm(e) {
+  var perm = [];
+  for (var i = 0; i < 4; ++i) {
+    var slot = [11, 10, 5, 4][i];
+    var piece = e.edges[slot].piece;
+    perm[i] = [-1, -1, -1, -1, 3, 2, -1, -1, -1, -1, 1, 0][piece];
+    if (perm[i] < 0) {
+      throw new Error('invalid piece in slice: ' + piece);
+    }
+  }
+  return perms.encodeDestructablePerm(perm);
+}
+
+function encodeUDEdges(e) {
+  var perm = [];
+  for (var i = 0; i < 8; ++i) {
+    var slot = [6, 5, 0, 4, 8, 11, 2, 10][i];
+    var piece = e.edges[slot].piece;
+    perm[i] = [2, -1, 6, -1, 3, 1, 0, -1, 4, -1, 7, 5][piece];
+    if (perm[i] < 0) {
+      throw new Error('unexpected edge piece: ' + piece);
+    }
+  }
+  return perms.encodeDestructablePerm(perm);
+}
+
+function encodeXCornerPerm(c) {
+  var perm = [];
+  for (var i = 0; i < 8; ++i) {
+    // xCornerIndices is declared in phase1_cube.js.
+    var idx = xCornerIndices[i];
+    perm[i] = [2, 0, 3, 1, 6, 4, 7, 5][c.corners[idx].piece];
+  }
+  return perms.encodeDestructablePerm(perm);
+}
+
+function encodeYCornerPerm(c) {
+  var perm = [];
+  for (var i = 0; i < 8; ++i) {
+    perm[i] = c.corners[i].piece;
+  }
+  return perms.encodeDestructablePerm(perm);
+}
+
+function encodeZCornerPerm(c) {
+  var perm = [];
+  for (var i = 0; i < 8; ++i) {
+    // zCornerIndices is declared in phase1_cube.js.
+    var idx = zCornerIndices[i];
+    perm[i] = [4, 5, 0, 1, 6, 7, 2, 3][c.corners[idx].piece];
+  }
+  return perms.encodeDestructablePerm(perm);
+}
+
 function moveESlicePerm(perm, move) {
   var p = perm.slice();
   var temp;
@@ -308,6 +433,7 @@ function p2MoveMove(m, axis) {
 
 exports.Phase2Cube = Phase2Cube;
 exports.Phase2Moves = Phase2Moves;
+exports.convertCubieToPhase2 = convertCubieToPhase2;
 exports.p2MoveFace = p2MoveFace;
 exports.p2MoveInverse = p2MoveInverse;
 exports.p2MoveMove = p2MoveMove;
