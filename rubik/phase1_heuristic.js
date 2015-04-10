@@ -63,24 +63,19 @@ Phase1Heuristic.prototype._computeEOSlice = function(moves) {
   }
   var nodes = new NodeQueue({eo: 0, slice: 220, depth: 0, hash: 220 * 2048,
     next: null});
-  var visited = new Uint8Array(1013760);
+  this.eoSlice[220 * 2048] = 0;
   while (!nodes.empty()) {
     var node = nodes.shift();
-    if (this.eoSlice[node.hash] !== -1) {
-      continue;
-    }
-    this.eoSlice[node.hash] = node.depth;
-    if (node.depth === 7) {
-      continue;
-    }
     for (var i = 0; i < 18; ++i) {
       var newEO = moves.eo[node.eo*18 + i];
       var newSlice = moves.slice[node.slice*18 + i];
       var hash = newSlice*2048 + newEO;
-      if (visited[hash] === 0) {
-        visited[hash] = 1;
-        nodes.push({eo: newEO, slice: newSlice, hash: hash,
-          depth: node.depth + 1, next: null});
+      if (this.eoSlice[hash] < 0) {
+        this.eoSlice[hash] = node.depth + 1;
+        if (node.depth < 6) {
+          nodes.push({eo: newEO, slice: newSlice, hash: hash,
+            depth: node.depth + 1, next: null});
+        }
       }
     }
   }

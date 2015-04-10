@@ -1,6 +1,14 @@
 var rubik = require('../../build/rubik.js');
 var bench = require('../../bench.js');
 
+function benchmarkSolveTables() {
+  bench('SolveTables', function(c) {
+    while (c--) {
+      new rubik.SolveTables();
+    }
+  });
+}
+
 function benchmarkSolveCube() {
   var scrambles = [
     "L F L2 B2 U' L D2 B' L' U2 F2 D F B D2 R2 L U' B F D2 U B2 F D'",
@@ -30,5 +38,6 @@ function benchmarkSolveCube() {
   });
 }
 
+benchmarkSolveTables();
 benchmarkSolveCube();
 console.log('PASS');

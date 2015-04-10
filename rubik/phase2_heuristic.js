@@ -34,24 +34,21 @@ Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
   
   var queue = new NodeQueue({corners: 0, slice: 0, hash: 0, depth: 0,
     next: null});
-  var visited = new Uint8Array(967680);
+  this.cornersSlice[0] = 0;
   while (!queue.empty()) {
     var node = queue.shift();
-    if (this.cornersSlice[node.hash] >= 0) {
-      continue;
-    }
-    this.cornersSlice[node.hash] = node.depth;
-    if (node.depth === 11) {
-      continue;
-    }
+    // Apply all 10 moves to the node.
     for (var m = 0; m < 10; ++m) {
       var slice = moves.sliceMoves[node.slice*10 + m];
       var corners = moves.cornerMoves[node.corners*10 + m];
       var hash = corners*24 + slice;
-      if (visited[hash] === 0) {
-        queue.push({corners: corners, slice: slice, hash: hash,
-          depth: node.depth + 1, next: null});
-        visited[hash] = 1;
+      // If this node has not been visited, note it and branch off.
+      if (this.cornersSlice[hash] < 0) {
+        this.cornersSlice[hash] = node.depth + 1;
+        if (node.depth < 10) {
+          queue.push({corners: corners, slice: slice, hash: hash,
+            depth: node.depth + 1, next: null});
+        }
       }
     }
   }
@@ -64,24 +61,21 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
   
   var queue = new NodeQueue({edges: 0, slice: 0, hash: 0, depth: 0,
     next: null});
-  var visited = new Uint8Array(967680);
+  this.edgesSlice[0] = 0;
   while (!queue.empty()) {
     var node = queue.shift();
-    if (this.edgesSlice[node.hash] >= 0) {
-      continue;
-    }
-    this.edgesSlice[node.hash] = node.depth;
-    if (node.depth === 8) {
-      continue;
-    }
+    // Apply all 10 moves to the node.
     for (var m = 0; m < 10; ++m) {
       var slice = moves.sliceMoves[node.slice*10 + m];
       var edges = moves.edgeMoves[node.edges*10 + m];
       var hash = edges*24 + slice;
-      if (visited[hash] === 0) {
-        queue.push({edges: edges, slice: slice, hash: hash,
-          depth: node.depth + 1, next: null});
-        visited[hash] = 1;
+      // If this node has not been visited, note it and branch off.
+      if (this.edgesSlice[hash] < 0) {
+        this.edgesSlice[hash] = node.depth + 1;
+        if (node.depth < 7) {
+          queue.push({edges: edges, slice: slice, hash: hash,
+            depth: node.depth + 1, next: null});
+        }
       }
     }
   }
