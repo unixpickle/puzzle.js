@@ -1,5 +1,5 @@
 // Phase2Solver implements the backbone of solvePhase2().
-function Phase2Solver(heurstic, moves, deadline) {
+function Phase2Solver(heuristic, moves, deadline) {
   this.heuristic = heuristic;
   this.moves = moves;
   this.deadline = deadline;
@@ -19,13 +19,16 @@ Phase2Solver.prototype.solve = function(cube) {
   try {
     return this._search(cube, 0, 0);
   } catch (e) {
+    if (e !== 'solve timed out') {
+      throw e;
+    }
     return null;
   }
 };
 
 Phase2Solver.prototype._checkExpired = function() {
-  if (new Date().getTime() < this.deadline) {
-    throw new Error('solve timed out');
+  if (new Date().getTime() > this.deadline) {
+    throw 'solve timed out';
   }
 };
 
@@ -80,3 +83,5 @@ function solvePhase2(cube, maxLen, heuristic, moves, timeout) {
   }
   return null;
 }
+
+exports.solvePhase2 = solvePhase2;

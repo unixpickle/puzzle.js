@@ -37,8 +37,8 @@ module.exports = function(name, coefficient, f) {
     var count = coefficient * Math.pow(2, power);
     var start = process.hrtime();
     f(count);
-    var end = process.hrtime();
-    var duration = (end[0] - start[0])*1000000000 + (end[1] - start[1]);
+    var totalDuration = process.hrtime(start);
+    var duration = totalDuration[0]*1000000000 + totalDuration[1];
     
     // If the duration was less than MIN_TIME, we increase it as needed.
     if (duration < MIN_TIME && power < 31) {

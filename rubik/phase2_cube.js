@@ -16,14 +16,14 @@ Phase2Cube.prototype.move = function(m, moves) {
 
 // set updates this cube's coordinates to match the given cube.
 Phase2Cube.prototype.set = function(c) {
-  this.cornerPerm = s.cornerPerm;
+  this.cornerPerm = c.cornerPerm;
   this.edgePerm = c.edgePerm;
   this.slicePerm = c.slicePerm;
 };
 
 // solved returns true if the Phase2Cube is solved.
 Phase2Cube.prototype.solved = function() {
-  return p.cornerPerm === 0 && p.edgePerm === 0 && p.slicePerm === 0;
+  return this.cornerPerm === 0 && this.edgePerm === 0 && this.slicePerm === 0;
 };
 
 // Phase2Moves stores a set of tables which can be used to apply moves to a
