@@ -32,8 +32,7 @@ Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
     this.cornersSlice[i] = -1;
   }
   
-  var queue = new NodeQueue({corners: 0, slice: 0, hash: 0, depth: 0,
-    next: null});
+  var queue = new NodeQueue({corners: 0, slice: 0, depth: 0, next: null});
   this.cornersSlice[0] = 0;
   while (!queue.empty()) {
     var node = queue.shift();
@@ -46,7 +45,7 @@ Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
       if (this.cornersSlice[hash] < 0) {
         this.cornersSlice[hash] = node.depth + 1;
         if (node.depth < 10) {
-          queue.push({corners: corners, slice: slice, hash: hash,
+          queue.push({corners: corners, slice: slice,
             depth: node.depth + 1, next: null});
         }
       }
@@ -59,8 +58,7 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
     this.edgesSlice[i] = -1;
   }
   
-  var queue = new NodeQueue({edges: 0, slice: 0, hash: 0, depth: 0,
-    next: null});
+  var queue = new NodeQueue({edges: 0, slice: 0, depth: 0, next: null});
   this.edgesSlice[0] = 0;
   while (!queue.empty()) {
     var node = queue.shift();
@@ -73,7 +71,7 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
       if (this.edgesSlice[hash] < 0) {
         this.edgesSlice[hash] = node.depth + 1;
         if (node.depth < 7) {
-          queue.push({edges: edges, slice: slice, hash: hash,
+          queue.push({edges: edges, slice: slice,
             depth: node.depth + 1, next: null});
         }
       }

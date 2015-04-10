@@ -61,8 +61,7 @@ Phase1Heuristic.prototype._computeEOSlice = function(moves) {
   for (var i = 0; i < 1013760; ++i) {
     this.eoSlice[i] = -1;
   }
-  var nodes = new NodeQueue({eo: 0, slice: 220, depth: 0, hash: 220 * 2048,
-    next: null});
+  var nodes = new NodeQueue({eo: 0, slice: 220, depth: 0, next: null});
   this.eoSlice[220 * 2048] = 0;
   while (!nodes.empty()) {
     var node = nodes.shift();
@@ -73,7 +72,7 @@ Phase1Heuristic.prototype._computeEOSlice = function(moves) {
       if (this.eoSlice[hash] < 0) {
         this.eoSlice[hash] = node.depth + 1;
         if (node.depth < 6) {
-          nodes.push({eo: newEO, slice: newSlice, hash: hash,
+          nodes.push({eo: newEO, slice: newSlice,
             depth: node.depth + 1, next: null});
         }
       }
