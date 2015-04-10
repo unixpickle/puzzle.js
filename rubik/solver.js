@@ -48,6 +48,7 @@ function solveCube(cube, tables, timeouts) {
 }
 
 function solveLen(cube, tables, maxLen, timeout) {
+  var deadline = new Date().getTime() + timeout;
   var p1Cube = new Phase1Cube(cube);
   var result = null;
   solvePhase1(p1Cube, tables.p1Heuristic, tables.p1Moves, function(moves, c) {
@@ -66,7 +67,7 @@ function solveLen(cube, tables, maxLen, timeout) {
       var p2Timeout = deadline - new Date().getTime();
       // Run the search
       var solution = solvePhase2(p2Cube, maxLen-moves.length,
-        tables.p2Heuristic, table.p2Moves, p2Timeout);
+        tables.p2Heuristic, tables.p2Moves, p2Timeout);
       if (solution !== null) {
         result = moves;
         for (var i = 0; i < solution.length; ++i) {

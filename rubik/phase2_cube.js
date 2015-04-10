@@ -436,6 +436,7 @@ function p2MoveMove(m, axis) {
 		[14, 15, 16, 17, 0, 6, 12, 1, 7, 13],
 		[13, 12, 16, 17, 2, 8, 14, 3, 9, 15]
   ][axis][m];
+  return new Move(num);
 }
 
 exports.Phase2Cube = Phase2Cube;

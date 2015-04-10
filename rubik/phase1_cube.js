@@ -133,25 +133,25 @@ Phase1Cube.prototype.solved = function() {
   var x = true;
   var y = true;
   var z = true;
-  if (p.xCO !== 1093) {
+  if (this.xCO !== 1093) {
     x = false;
-  } else if (p.mSlice !== 220) {
+  } else if (this.mSlice !== 220) {
     x = false;
-  } else if (p.fbEO !== 0) {
+  } else if (this.fbEO !== 0) {
     x = false;
   }
-  if (p.yCO !== 1093) {
+  if (this.yCO !== 1093) {
     y = false;
-  } else if (p.eSlice !== 220) {
+  } else if (this.eSlice !== 220) {
     y = false;
-  } else if (p.fbEO !== 0) {
+  } else if (this.fbEO !== 0) {
     y = false;
   }
-  if (p.zCO !== 1093) {
+  if (this.zCO !== 1093) {
     z = false;
-  } else if (p.sSlice !== 220) {
+  } else if (this.sSlice !== 220) {
     z = false;
-  } else if (p.udEO !== 0) {
+  } else if (this.udEO !== 0) {
     z = false;
   }
   return [x, y, z];
