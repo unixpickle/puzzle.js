@@ -45,8 +45,7 @@ function encodeDestructablePerm(permutation) {
     // If the first item of the sub-permutation does not belong at the
     // beginning, we need to offset our result.
     if (current !== 0) {
-      var tailCount = factorial(len-i);
-      result += tailCount*current;
+      result += factorial(len-i)*current;
     }
     
     // Get rid of any trace of "current" from the sub-permutation .

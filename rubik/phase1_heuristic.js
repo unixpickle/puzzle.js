@@ -1,22 +1,34 @@
 // Phase1Heuristic stores the data needed to effectively prune the search for a
 // solution for phase-1.
 function Phase1Heuristic(moves) {
-  this.co = new Int8Array(2187);
+  // This is packed with two 4-bit depth values per byte. If a depth is 0xf, it
+  // should be assumed to be 8.
+  this.coEO = new Uint8Array(2239488);
+  
+  // This is packed with one depth value per byte. If a depth is -1, it should
+  // be assumed to be 8.
   this.eoSlice = new Int8Array(1013760);
   
-  this._computeCO(moves);
+  this._computeCOEO(moves);
   this._computeEOSlice(moves);
 }
 
 // lowerBound returns the minimum number of moves needed to solve at least one
 // phase-1 axis.
 Phase1Heuristic.prototype.lowerBound = function(c) {
-  var slice0 = this.eoSlice[c.mSlice*2048 + c.xEO()];
+  var xEO = c.xEO();
+  
+  var slice0 = this.eoSlice[c.mSlice*2048 + xEO];
   var slice1 = this.eoSlice[c.eSlice*2048 + c.fbEO];
   var slice2 = this.eoSlice[c.sSlice*2048 + c.udEO];
-  var co0 = this.co[c.xCO];
-  var co1 = this.co[c.yCO];
-  var co2 = this.co[c.zCO];
+  
+  // Bitfield accesses are kind of ugly.
+  var hash = xEO | (c.xCO << 11);
+  var eo0 = (this.coEO[hash >>> 1] >>> ((hash & 1) << 2)) & 0xf;
+  hash = c.fbEO | (c.yCO << 11);
+  var eo1 = (this.coEO[hash >>> 1] >>> ((hash & 1) << 2)) & 0xf;
+  hash = c.udEO | (c.zCO << 11);
+  var eo2 = (this.coEO[hash >>> 1] >>> ((hash & 1) << 2)) & 0xf;
   
   // The slice heuristic is not complete; a value of -1 means depth 8.
   if (slice0 < 0) {
@@ -29,39 +41,68 @@ Phase1Heuristic.prototype.lowerBound = function(c) {
     slice2 = 8;
   }
   
-  return Math.min(Math.max(slice0, co0), Math.max(slice1, co1),
-    Math.max(slice2, co2));
+  // The COEO heuristic is not complete; a value of 0xf means depth 8.
+  if (eo0 === 0xf) {
+    eo0 = 8;
+  }
+  if (eo1 === 0xf) {
+    eo1 = 8;
+  }
+  if (eo2 === 0xf) {
+    eo2 = 8;
+  }
+  
+  return Math.min(Math.max(slice0, eo0), Math.max(slice1, eo1),
+    Math.max(slice2, eo2));
 };
 
-// _computeCO generates the CO table.
-Phase1Heuristic.prototype._computeCO = function(moves) {
-  for (var i = 0; i < 2187; ++i) {
-    this.co[i] = -1;
+// _computeCOEO generates the CO+EO table.
+Phase1Heuristic.prototype._computeCOEO = function(moves) {
+  // Set all the depths to 0xf.
+  for (var i = 0; i < 2239488; ++i) {
+    this.coEO[i] = 0xff;
   }
   
   // Each node is encoded as follows:
-  // (LSB) (4 bits: depth) (12 bits: corner orientations)
+  // (LSB) (4 bits: depth) (11 bits: EO) (12 bits: CO)
   
-  // Create the queue with the starting node. This queue never needs more than
-  // 1285 nodes at once (a number I found empirically).
-  var queue = new NumberQueue(1285);
-  queue.push(1093 << 4);
+  // States are hashed as follows:
+  // (LSB) (11 bits: EO) (12 bits: CO)
   
-  // We have visited the starting node.
-  this.co[1093] = 0;
+  // Create the queue with the starting node. I found empirically that there
+  // will never be more than 549711 nodes in the queue.
+  var queue = new NumberQueue(549711);
+  queue.push(1093 << 15);
+  
+  // Set the first node to have a depth of zero.
+  this.coEO[1093 << 10] = 0xf0;
   
   while (!queue.empty()) {
     // Shift a node and extract its fields.
     var node = queue.shift();
     var depth = node & 0xf;
-    var co = node >>> 4;
+    var eo = (node >>> 4) & 0x7ff;
+    var co = (node >>> 15);
     
-    // Apply moves to the state.
+    // Apply moves to this state.
     for (var i = 0; i < 18; ++i) {
+      var newEO = moves.eo[eo*18 + i];
       var newCO = moves.co[co*18 + i];
-      if (this.co[newCO] < 0) {
-        this.co[newCO] = depth + 1;
-        queue.push((depth + 1) | (newCO << 4));
+      var hash = newEO | (newCO << 11);
+      
+      // idx is the byte index of the hash.
+      var idx = hash >>> 1;
+      
+      // shift is the bit offset for this hash. It is either 0 or 4.
+      var shift = (hash & 1) << 2;
+      
+      if (((this.coEO[idx] >>> shift) & 0xf) === 0xf) {
+        // Right now the bitfield contains 0xf, so we xor it with the complement
+        // of depth+1 to set it depth+1. Think about it.
+        this.coEO[idx] ^= ((depth + 1) ^ 0xf) << shift;
+        if (depth < 6) {
+          queue.push((depth + 1) | (hash << 4));
+        }
       }
     }
   }
