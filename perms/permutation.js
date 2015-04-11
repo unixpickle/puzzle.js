@@ -1,9 +1,7 @@
 var factorials = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800,
   39916800, 479001600, 6227020800];
 
-/**
- * This generates all the permutations of a given length [size].
- */
+// allPerms generates all the permutations of a given length.
 function allPerms(size) {
   if (size === 0) {
     return [[]];
@@ -29,10 +27,9 @@ function allPerms(size) {
   return result;
 }
 
-/**
- * Encode a permutation with a perfect-mapping hash function, destroying the
- * permutation array in the process.
- */
+// encodeDestructablePerm optimally encodes an array of permuted integers. In
+// the process, it modifies the array. This avoids an extra memory allocation
+// which encodePerm() cannot avoid at the expense of the original array.
 function encodeDestructablePerm(permutation) {
   if (permutation.length <= 1) {
     return 0;
@@ -59,16 +56,13 @@ function encodeDestructablePerm(permutation) {
   return result;
 }
 
-/**
- * Encode a permutation with a perfect-mapping hash function.
- */
+// encodePerm encodes a permutation optimally without modifying it.
 function encodePerm(permutation) {
   return encodeDestructablePerm(permutation.slice());
 }
 
-/**
- * Compute the factorial of [n].
- */
+// factorial returns the product of the numbers up to and including n. For
+// instance, factorial(4) is 4*3*2*1. A special case is that factorial(0) = 1.
 function factorial(n) {
   if (n >= factorials.length) {
     return n * factorial(n-1);
@@ -76,22 +70,15 @@ function factorial(n) {
   return factorials[n];
 }
 
-/**
- * Compute the parity of a permutation on the list [0, 1, 2, 3, ...]
- *
- * This returns true for even parity and false for add parity.
- */
+// parity computes the parity of a permutation. This returns true for even
+// parity and false for odd parity.
 function parity(permutation) {
   return paritySort(permutation.slice());
 }
 
-/**
- * Compute the parity of a permutation on the list [0, 1, 2, 3, ...].
- *
- * The [list] will be sorted while this function executes.
- *
- * This returns true for even parity and false for add parity.
- */
+// paritySort computes the parity of a permutation, sorting the given
+// permutation in the process. Therefore, this can avoid an extra allocation
+// which the parity() routine cannot.
 function paritySort(list) {
   var parity = true;
   for (var i = 0, len = list.length-1; i < len; ++i) {
@@ -113,9 +100,7 @@ function paritySort(list) {
   return parity;
 }
 
-/**
- * Generates a random permutation of length [len].
- */
+// randomPerm generates a random permutation of a given length.
 function randomPerm(len) {
   // Generate a list of symbols.
   var symbols = [];
@@ -135,9 +120,9 @@ function randomPerm(len) {
   return result;
 }
 
-/**
- * Generates a random permutation of length [len] with parity [p].
- */
+// randomPermParity generates a random permutation of a given length.
+// The second argument specifies the parity of the permutation. If it is false,
+// the permutation will have odd parity.
 function randomPermParity(len, p) {
   if (len <= 1 && p === false) {
     throw new Error('cannot generate odd permutation on ' + len + ' symbols');

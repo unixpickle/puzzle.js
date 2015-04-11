@@ -1,3 +1,5 @@
+// pascalsTriangle stores pre-computed values of the choose operator. This makes
+// choose() a lot faster.
 var pascalsTriangle = [
   [1],
   [1, 1],
@@ -14,9 +16,7 @@ var pascalsTriangle = [
   [1, 12, 66, 220, 495, 792, 924, 792, 495, 220, 66, 12, 1]
 ];
 
-/**
- * Supply two numbers, a and b, to get (a choose b)
- */
+// choose takes two numbers, a and b, and returns (a choose b).
 function choose(a, b) {
   if (a < 13) {
     return pascalsTriangle[a][b];
@@ -30,9 +30,7 @@ function choose(a, b) {
   return res/factorial(b);
 }
 
-/**
- * This takes an array of booleans and returns how many are true.
- */
+// countTrue takes an array and returns the number of elements which are true.
 function countTrue(list) {
   var res = 0;
   for (var i = 0, len = list.length; i < len; ++i) {
@@ -43,27 +41,18 @@ function countTrue(list) {
   return res;
 }
 
-/**
- * The [choice] array stores a set of true and false boolean values. It
- * represents the "choice" to be encoded.
- */
+// encodeChoose encodes an array which represents a given "choice"--that is, an
+// array of boolean values. This acts as a perfect-mapping hash function for
+// the unordered choose operation.
 function encodeChoose(choice) {
   return encodeExplicitChoose(0, choice, countTrue(choice));
 }
 
-/**
- * This serves as a perfect-mapping hash function for an unordered choose
- * operation.
- *
- * The [start] argument specifies the index in the [choice] array to start at.
- * Usually, this should be 0.
- *
- * The [choice] array stores a set of true and false boolean values. It
- * represents the "choice" to be encoded.
- *
- * The [numTrue] argument specifies how many true values are in [choose]. You
- * can compute this using the [countTrue] function.
- */
+// encodeExplicitChoose implements the backbone of encodeChoose().
+// The start argument specifies the index in the [choice] array to start at.
+// The choice array stores a set of true and false boolean values.
+// The numTrue argument specifies how many true values are in [choose]. You
+// can compute this using the countTrue() routine.
 function encodeExplicitChoose(start, choice, numTrue) {
   if (choice.length-start <= 1 || numTrue === 0) {
     return 0;
