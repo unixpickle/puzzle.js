@@ -163,24 +163,22 @@ Phase1Cube.prototype.xEO = function() {
   
   // Translate the EO bitmap, noting that xEdgeIndices[10] is 11 and is thus
   // never set in the FB bitmap.
-  var parity = false;
+  var parity = 0;
   for (var i = 0; i < 10; ++i) {
     var idx = xEdgeIndices[i];
     if ((this.fbEO & (1 << idx)) !== 0) {
       res |= 1 << i;
-      parity = !parity;
+      parity ^= 1;
     }
   }
   
   // If the last thing in the translated bitmap would be a 1, flip the parity.
   if ((this.fbEO & (1 << xEdgeIndices[11])) !== 0) {
-    parity = !parity;
+    parity ^= 1;
   }
   
   // If there is parity, then the missing element (i.e. #10) is 1.
-  if (parity) {
-    res |= 1 << 10;
-  }
+  res |= parity << 10;
   
   return res;
 };
