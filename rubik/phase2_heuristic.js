@@ -32,21 +32,36 @@ Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
     this.cornersSlice[i] = -1;
   }
   
-  var queue = new NodeQueue({corners: 0, slice: 0, depth: 0, next: null});
+  // The arrangement of bits in the queue's nodes are as follows:
+  // (LSB) (4 bits: depth) (5 bits: slice) (20 bits: corners) (MSB)
+  
+  // Setup the queue to have the start node. I found empirically that the queue
+  // will never have more than 201210 nodes.
+  var queue = new NumberQueue(201210);
+  queue.push(0);
+  
+  // We have explored the start node. It's depth is zero (obviously).
   this.cornersSlice[0] = 0;
+  
+  // While there's still stuff in the queue, do the search.
   while (!queue.empty()) {
+    // Shift a node and extract its bitfields.
     var node = queue.shift();
+    var depth = (node & 0xf);
+    var slice = (node >>> 4) & 0x1f;
+    var corners = (node >>> 9);
+    
     // Apply all 10 moves to the node.
     for (var m = 0; m < 10; ++m) {
-      var slice = moves.sliceMoves[node.slice*10 + m];
-      var corners = moves.cornerMoves[node.corners*10 + m];
-      var hash = corners*24 + slice;
-      // If this node has not been visited, note it and branch off.
+      var newSlice = moves.sliceMoves[slice*10 + m];
+      var newCorners = moves.cornerMoves[corners*10 + m];
+      var hash = newCorners*24 + newSlice;
+      
+      // If this node has not been visited, push it to the queue.
       if (this.cornersSlice[hash] < 0) {
-        this.cornersSlice[hash] = node.depth + 1;
-        if (node.depth < 10) {
-          queue.push({corners: corners, slice: slice,
-            depth: node.depth + 1, next: null});
+        this.cornersSlice[hash] = depth + 1;
+        if (depth < 10) {
+          queue.push((depth + 1) | (newSlice << 4) | (newCorners << 9));
         }
       }
     }
@@ -58,21 +73,35 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
     this.edgesSlice[i] = -1;
   }
   
-  var queue = new NodeQueue({edges: 0, slice: 0, depth: 0, next: null});
+  // The arrangement of bits in the queue's nodes are as follows:
+  // (LSB) (4 bits: depth) (5 bits: slice) (20 bits: edges) (MSB)
+  
+  // Setup the queue to have the start node. I found that there will never be
+  // more than 290813 nodes in the queue.
+  var queue = new NumberQueue(290813);
+  queue.push(0);
+  
+  // We have visited the first node.
   this.edgesSlice[0] = 0;
+  
   while (!queue.empty()) {
+    // Shift a node and extract its bitfields.
     var node = queue.shift();
+    var depth = (node & 0xf);
+    var slice = (node >>> 4) & 0x1f;
+    var edges = (node >>> 9);
+    
     // Apply all 10 moves to the node.
     for (var m = 0; m < 10; ++m) {
-      var slice = moves.sliceMoves[node.slice*10 + m];
-      var edges = moves.edgeMoves[node.edges*10 + m];
-      var hash = edges*24 + slice;
-      // If this node has not been visited, note it and branch off.
+      var newSlice = moves.sliceMoves[slice*10 + m];
+      var newEdges = moves.edgeMoves[edges*10 + m];
+      var hash = newEdges*24 + newSlice;
+      
+      // If this node has not been visited, push it to the queue.
       if (this.edgesSlice[hash] < 0) {
-        this.edgesSlice[hash] = node.depth + 1;
-        if (node.depth < 7) {
-          queue.push({edges: edges, slice: slice,
-            depth: node.depth + 1, next: null});
+        this.edgesSlice[hash] = depth + 1;
+        if (depth < 7) {
+          queue.push((depth + 1) | (newSlice << 4) | (newEdges << 9));
         }
       }
     }
