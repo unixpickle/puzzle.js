@@ -24,8 +24,14 @@ Note that you should replace "0.2.0" with the actual version number. Note also t
 
 # TODO
 
- * Implement more intelligent random state generator for Skewb
- * Re-write the entire 3x3x3 solver
+ * Figure out an intelligent way to generate random states on the Skewb.
+ * Improve initialization time &amp; speed of...
+   * the 3x3 solver
+   * the 2x2 solver
+   * the Skewb solver
+ * Implement move-based scrambles for all big cubes.
+ * Implement Square-1 API+scrambles.
+ * Implement Rubik's Clock API+scrambles.
 
 # License
 
