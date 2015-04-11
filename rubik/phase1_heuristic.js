@@ -38,19 +38,30 @@ Phase1Heuristic.prototype._computeCO = function(moves) {
   for (var i = 0; i < 2187; ++i) {
     this.co[i] = -1;
   }
-  var nodes = new NodeQueue({co: 1093, depth: 0, next: null});
-  var visited = new Uint8Array(2187);
-  while (!nodes.empty()) {
-    var node = nodes.shift();
-    if (this.co[node.co] !== -1) {
-      continue;
-    }
-    this.co[node.co] = node.depth;
+  
+  // Each node is encoded as follows:
+  // (LSB) (4 bits: depth) (12 bits: corner orientations)
+  
+  // Create the queue with the starting node. This queue never needs more than
+  // 1285 nodes at once (a number I found empirically).
+  var queue = new NumberQueue(1285);
+  queue.push(1093 << 4);
+  
+  // We have visited the starting node.
+  this.co[1093] = 0;
+  
+  while (!queue.empty()) {
+    // Shift a node and extract its fields.
+    var node = queue.shift();
+    var depth = node & 0xf;
+    var co = node >>> 4;
+    
+    // Apply moves to the state.
     for (var i = 0; i < 18; ++i) {
-      var applied = moves.co[node.corners*18 + i];
-      if (visited[applied] === 0) {
-        visited[applied] = 1;
-        nodes.push({co: applied, depth: node.depth + 1, next: null});
+      var newCO = moves.co[co*18 + i];
+      if (this.co[newCO] < 0) {
+        this.co[newCO] = depth + 1;
+        queue.push((depth + 1) | (newCO << 4));
       }
     }
   }
@@ -61,19 +72,39 @@ Phase1Heuristic.prototype._computeEOSlice = function(moves) {
   for (var i = 0; i < 1013760; ++i) {
     this.eoSlice[i] = -1;
   }
-  var nodes = new NodeQueue({eo: 0, slice: 220, depth: 0, next: null});
-  this.eoSlice[220 * 2048] = 0;
-  while (!nodes.empty()) {
-    var node = nodes.shift();
+  
+  // Each node is encoded as follows:
+  // (LSB) (3 bits: depth) (11 bits: EO) (9 bits: slice)
+  
+  // States are hashed for eoSlice as follows:
+  // (slice << 11) | EO.
+  // In other words, shifting the node to the right by 3 bits gives you the hash
+  // for that node (although I never actually use this, lol).
+  
+  // Generate the queue with the starting node. I have found empirically that
+  // there are never more than 238263 nodes in the queue.
+  var queue = new NumberQueue(238263);
+  queue.push(220 << 14);
+  
+  // We have visited the first node.
+  this.eoSlice[220 << 11] = 0;
+  
+  while (!queue.empty()) {
+    // Shift the node and extract its bitfields.
+    var node = queue.shift();
+    var depth = node & 0x7;
+    var eo = (node >>> 3) & 0x7ff;
+    var slice = (node >>> 14);
+    
+    // Apply each move to the node.
     for (var i = 0; i < 18; ++i) {
-      var newEO = moves.eo[node.eo*18 + i];
-      var newSlice = moves.slice[node.slice*18 + i];
-      var hash = newSlice*2048 + newEO;
+      var newEO = moves.eo[eo*18 + i];
+      var newSlice = moves.slice[slice*18 + i];
+      var hash = (newSlice << 11) | newEO;
       if (this.eoSlice[hash] < 0) {
-        this.eoSlice[hash] = node.depth + 1;
-        if (node.depth < 6) {
-          nodes.push({eo: newEO, slice: newSlice,
-            depth: node.depth + 1, next: null});
+        this.eoSlice[hash] = depth + 1;
+        if (depth < 6) {
+          queue.push((depth + 1) | (hash << 3));
         }
       }
     }
