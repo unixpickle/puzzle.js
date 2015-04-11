@@ -1,12 +1,10 @@
-var RubikAPI = includeAPI('rubik');
-var SkewbAPI = includeAPI('skewb');
-var PocketAPI = includeAPI('pocketcube');
-var scramblers;
-
-var pocketHeuristic = null;
-var skewbHeuristic = null;
+var scramblers = null;
 
 function allPuzzles() {
+  if (scramblers === null) {
+    createScramblers();
+  }
+  
   var res = [];
   for (var i = 0, len = scramblers.length; i < len; ++i) {
     res[i] = scramblers[i].name;
@@ -14,7 +12,66 @@ function allPuzzles() {
   return res;
 }
 
+function createScramblers() {
+  scramblers = [
+    {
+      name: "2x2x2",
+      scramblers: [
+        {
+          f: pocketState,
+          moves: false,
+          name: "State"
+        },
+        {
+          f: pocketOptState,
+          moves: false,
+          name: "Optimal"
+        },
+        {
+          f: pocketMoves,
+          moves: true,
+          name: "Moves"
+        }
+      ]
+    },
+    {
+      name: "3x3x3",
+      scramblers: [
+        {
+          f: rubikState,
+          moves: false,
+          name: "State"
+        },
+        {
+          f: rubikMoves,
+          moves: true,
+          name: "Moves"
+        }
+      ]
+    },
+    {
+      name: "Skewb",
+      scramblers: [
+        {
+          f: skewbState,
+          moves: false,
+          name: "State"
+        },
+        {
+          f: skewbMoves,
+          moves: true,
+          name: "Moves"
+        }
+      ]
+    }
+  ];
+}
+
 function generateScramble(puzzle, scrambler, moves) {
+  if (scramblers === null) {
+    createScramblers();
+  }
+  
   // Find the info for the scrambler.
   var info = null;
   for (var i = 0, len = scramblers.length; i < len; ++i) {
@@ -39,34 +96,6 @@ function generateScramble(puzzle, scrambler, moves) {
   }
 }
 
-function pocketMoves(count) {
-  var moves = PocketAPI.scrambleMoves(count);
-  return PocketAPI.movesToString(moves);
-}
-
-function pocketOptState() {
-  if (pocketHeuristic === null) {
-    pocketHeuristic = new PocketAPI.FullHeuristic(5);
-  }
-  var state = PocketAPI.randomState();
-  var solution = PocketAPI.solve(state, pocketHeuristic);
-  return PocketAPI.movesToString(solution);
-}
-
-function pocketState() {
-  if (pocketHeuristic === null) {
-    pocketHeuristic = new PocketAPI.FullHeuristic(5);
-  }
-  var state = PocketAPI.randomState();
-  var solution = PocketAPI.solve(state, pocketHeuristic, 8);
-  return PocketAPI.movesToString(solution);
-}
-
-function rubikMoves(count) {
-  var moves = RubikAPI.scrambleMoves(count);
-  return RubikAPI.movesToString(moves);
-}
-
 function scramblersForPuzzle(puzzle) {
   for (var i = 0, len = scramblers.length; i < len; ++i) {
     if (scramblers[i].name === puzzle) {
@@ -80,68 +109,6 @@ function scramblersForPuzzle(puzzle) {
   }
   throw new Error('unknown puzzle: ' + puzzle);
 }
-
-function skewbMoves(count) {
-  var moves = SkewbAPI.scrambleMoves(count);
-  return SkewbAPI.movesToString(moves);
-}
-
-function skewbState() {
-  if (skewbHeuristic === null) {
-    skewbHeuristic = new SkewbAPI.Heuristic();
-  }
-  var state = SkewbAPI.randomState();
-  var solution = SkewbAPI.solve(state, skewbHeuristic);
-  return SkewbAPI.movesToString(solution);
-}
-
-scramblers = [
-  {
-    name: "2x2x2",
-    scramblers: [
-      {
-        f: pocketState,
-        moves: false,
-        name: "State"
-      },
-      {
-        f: pocketOptState,
-        moves: false,
-        name: "Optimal"
-      },
-      {
-        f: pocketMoves,
-        moves: true,
-        name: "Moves"
-      }
-    ]
-  },
-  {
-    name: "3x3x3",
-    scramblers: [
-      {
-        f: rubikMoves,
-        moves: true,
-        name: "Moves"
-      }
-    ]
-  },
-  {
-    name: "Skewb",
-    scramblers: [
-      {
-        f: skewbState,
-        moves: false,
-        name: "State"
-      },
-      {
-        f: skewbMoves,
-        moves: true,
-        name: "Moves"
-      }
-    ]
-  }
-];
 
 exports.allPuzzles = allPuzzles;
 exports.generateScramble = generateScramble;

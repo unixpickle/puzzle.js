@@ -9,6 +9,12 @@ function test2x2State() {
   }
 }
 
+function test3x3State() {
+  // Make sure the scrambler doesn't generate an exception.
+  scrambler.generateScramble('3x3x3', 'State', -1);
+  scrambler.generateScramble('3x3x3', 'State', -1);
+}
+
 function testSkewbState() {
   // Make sure the scrambler doesn't generate an exception.
   scrambler.generateScramble('Skewb', 'State', -1);
@@ -16,5 +22,6 @@ function testSkewbState() {
 }
 
 test2x2State();
+test3x3State();
 testSkewbState();
 console.log('PASS');
