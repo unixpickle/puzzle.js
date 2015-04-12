@@ -13,7 +13,8 @@ function testSolve() {
     "F L R B F' D' R U D' F R2 B2 L U B U' B U' B2 R L' B2 U R' F",
     "L2 D F U F' L D' U2 F U D B2 R' D R' D R B2 F' L' U' L R2 F B'",
     "U2 F2 R U2 R2 D' F' D B' F R2 L' B2 F R2 D2 F2 B' L2 D F2 L D' R2 D",
-    "D' L2 U R2 B' L B2 D L U2 L U2 R' B U2 B' F R F2 D' B' F' L2 D2 R2"
+    "D' L2 U R2 B' L B2 D L U2 L U2 R' B U2 B' F R F2 D' B' F' L2 D2 R2",
+    "B U2 R B2 R R2 U2 R2 B2 U2 B L2 F D2 F' L2"
   ];
   var tables = new rubik.SolveTables();
   var timeouts = new rubik.SolveTimeouts();
@@ -30,6 +31,14 @@ function testSolve() {
     }
     assert(cube.solved(), "Solution " + solution + " did not solve " +
       scramble);
+    // Make sure no faces are repeated.
+    var lastFace = 0;
+    for (var j = 0; j < solution.length; ++j) {
+      var face = solution[j].face();
+      assert(face !== lastFace, "Face repeated in solution " +
+        solution.join(' '));
+      lastFace = face;
+    }
   }
 }
 

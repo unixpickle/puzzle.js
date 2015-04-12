@@ -1,3 +1,40 @@
+// cancelMoves performs move cancellation on a sequence of moves. The result is
+// returned and the original array is not modified.
+function cancelMoves(moves) {
+  var res = moves.slice();
+  
+  // TODO: remove redundancy like L R L'.
+  
+  // Loop through each move and make sure it has a different face than the move
+  // before it.
+  var lastFace = 0;
+  for (var i = 0; i < res.length; ++i) {
+    var face = res[i].face();
+    if (face === lastFace) {
+      // Figure out the new move (or delete the move altogether).
+      var turns = res[i-1].turns() + res[i].turns();
+      res.splice(i, 1);
+      --i;
+      if (turns === 1) {
+        res[i] = new Move(face - 1);
+      } else if (turns === 2 || turns === -2) {
+        res[i] = new Move(face + 11);
+      } else if (turns === -1 || turns === 3) {
+        res[i] = new Move(face + 5);
+      } else {
+        // The moves directly cancelled each other out.
+        res.splice(i, 1);
+        --i;
+        lastFace = (i === -1 ? 0 : res[i].face());
+        continue;
+      }
+    }
+    lastFace = face;
+  }
+  
+  return res;
+}
+
 function scrambleMoves(len) {
   var axis = -1;
   var moves = allMoves();
@@ -28,4 +65,5 @@ function scrambleMoves(len) {
   return result;
 }
 
+exports.cancelMoves = cancelMoves;
 exports.scrambleMoves = scrambleMoves;

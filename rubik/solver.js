@@ -73,6 +73,7 @@ function solveLen(cube, tables, maxLen, timeout) {
         for (var i = 0; i < solution.length; ++i) {
           result.push(p2MoveMove(solution[i], axis));
         }
+        result = cancelMoves(result);
         return false;
       }
       return true;

@@ -80,8 +80,6 @@ If three arguments are provided to the benchmark function, the second argument w
 # TODO
 
  * Figure out an intelligent way to generate random states on the Skewb.
- * Allow move cancellation between phases in the two phase solver.
-   * I got this for a last layer scramble: B U2 R B2 R R2 U2 R2 B2 U2 B L2 F D2 F' L2
  * Improve initialization time &amp; speed of...
    * the 3x3 solver
    * the 2x2 solver
