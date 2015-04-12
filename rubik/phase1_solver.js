@@ -36,14 +36,14 @@ Solver.prototype.deepen = function() {
 
 // solve finds solutions for the cube.
 Solver.prototype.solve = function(cube) {
-  return this._search(cube, 0, 0);
+  return this._search(cube, 0, 0, -1);
 }
 
 Solver.prototype._expired = function() {
   return new Date().getTime() > this.deadline;
 };
 
-Solver.prototype._search = function(cube, depth, lastFace) {
+Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
   if (depth === this.depth) {
     if (cube.anySolved()) {
       if (this._expired()) {
@@ -59,7 +59,12 @@ Solver.prototype._search = function(cube, depth, lastFace) {
   var newCube = this.preAllocCubes[depth];
   for (var i = 0; i < 18; ++i) {
     var face = (i % 6) + 1;
+    var axis = (face - 1) >>> 1;
     if (face === lastFace) {
+      continue;
+    } else if (axis === lastAxis && face >= lastFace) {
+      // Avoid redundancies like L R L' and enforce an ordering (e.g. there can
+      // be a solution with L R, but not one with R L).
       continue;
     }
     
@@ -70,7 +75,7 @@ Solver.prototype._search = function(cube, depth, lastFace) {
     
     // Recurse one level deeper, setting the move in the solution buffer.
     this.solution[depth] = move;
-    if (!this._search(newCube, depth+1, face)) {
+    if (!this._search(newCube, depth+1, face, axis)) {
       return false;
     }
     
