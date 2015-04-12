@@ -1,13 +1,15 @@
 // Phase2Heuristic estimates the lower bound for the number of moves to solve a
 // Phase2Cube.
 function Phase2Heuristic(moves) {
-  // One depth value is stored per byte. In the future, this could be optimized
-  // for memory efficiency.
-  this.cornersSlice = new Uint8Array(967680);
+  // This stores the number of moves needed to solve both the corners and the
+  // E slice edges for each case. The cases are encoded as:
+  // CornerPerm*24 + SlicePerm.
+  this.cornersSlice = new CompactTable(967680);
   
-  // One depth vaule is stored per byte. In the future, this could be optimized
-  // for memory efficiency.
-  this.edgesSlice = new Uint8Array(967680);
+  // This stores the number of moves needed to solve both the edges and the E
+  // slice edges for each case. The cases are encoded as:
+  // EdgePerm*24 + SlicePerm.
+  this.edgesSlice = new CompactTable(967680);
   
   this._generateCornersSlice(moves);
   this._generateEdgesSlice(moves);
@@ -16,15 +18,14 @@ function Phase2Heuristic(moves) {
 // lowerBound returns a lower bound for the number of moves to solve a given
 // Phase2Cube.
 Phase2Heuristic.prototype.lowerBound = function(c) {
-  var cMoves = this.cornersSlice[c.cornerPerm*24 + c.slicePerm];
-  var eMoves = this.edgesSlice[c.edgePerm*24 + c.slicePerm];
+  var cMoves = this.cornersSlice.get(c.cornerPerm*24 + c.slicePerm);
+  var eMoves = this.edgesSlice.get(c.edgePerm*24 + c.slicePerm);
   return Math.max(cMoves, eMoves);
 };
 
 Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
-  for (var i = 0; i < 967680; ++i) {
-    this.cornersSlice[i] = 12;
-  }
+  // We will never explore up to depth 12, so we set every depth to 12.
+  this.cornersSlice.fillWith(12);
   
   // The arrangement of bits in the queue's nodes are as follows:
   // (LSB) (4 bits: depth) (5 bits: slice) (20 bits: corners) (MSB)
@@ -35,7 +36,7 @@ Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
   queue.push(0);
   
   // We have explored the start node. It's depth is zero (obviously).
-  this.cornersSlice[0] = 0;
+  this.cornersSlice.set(0, 0);
   
   // While there's still stuff in the queue, do the search.
   while (!queue.empty()) {
@@ -52,8 +53,8 @@ Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
       var hash = newCorners*24 + newSlice;
       
       // If this node has not been visited, push it to the queue.
-      if (this.cornersSlice[hash] === 12) {
-        this.cornersSlice[hash] = depth + 1;
+      if (this.cornersSlice.get(hash) === 12) {
+        this.cornersSlice.set(hash, depth + 1);
         if (depth < 10) {
           queue.push((depth + 1) | (newSlice << 4) | (newCorners << 9));
         }
@@ -63,9 +64,8 @@ Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
 };
 
 Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
-  for (var i = 0; i < 967680; ++i) {
-    this.edgesSlice[i] = 9;
-  }
+  // We will never search to depth 9.
+  this.edgesSlice.fillWith(9);
   
   // The arrangement of bits in the queue's nodes are as follows:
   // (LSB) (4 bits: depth) (5 bits: slice) (20 bits: edges) (MSB)
@@ -76,7 +76,7 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
   queue.push(0);
   
   // We have visited the first node.
-  this.edgesSlice[0] = 0;
+  this.edgesSlice.set(0, 0);
   
   while (!queue.empty()) {
     // Shift a node and extract its bitfields.
@@ -92,8 +92,8 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
       var hash = newEdges*24 + newSlice;
       
       // If this node has not been visited, push it to the queue.
-      if (this.edgesSlice[hash] === 9) {
-        this.edgesSlice[hash] = depth + 1;
+      if (this.edgesSlice.get(hash) === 9) {
+        this.edgesSlice.set(hash, depth + 1);
         if (depth < 7) {
           queue.push((depth + 1) | (newSlice << 4) | (newEdges << 9));
         }
