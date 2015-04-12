@@ -46,6 +46,16 @@ function createScramblers() {
           f: rubikMoves,
           moves: true,
           name: "Moves"
+        },
+        {
+          f: rubikCOLL,
+          moves: false,
+          name: "COLL"
+        },
+        {
+          f: rubikLastLayer,
+          moves: false,
+          name: "Last Layer"
         }
       ]
     },
@@ -77,7 +87,7 @@ function generateScramble(puzzle, scrambler, moves) {
   for (var i = 0, len = scramblers.length; i < len; ++i) {
     if (scramblers[i].name === puzzle) {
       var subs = scramblers[i].scramblers;
-      for (var j = 0, len = subs.length; j < len; ++j) {
+      for (var j = 0, len1 = subs.length; j < len1; ++j) {
         if (subs[j].name === scrambler) {
           info = subs[j];
           break;
@@ -101,7 +111,7 @@ function scramblersForPuzzle(puzzle) {
     if (scramblers[i].name === puzzle) {
       var res = [];
       var subs = scramblers[i].scramblers;
-      for (var j = 0, len = subs.length; j < len; ++j) {
+      for (var j = 0, len1 = subs.length; j < len1; ++j) {
         res[j] = {moves: subs[j].moves, name: subs[j].name};
       }
       return res;

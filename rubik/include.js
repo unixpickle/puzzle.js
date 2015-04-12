@@ -1,12 +1,12 @@
 // Import the pocketcube's move API.
-var PocketCube = includeAPI('pocketcube');
-var Corner = PocketCube.Corner;
-var Corners = PocketCube.Cube;
-var Move = PocketCube.Move;
-var allMoves = PocketCube.allMoves;
-var movesToString = PocketCube.movesToString;
-var parseMove = PocketCube.parseMove;
-var parseMoves = PocketCube.parseMoves;
+var pocketcube = includeAPI('pocketcube');
+var Corner = pocketcube.Corner;
+var Corners = pocketcube.Cube;
+var Move = pocketcube.Move;
+var allMoves = pocketcube.allMoves;
+var movesToString = pocketcube.movesToString;
+var parseMove = pocketcube.parseMove;
+var parseMoves = pocketcube.parseMoves;
 exports.Move = Move;
 exports.allMoves = allMoves;
 exports.movesToString = movesToString;
