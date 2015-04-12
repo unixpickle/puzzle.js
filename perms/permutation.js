@@ -27,6 +27,22 @@ function allPerms(size) {
   return result;
 }
 
+// applyPerm applies a permutation to an array. The first argument is the array,
+// the second is the permutation. The result is stored in the first argument.
+function applyPerm(arr, perm) {
+  if (arr.length !== perm.length) {
+    throw new Error('incorrect permutation length');
+  }
+  var res = [];
+  var len = arr.length;
+  for (var i = 0; i < len; ++i) {
+    res[i] = arr[perm[i]];
+  }
+  for (var i = 0; i < len; ++i) {
+    arr[i] = res[i];
+  }
+}
+
 // encodeDestructablePerm optimally encodes an array of permuted integers. In
 // the process, it modifies the array. This avoids an extra memory allocation
 // which encodePerm() cannot avoid at the expense of the original array.
@@ -141,6 +157,7 @@ function randomPermParity(len, p) {
 }
 
 exports.allPerms = allPerms;
+exports.applyPerm = applyPerm;
 exports.encodeDestructablePerm = encodeDestructablePerm;
 exports.encodePerm = encodePerm;
 exports.factorial = factorial;
