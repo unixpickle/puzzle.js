@@ -1,11 +1,13 @@
 // Phase2Heuristic estimates the lower bound for the number of moves to solve a
 // Phase2Cube.
 function Phase2Heuristic(moves) {
-  // If an element is -1, it should be assumed to have the value 12.
-  this.cornersSlice = new Int8Array(967680);
+  // One depth value is stored per byte. In the future, this could be optimized
+  // for memory efficiency.
+  this.cornersSlice = new Uint8Array(967680);
   
-  // If an element is -1, it should be assumed to have the value 9.
-  this.edgesSlice = new Int8Array(967680);
+  // One depth vaule is stored per byte. In the future, this could be optimized
+  // for memory efficiency.
+  this.edgesSlice = new Uint8Array(967680);
   
   this._generateCornersSlice(moves);
   this._generateEdgesSlice(moves);
@@ -16,20 +18,12 @@ function Phase2Heuristic(moves) {
 Phase2Heuristic.prototype.lowerBound = function(c) {
   var cMoves = this.cornersSlice[c.cornerPerm*24 + c.slicePerm];
   var eMoves = this.edgesSlice[c.edgePerm*24 + c.slicePerm];
-  
-  if (cMoves === -1) {
-    cMoves = 12;
-  }
-  if (eMoves === -1) {
-    eMoves = 9;
-  }
-  
   return Math.max(cMoves, eMoves);
 };
 
 Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
   for (var i = 0; i < 967680; ++i) {
-    this.cornersSlice[i] = -1;
+    this.cornersSlice[i] = 12;
   }
   
   // The arrangement of bits in the queue's nodes are as follows:
@@ -58,7 +52,7 @@ Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
       var hash = newCorners*24 + newSlice;
       
       // If this node has not been visited, push it to the queue.
-      if (this.cornersSlice[hash] < 0) {
+      if (this.cornersSlice[hash] === 12) {
         this.cornersSlice[hash] = depth + 1;
         if (depth < 10) {
           queue.push((depth + 1) | (newSlice << 4) | (newCorners << 9));
@@ -70,7 +64,7 @@ Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
 
 Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
   for (var i = 0; i < 967680; ++i) {
-    this.edgesSlice[i] = -1;
+    this.edgesSlice[i] = 9;
   }
   
   // The arrangement of bits in the queue's nodes are as follows:
@@ -98,7 +92,7 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
       var hash = newEdges*24 + newSlice;
       
       // If this node has not been visited, push it to the queue.
-      if (this.edgesSlice[hash] < 0) {
+      if (this.edgesSlice[hash] === 9) {
         this.edgesSlice[hash] = depth + 1;
         if (depth < 7) {
           queue.push((depth + 1) | (newSlice << 4) | (newEdges << 9));
