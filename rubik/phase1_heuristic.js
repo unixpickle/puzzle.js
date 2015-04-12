@@ -1,13 +1,11 @@
 // Phase1Heuristic stores the data needed to effectively prune the search for a
 // solution for phase-1.
 function Phase1Heuristic(moves) {
-  // This is packed with two 4-bit depth values per byte. If a depth is 0xf, it
-  // should be assumed to be 8.
+  // This is packed with two 4-bit depth values per byte.
   this.coEO = new Uint8Array(2239488);
   
-  // This is packed with one depth value per byte. If a depth is -1, it should
-  // be assumed to be 8.
-  this.eoSlice = new Int8Array(1013760);
+  // This is packed with one depth value per byte.
+  this.eoSlice = new Uint8Array(1013760);
   
   this._computeCOEO(moves);
   this._computeEOSlice(moves);
@@ -30,37 +28,27 @@ Phase1Heuristic.prototype.lowerBound = function(c) {
   hash = c.udEO | (c.zCO << 11);
   var eo2 = (this.coEO[hash >>> 1] >>> ((hash & 1) << 2)) & 0xf;
   
-  // The slice heuristic is not complete; a value of -1 means depth 8.
-  if (slice0 < 0) {
-    slice0 = 8;
-  }
-  if (slice1 < 0) {
-    slice1 = 8;
-  }
-  if (slice2 < 0) {
-    slice2 = 8;
-  }
-  
-  // The COEO heuristic is not complete; a value of 0xf means depth 8.
-  if (eo0 === 0xf) {
-    eo0 = 8;
-  }
-  if (eo1 === 0xf) {
-    eo1 = 8;
-  }
-  if (eo2 === 0xf) {
-    eo2 = 8;
+  // Return the least of the three heuristic values.
+  var a = Math.max(slice0, eo0);
+  var b = Math.max(slice1, eo1);
+  var c = Math.max(slice2, eo2);
+  if (b < a) {
+    return Math.min(b, c);
+  } else {
+    return Math.min(a, c);
   }
   
-  return Math.min(Math.max(slice0, eo0), Math.max(slice1, eo1),
-    Math.max(slice2, eo2));
+  // NOTE: using Math.min() with three arguments might slow down v8 since it
+  // doesn't like polymorphic functions.
+  // return Math.min(Math.max(slice0, eo0), Math.max(slice1, eo1),
+  //   Math.max(slice2, eo2));
 };
 
 // _computeCOEO generates the CO+EO table.
 Phase1Heuristic.prototype._computeCOEO = function(moves) {
-  // Set all the depths to 0xf.
+  // Set all the depths to 0x8.
   for (var i = 0; i < 2239488; ++i) {
-    this.coEO[i] = 0xff;
+    this.coEO[i] = 0x88;
   }
   
   // Each node is encoded as follows:
@@ -75,7 +63,7 @@ Phase1Heuristic.prototype._computeCOEO = function(moves) {
   queue.push(1093 << 15);
   
   // Set the first node to have a depth of zero.
-  this.coEO[1093 << 10] = 0xf0;
+  this.coEO[1093 << 10] = 0x80;
   
   while (!queue.empty()) {
     // Shift a node and extract its fields.
@@ -96,10 +84,10 @@ Phase1Heuristic.prototype._computeCOEO = function(moves) {
       // shift is the bit offset for this hash. It is either 0 or 4.
       var shift = (hash & 1) << 2;
       
-      if (((this.coEO[idx] >>> shift) & 0xf) === 0xf) {
-        // Right now the bitfield contains 0xf, so we xor it with the complement
-        // of depth+1 to set it depth+1. Think about it.
-        this.coEO[idx] ^= ((depth + 1) ^ 0xf) << shift;
+      if (((this.coEO[idx] >>> shift) & 0xf) === 0x8) {
+        // Right now the bitfield contains 0x8, so we xor it with (depth+1)^8.
+        // Think about it.
+        this.coEO[idx] ^= ((depth + 1) ^ 0x8) << shift;
         if (depth < 6) {
           queue.push((depth + 1) | (hash << 4));
         }
@@ -111,7 +99,7 @@ Phase1Heuristic.prototype._computeCOEO = function(moves) {
 // _computeEOSlice generates the EOSlice table.
 Phase1Heuristic.prototype._computeEOSlice = function(moves) {
   for (var i = 0; i < 1013760; ++i) {
-    this.eoSlice[i] = -1;
+    this.eoSlice[i] = 8;
   }
   
   // Each node is encoded as follows:
@@ -142,7 +130,7 @@ Phase1Heuristic.prototype._computeEOSlice = function(moves) {
       var newEO = moves.eo[eo*18 + i];
       var newSlice = moves.slice[slice*18 + i];
       var hash = (newSlice << 11) | newEO;
-      if (this.eoSlice[hash] < 0) {
+      if (this.eoSlice[hash] === 8) {
         this.eoSlice[hash] = depth + 1;
         if (depth < 6) {
           queue.push((depth + 1) | (hash << 3));
