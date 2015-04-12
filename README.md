@@ -16,11 +16,11 @@ This command will generate a directory called "build" which contains built sourc
 
 Once you build the source code, you're ready to use the library.
 
-Puzzle.js can run in the browser, in Node.js, or in a WebWorker. If you want to use this library in a webpage, you can copy the **build/puzzle.web.0.6.0.js** file to your project. Then, you can include it using a `<script>` tag:
+Puzzle.js can run in the browser, in Node.js, or in a WebWorker. If you want to use this library in a webpage, you can copy the **build/puzzle.web.0.7.1.js** file to your project. Then, you can include it using a `<script>` tag:
     
-    <script src="puzzlejs/puzzle.web.0.6.0.js"></script>
+    <script src="puzzlejs/puzzle.web.0.7.1.js"></script>
 
-Note that you should replace "0.6.0" with the actual version number. Note also that you should not use an async `<script>` tag; the "webscrambler" API locates its WebWorker script in a way which depends on a synchronous import.
+Note that you should replace "0.7.1" with the actual version number. Note also that you should not use an async `<script>` tag; the "webscrambler" API locates its WebWorker script in a way which depends on a synchronous import.
 
 # Testing
 
