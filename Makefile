@@ -5,7 +5,7 @@ VERSION=$(shell cat VERSION)
 
 all: $(BUILD) $(BUILD)/puzzle.web.$(VERSION).js
 
-$(BUILD)/puzzle.web.$(VERSION).js: $(BUILD)/perms.js $(BUILD)/pocketcube.js $(BUILD)/rubik.js $(BUILD)/skewb.js $(BUILD)/scrambler.js
+$(BUILD)/puzzle.web.$(VERSION).js: $(BUILD)/perms.js $(BUILD)/pocketcube.js $(BUILD)/rubik.js $(BUILD)/skewb.js $(BUILD)/scrambler.js $(BUILD)/symmetry.js
 	cat $+ webscrambler/main.js webscrambler/worker.js >$@
 
 $(BUILD)/scrambler.js: $(BUILD)/rubik.js $(BUILD)/skewb.js
@@ -27,6 +27,10 @@ $(BUILD)/pocketcube.js:
 $(BUILD)/perms.js:
 	cat perms/*.js >$@
 	bash skeletize.sh perms $@
+
+$(BUILD)/symmetry.js:
+	cat symmetry/*.js >$@
+	bash skeletize.sh symmetry $@
 
 $(BUILD):
 	mkdir $(BUILD)
