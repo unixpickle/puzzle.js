@@ -15,3 +15,6 @@ exports.parseMoves = parseMoves;
 
 // Import the permutation API.
 var perms = includeAPI('perms');
+
+// Import the symmetry API.
+var symmetry = includeAPI('symmetry');
