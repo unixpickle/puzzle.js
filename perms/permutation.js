@@ -1,5 +1,6 @@
 var factorials = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800,
   39916800, 479001600, 6227020800];
+var applyPermCache = [];
 
 // allPerms generates all the permutations of a given length.
 function allPerms(size) {
@@ -33,13 +34,12 @@ function applyPerm(arr, perm) {
   if (arr.length !== perm.length) {
     throw new Error('incorrect permutation length');
   }
-  var res = [];
   var len = arr.length;
   for (var i = 0; i < len; ++i) {
-    res[i] = arr[perm[i]];
+    applyPermCache[i] = arr[perm[i]];
   }
   for (var i = 0; i < len; ++i) {
-    arr[i] = res[i];
+    arr[i] = applyPermCache[i];
   }
 }
 

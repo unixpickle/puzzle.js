@@ -27,6 +27,8 @@ Phase2EdgeSym.prototype._generateRawToSym = function() {
     this._rawToSym[i] = 0xffff;
   }
   
+  var permutationCache = [];
+  
   // Go through each permutation, find the lowest symmetry of it, and use it.
   var perm8 = perms.allPerms(8);
   var caseCount = 0;
@@ -45,10 +47,10 @@ Phase2EdgeSym.prototype._generateRawToSym = function() {
     
     // Generate all the symmetries of this permutation and hash each one.
     var perm = perm8[i];
-    for (var i = 1; i < 0x10; ++i) {
-      var p = p2EdgeSymmetryConj(i, perm);
+    for (var j = 1; j < 0x10; ++j) {
+      var p = p2EdgeSymmetryConj(j, perm);
       var hash = perms.encodeDestructablePerm(p);
-      this._rawToSym[hash] = (symHash << 4) | i;
+      this._rawToSym[hash] = (symHash << 4) | j;
     }
   }
 };
@@ -185,5 +187,6 @@ function permute4Backwards(array, start) {
 }
 
 exports.Phase2EdgeSym = Phase2EdgeSym;
+exports.p2EdgeSymmetryConj = p2EdgeSymmetryConj;
 exports.p2EdgeSymmetryPermute = p2EdgeSymmetryPermute;
 exports.p2SliceSymmetryPermute = p2SliceSymmetryPermute;
