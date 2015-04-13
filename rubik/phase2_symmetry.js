@@ -1,3 +1,17 @@
+// moveSymInvConjugates[m][s] gives s*m*s'.
+var moveSymInvConjugates = [
+  [0, 3, 1, 2, 0, 2, 1, 3, 0, 3, 1, 2, 0, 2, 1, 3],
+  [1, 2, 0, 3, 1, 3, 0, 2, 1, 2, 0, 3, 1, 3, 0, 2],
+  [2, 0, 3, 1, 3, 0, 2, 1, 2, 0, 3, 1, 3, 0, 2, 1],
+  [3, 1, 2, 0, 2, 1, 3, 0, 3, 1, 2, 0, 2, 1, 3, 0],
+  [4, 4, 4, 4, 5, 5, 5, 5, 8, 8, 8, 8, 7, 7, 7, 7],
+  [5, 5, 5, 5, 4, 4, 4, 4, 7, 7, 7, 7, 8, 8, 8, 8],
+  [6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9, 9, 9, 9, 9, 9],
+  [7, 7, 7, 7, 8, 8, 8, 8, 5, 5, 5, 5, 4, 4, 4, 4],
+  [8, 8, 8, 8, 7, 7, 7, 7, 4, 4, 4, 4, 5, 5, 5, 5],
+  [9, 9, 9, 9, 9, 9, 9, 9, 6, 6, 6, 6, 6, 6, 6, 6]
+];
+
 // Phase2EdgeSym manages everything having to do with the phase-2 edge symmetry
 // coordinate.
 //
@@ -29,7 +43,7 @@ Phase2EdgeSym.prototype.move = function(coord, move) {
   
   // Find the move s*m*s'. We do this because s'*(s*m*s')*c*s is equivalent to
   // m*s'*c*s, which is what we are really looking for.
-  var moveInvConj = p2MoveSymmetryConj(symmetry.udSymmetryInverse(s), move);
+  var moveInvConj = p2MoveSymmetryInvConj(s, move);
   var x = this._moves[c*10 + moveInvConj];
   
   var s1 = x & 0xf;
@@ -240,58 +254,9 @@ function p2EdgeSymmetryPermute(sym, array) {
   }
 }
 
-// p2MoveSymmetryConj conjugates a move m with a symmetry s to find s'*m*s.
-function p2MoveSymmetryConj(s, m) {
-  // The moves are F2 B2 R2 L2 U U' U2 D D' D2, in that order.
-  
-  var lrFlip = symmetry.udSymmetryLRFlip(s);
-  var udFlip = symmetry.udSymmetryUDFlip(s);
-  
-  // If the move is U, U', U2, D, D', or D2, it is only affected by the LRflip
-  // and the UDflip. The y rotation does not affect it.
-  if (m >= 4) {
-    // If one flip was applied, the move is inverted.
-    if (lrFlip !== udFlip) {
-      m = p2MoveInverse(m);
-    }
-    // If the UD axis was flipped, the move swaps faces.
-    if (udFlip) {
-      return [0, 0, 0, 0, 7, 8, 9, 4, 5, 6][m];
-    }
-    return m;
-  }
-  
-  var yRot = symmetry.udSymmetryY(s);
-  if (m < 2) {
-    // Handle F2 and B2 moves, noting that UDflip and LRflip have no effect.
-    if (yRot === 0) {
-      return m;
-    } else if (yRot === 2) {
-      return m ^ 1;
-    } else if (yRot === 1) {
-      // F2 -> R2. Adding two is the same thing as ORing 2 in this case.
-      return m | 2;
-    } else if (yRot === 3) {
-      // F2 -> L2. Adding two is the same thing as ORing 2 in this case.
-      return (m ^ 1) | 2;
-    }
-  }
-  
-  // Handle R2 and L2 moves, noting that UDflip has no effect.
-  if (lrFlip) {
-    m ^= 1;
-  }
-  if (yRot === 0) {
-    return m;
-  } else if (yRot === 2) {
-    return m ^ 1;
-  } else if (yRot === 1) {
-    // R2 2 -> B2 1, L2 3 -> F2 0
-    return m ^ 3;
-  } else if (yRot === 3) {
-    // R2 2 -> F2 0, L2 3 -> B2 1
-    return m ^ 2;
-  }
+// p2MoveSymmetryInvConj conjugates a move m with a symmetry s' to find s*m*s'.
+function p2MoveSymmetryInvConj(s, m) {
+  return moveSymInvConjugates[m][s];
 }
 
 // p2SliceSymmetryPermute applies a UD symmetry to a given permutation of 4
