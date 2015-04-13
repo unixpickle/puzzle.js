@@ -18,7 +18,7 @@ function benchmarkPhase2EdgeSymMove() {
     2545, 34688, 29912, 2667, 1503, 15434, 38614, 11406];
   var sym = new rubik.Phase2EdgeSym();
   bench('move', states.length*10, function(n) {
-    for (var i = 0; i < n/states.length; ++i) {
+    for (var i = 0; i < n/(states.length*10); ++i) {
       for (var s = 0, len = states.length; s < len; ++s) {
         for (var m = 0; m < 10; ++m) {
           sym.move(states[s], m);

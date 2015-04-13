@@ -10,12 +10,32 @@
 // UD flip third. So, symmetry 15 represents UDflip*LRflip*y'. It can also be
 // noted that the UD flip commutes with the LR flip and the y rotation.
 
+// udSymmetryProducts[a*16 + b] gives the symmetry a*b.
+var udSymmetryProducts = [
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+  1, 2, 3, 0, 7, 4, 5, 6, 9, 10, 11, 8, 15, 12, 13, 14,
+  2, 3, 0, 1, 6, 7, 4, 5, 10, 11, 8, 9, 14, 15, 12, 13,
+  3, 0, 1, 2, 5, 6, 7, 4, 11, 8, 9, 10, 13, 14, 15, 12,
+  4, 5, 6, 7, 0, 1, 2, 3, 12, 13, 14, 15, 8, 9, 10, 11,
+  5, 6, 7, 4, 3, 0, 1, 2, 13, 14, 15, 12, 11, 8, 9, 10,
+  6, 7, 4, 5, 2, 3, 0, 1, 14, 15, 12, 13, 10, 11, 8, 9,
+  7, 4, 5, 6, 1, 2, 3, 0, 15, 12, 13, 14, 9, 10, 11, 8,
+  8, 9, 10, 11, 12, 13, 14, 15, 0, 1, 2, 3, 4, 5, 6, 7,
+  9, 10, 11, 8, 15, 12, 13, 14, 1, 2, 3, 0, 7, 4, 5, 6,
+  10, 11, 8, 9, 14, 15, 12, 13, 2, 3, 0, 1, 6, 7, 4, 5,
+  11, 8, 9, 10, 13, 14, 15, 12, 3, 0, 1, 2, 5, 6, 7, 4,
+  12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3,
+  13, 14, 15, 12, 11, 8, 9, 10, 5, 6, 7, 4, 3, 0, 1, 2,
+  14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1,
+  15, 12, 13, 14, 9, 10, 11, 8, 7, 4, 5, 6, 1, 2, 3, 0
+];
+
+// udSymmetryInverses[s] gives s'.
+var udSymmetryInverses = [0, 3, 2, 1, 4, 5, 6, 7, 8, 11, 10, 9, 12, 13, 14, 15];
+
 // udSymmetryInverse returns the inverse of a UD symmetry.
 function udSymmetryInverse(sym) {
-  // If there is an LR flip, the inverse is the same as the original.
-  // Also, since UDflip commutes with LRflip and y, it is preserved in the
-  // inverse.
-  return [0, 3, 2, 1, 4, 5, 6, 7, 8, 11, 10, 9, 12, 13, 14, 15][sym];
+  return udSymmetryInverses[sym];
 }
 
 // udSymmetryLRFlip returns true if the symmetry includes an LR reflection.
@@ -25,31 +45,7 @@ function udSymmetryLRFlip(sym) {
 
 // udSymmetryProduct returns the product of two symmetries, s1*s2.
 function udSymmetryProduct(s1, s2) {
-  // Since UDflip commutes, the new UDflip is the xor of the two UDflips.
-  var udProduct = (s1 & 8) ^ (s2 & 8);
-  
-  // The logic below depends on the fact that LRflip*y^n = y^(4-n)*LRflip.
-  var lrFlip1 = ((s1 & 4) !== 0);
-  var lrFlip2 = ((s2 & 4) !== 0);
-  var y1 = (s1 & 3);
-  var y2 = (s2 & 3);
-  if (!lrFlip1 && !lrFlip2) {
-    // This is y^n*y^m = y^(n+m)
-    var rotation = (y1 + y2) & 3;
-    return udProduct | rotation;
-  } else if (!lrFlip1 && lrFlip2) {
-    // This is y^n*LRflip*y^m = LRflip*y^(4-n+m)
-    var rotation = (4 - y1 + y2) & 3;
-    return udProduct | rotation | 4;
-  } else if (lrFlip1 && !lrFlip2) {
-    // This is LRflip*y^n*y^m = LRflip*y^(n+m)
-    var rotation = (y1 + y2) & 3;
-    return udProduct | rotation | 4;
-  }
-  
-  // This is LRflip*y^n*LRflip*y^m = y^(4-n)*y^m.
-  var rotation = (4 - y1 + y2) & 3;
-  return udProduct | rotation;
+  return udSymmetryProducts[(s1 << 4) | s2];
 }
 
 // udSymmetryUDFlip returns true if the symmetry includes a UD reflection.
