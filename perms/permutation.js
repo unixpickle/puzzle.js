@@ -43,6 +43,22 @@ function applyPerm(arr, perm) {
   }
 }
 
+// comparePerms "compares" the permutations a and b and returns -1 if a<b, 1 if
+// a>b, or 0 if a=b. This is like comparing encodePerm(a) with encodePerm(b).
+function comparePerms(a, b) {
+  if (a.length !== b.length) {
+    throw new Error('permutations must be the same length');
+  }
+  for (var i = 0, len = a.length; i < len; ++i) {
+    if (a[i] > b[i]) {
+      return 1;
+    } else if (a[i] < b[i]) {
+      return -1;
+    }
+  }
+  return 0;
+}
+
 // encodeDestructablePerm optimally encodes an array of permuted integers. In
 // the process, it modifies the array. This avoids an extra memory allocation
 // which encodePerm() cannot avoid at the expense of the original array.
@@ -158,6 +174,7 @@ function randomPermParity(len, p) {
 
 exports.allPerms = allPerms;
 exports.applyPerm = applyPerm;
+exports.comparePerms = comparePerms;
 exports.encodeDestructablePerm = encodeDestructablePerm;
 exports.encodePerm = encodePerm;
 exports.factorial = factorial;

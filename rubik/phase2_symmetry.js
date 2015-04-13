@@ -2,6 +2,73 @@
 // heuristics we use since we are less constrained by memory and initialization
 // time.
 
+// Phase2EdgeSym manages everything having to do with the phase-2 edge symmetry
+// coordinate. These coordinates are stored as (C << 4) | S, where S is some
+// symmetry and C is an edge case up to symmetry. These coordinates are not
+// necessarily unique, but that is acceptable.
+function Phase2EdgeSym() {
+  // this._rawToSym maps every raw coordinate (obtained by encoding the
+  // permutation of the UD edges) to a corresponding symmetry coordinate.
+  this._rawToSym = new Uint16Array(40320);
+  
+  this._generateRawToSym();
+}
+
+// rawToSym converts a raw edge coordinate to a symmetry coordinate.
+Phase2EdgeSym.prototype.rawToSym = function(raw) {
+  return this._rawToSym[raw];
+};
+
+// _generateRawToSym generates the _rawToSym table which maps raw cases to their
+// symmetry coordinates.
+Phase2EdgeSym.prototype._generateRawToSym = function() {
+  // Set every element to 0xffff so we can tell when elements have been set.
+  for (var i = 0; i < 40320; ++i) {
+    this._rawToSym[i] = 0xffff;
+  }
+  
+  // Go through each permutation, find the lowest symmetry of it, and use it.
+  var perm8 = perms.allPerms(8);
+  var caseCount = 0;
+  for (var i = 0; i < 40320; ++i) {
+    // Skip this iteration if the permutation has already been accounted for by
+    // a symmetrically equivalent permutation.
+    if (this._rawToSym[i] !== 0xffff) {
+      continue;
+    }
+    
+    // Save the hash up to symmetry.
+    var symHash = caseCount++;
+    
+    // Save this permutation in the table with the identity symmetry operator.
+    this._rawToSym[i] = symHash << 4;
+    
+    // Generate all the symmetries of this permutation and hash each one.
+    var perm = perm8[i];
+    for (var i = 1; i < 0x10; ++i) {
+      var p = p2EdgeSymmetryConj(i, perm);
+      var hash = perms.encodeDestructablePerm(p);
+      this._rawToSym[hash] = (symHash << 4) | i;
+    }
+  }
+};
+
+// p2EdgeSymmetryConj conjugates a phase-2 edge permutation case with a UD
+// symmetry. The result, sym'*array*sym, is returned.
+function p2EdgeSymmetryConj(sym, array) {
+  // Apply sym to the identity permutation.
+  var result = [0, 1, 2, 3, 4, 5, 6, 7];
+  p2EdgeSymmetryPermute(sym, result);
+  
+  // Apply array to get array*sym.
+  perms.applyPerm(result, array);
+  
+  // Apply sym' to get sym'*array*sym.
+  p2EdgeSymmetryPermute(symmetry.udSymmetryInverse(sym), result);
+  
+  return result;
+}
+
 // p2EdgeSymmetryPermute applies a UD symmetry to a given permutation of 8
 // elements which represent UD edge pieces on a phase-2 cube.
 function p2EdgeSymmetryPermute(sym, array) {
@@ -11,10 +78,10 @@ function p2EdgeSymmetryPermute(sym, array) {
   var yRot = symmetry.udSymmetryY(sym);
   if (yRot === 1) {
     permute4Forwards(array, 0);
-    permute4Backwards(array, 4);
+    permute4Forwards(array, 4);
   } else if (yRot === 3) {
     permute4Backwards(array, 0);
-    permute4Forwards(array, 4);
+    permute4Backwards(array, 4);
   } else if (yRot === 2) {
     // Doing y^2 is equivalent to doing LRflip*FBflip.
     lrFlip = !lrFlip;
@@ -30,21 +97,21 @@ function p2EdgeSymmetryPermute(sym, array) {
   
   // If there is an LR reflection, swap [1] with [3] and [5] with [7].
   if (lrFlip) {
-    var temp = sym[1];
-    sym[1] = sym[3];
-    sym[3] = temp;
-    temp = sym[5];
-    sym[5] = sym[7];
-    sym[7] = temp;
+    var temp = array[1];
+    array[1] = array[3];
+    array[3] = temp;
+    temp = array[5];
+    array[5] = array[7];
+    array[7] = temp;
   }
   
   // If there is a UD reflection, swap the first four elements with the last
   // four elements.
   if (symmetry.udSymmetryUDFlip(sym)) {
     for (var i = 0; i < 4; ++i) {
-      var temp = sym[i];
-      sym[i] = sym[i + 4];
-      sym[i + 4] = temp;
+      var temp = array[i];
+      array[i] = array[i + 4];
+      array[i + 4] = temp;
     }
   }
 }
@@ -117,5 +184,6 @@ function permute4Backwards(array, start) {
   array[start + 3] = temp;
 }
 
+exports.Phase2EdgeSym = Phase2EdgeSym;
 exports.p2EdgeSymmetryPermute = p2EdgeSymmetryPermute;
 exports.p2SliceSymmetryPermute = p2SliceSymmetryPermute;
