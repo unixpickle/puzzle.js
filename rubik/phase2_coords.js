@@ -12,6 +12,14 @@ var moveSymInvConjugates = [
   [9, 9, 9, 9, 9, 9, 9, 9, 6, 6, 6, 6, 6, 6, 6, 6]
 ];
 
+// Phase2Coords manages all the coordinates needed for the phase-2 solver.
+function Phase2Coords() {
+  var perm8 = perms.allPerms(8);
+  this.corners = new Phase2CornerSym(perm8);
+  this.edges = new Phase2EdgeSym(perm8);
+  this.slice = new Phase2SliceCoord(perms.allPerm(4));
+}
+
 // Phase2Sym is an abstract base class which helps implement phase-2 symmetry
 // coordinates.
 //
@@ -173,6 +181,90 @@ function Phase2EdgeSym(perm8) {
 }
 
 Phase2EdgeSym.prototype = Object.create(Phase2Sym.prototype);
+
+// Phase2SliceCoord manages the M slice coordinate for the phase-2 solver. This
+// coordinate is very small (only 24 permutations), so this object is very
+// lightweight.
+function Phase2SliceCoord(perm4) {
+  // this._moves stores every move applied to every configuration. A given move
+  // can be applied to a raw state using this._moves[raw*10 + move].
+  this._moves = new Uint8Array(24 * 10);
+  
+  // this._symmetries makes it easy and efficient to apply any of the 16
+  // symmetries to a slice coordinate. The value this._symmetries[raw*16 + sym]
+  // is equal to sym'*raw*sym.
+  this._symmetries = new Uint8Array(24 * 16);
+  
+  this._generateMoves(perm4);
+  this._generateSymmetries(perm4);
+}
+
+// conjSym conjugates a coordinate with a given symmetry, returning
+// sym'*coord*sym.
+Phase2SliceCoord.prototype.conjSym = function(sym, coord) {
+  return this._symmetries[(coord << 4) | sym];
+};
+
+// move applies a move to the slice.
+Phase2SliceCoord.prototype.move = function(coord, move) {
+  return this._moves[coord*10 + move];
+};
+
+// _generateMoves generates the move table for the slice.
+Phase2SliceCoord.prototype._generateMoves = function(perm4) {
+  for (var i = 0; i < 24; ++i) {
+    var perm = perm4[i];
+    for (var m = 0; m < 10; ++m) {
+      var newState = moveESlicePerm(perm, m);
+      this._moves[i*10 + m] = newState;
+    }
+  }
+};
+
+// _generateSymmetries generates the table for applying symmetries to a given
+// coordinate.
+Phase2SliceCoord.prototype._generateSymmetries = function(perm4) {
+  for (var i = 0; i < 24; ++i) {
+    var perm = perm4[i];
+    for (var s = 0; s < 0x10; ++s) {
+      var p = p2SliceSymmetryConj(s, perm);
+      var hash = perms.encodeDestructablePerm(p);
+      this._symmetries[(i << 4) | s] = hash;
+    }
+  }
+};
+
+// moveESlicePerm applies a move to a permutation which represents the E slice
+// edges. This returns a perfect hash of the result and does not modify the
+// original permutation.
+function moveESlicePerm(perm, move) {
+  var p = perm.slice();
+  var temp;
+  switch (move) {
+  case 0:
+    temp = p[0];
+    p[0] = p[1];
+    p[1] = temp;
+    break;
+  case 1:
+    temp = p[2];
+    p[2] = p[3];
+    p[3] = temp;
+    break;
+  case 2:
+    temp = p[0];
+    p[0] = p[2];
+    p[2] = temp;
+    break;
+  case 3:
+    temp = p[1];
+    p[1] = p[3];
+    p[3] = temp;
+  default:
+    break;
+  }
+  return perms.encodeDestructablePerm(p);
+}
 
 // moveUDPerm applies a phase-2 move to a given edge permutation case. It then
 // hashes the result and returns said hash. The original permutation is not
@@ -497,6 +589,22 @@ function p2MoveSymmetryInvConj(s, m) {
   return moveSymInvConjugates[m][s];
 }
 
+// p2SliceSymmetryConj conjugates a phase-2 slice permutation case with a UD
+// symmetry. The result, sym'*array*sym, is returned.
+function p2SliceSymmetryConj(sym, array) {
+  // Apply sym to the identity permutation.
+  var result = [0, 1, 2, 3];
+  p2SliceSymmetryPermute(sym, result);
+  
+  // Apply array to get array*sym.
+  perms.applyPerm(result, array);
+  
+  // Apply sym' to get sym'*array*sym.
+  p2SliceSymmetryPermute(symmetry.udSymmetryInverse(sym), result);
+  
+  return result;
+}
+
 // p2SliceSymmetryPermute applies a UD symmetry to a given permutation of 4
 // elements which represent slice edge pieces on a phase-2 cube.
 function p2SliceSymmetryPermute(sym, array) {
@@ -565,6 +673,7 @@ function permute4Backwards(array, start) {
   array[start + 3] = temp;
 }
 
+exports.Phase2Coords = Phase2Coords;
 exports.Phase2CornerSym = Phase2CornerSym;
 exports.Phase2EdgeSym = Phase2EdgeSym;
 exports.p2CornerSymmetryConj = p2CornerSymmetryConj;

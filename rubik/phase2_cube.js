@@ -318,35 +318,6 @@ function generateLREdgeMirrors(perm8) {
   return lrPerms;
 }
 
-function moveESlicePerm(perm, move) {
-  var p = perm.slice();
-  var temp;
-  switch (move) {
-  case 0:
-    temp = p[0];
-    p[0] = p[1];
-    p[1] = temp;
-    break;
-  case 1:
-    temp = p[2];
-    p[2] = p[3];
-    p[3] = temp;
-    break;
-  case 2:
-    temp = p[0];
-    p[0] = p[2];
-    p[2] = temp;
-    break;
-  case 3:
-    temp = p[1];
-    p[1] = p[3];
-    p[3] = temp;
-  default:
-    break;
-  }
-  return perms.encodeDestructablePerm(p);
-}
-
 // p2MoveFace returns the face of a phase-2 move.
 function p2MoveFace(m) {
   return [2, 3, 4, 5, 0, 0, 0, 1, 1, 1][m] + 1;
