@@ -12,18 +12,23 @@ var moveSymInvConjugates = [
   [9, 9, 9, 9, 9, 9, 9, 9, 6, 6, 6, 6, 6, 6, 6, 6]
 ];
 
-// Phase2Sym is an abstract base class which implements move application and raw
-// to symmetry conversion for symmetry coordinates.
-// The numRaw argument is the number of raw configurations there are.
-// The numSym argument is the number of configurations up to symmetry. This is
-// 1/16th the number of symmetry coordinates.
+// Phase2Sym is an abstract base class which helps implement phase-2 symmetry
+// coordinates.
+//
+// The numRaw argument is the number of raw coordinates.
+// The numSym argument is the number of coordinates which are unique up to
+// symmetry.
+//
+// Symmetry coordinates are pairs (C, S) where C is a unique case up to
+// symmetry and S is a UD symmetry operation. The pair (C, S) represents the
+// state S'*C*S. These coordinates are encoded into integers as (C << 4) | S.
 function Phase2Sym(numRaw, numSym) {
   // this._moves maps every pair (C, M) to a symmetry coordinate, where C is a
   // unique edge case up to symmetry and M is a move between 0 and 10.
   this._moves = new Uint16Array(numSym * 10);
   
-  // this._rawToSym maps every raw coordinate (obtained by encoding the
-  // permutation of the UD edges) to a corresponding symmetry coordinate.
+  // this._rawToSym maps every raw coordinate to a corresponding symmetry
+  // coordinate.
   this._rawToSym = new Uint16Array(numRaw);
   
   // Set every entry in the moves table to 0xffff.
@@ -61,60 +66,14 @@ Phase2Sym.prototype.rawToSym = function(raw) {
   return this._rawToSym[raw];
 };
 
-// Phase2EdgeSym manages everything having to do with the phase-2 edge symmetry
+// _generateMoves fills in the move table for the symmetry coordinate.
+// The rawPerms argument contains the permutations corresponding to the raw
 // coordinate.
-//
-// Edge symmetry coordinates are stored as (C << 4) | S, where S is some UD
-// symmetry and C is an edge case up to symmetry. Since there are 2768 edge
-// cases up to symmetry, there are a total of 44,288 coordinates. This is more
-// than 40,320, showing that symmetry coordinates have some redundancies. This
-// is acceptable, however, because symmetry coordinates are not required to act
-// as perfect hashes.
-function Phase2EdgeSym(perm8) {
-  Phase2Sym.call(this, 40320, 2768);
-  
-  this._generateRawToSym(perm8);
-  this._generateMoves(perm8);
-}
-
-Phase2EdgeSym.prototype = Object.create(Phase2Sym.prototype);
-
-// _generateRawToSym generates the _rawToSym table which maps raw cases to their
-// symmetry coordinates.
-Phase2EdgeSym.prototype._generateRawToSym = function(perm8) {
-  var permutationCache = [];
-  
-  // Go through each permutation, find the lowest symmetry of it, and use it.
-  var caseCount = 0;
-  for (var i = 0; i < 40320; ++i) {
-    // Skip this iteration if the permutation has already been accounted for by
-    // a symmetrically equivalent permutation.
-    if (this._rawToSym[i] !== 0xffff) {
-      continue;
-    }
-    
-    // Save the hash up to symmetry.
-    var symHash = caseCount++;
-    
-    // Save this permutation in the table with the identity symmetry operator.
-    this._rawToSym[i] = symHash << 4;
-    
-    // Generate all the symmetries of this permutation and hash each one.
-    var perm = perm8[i];
-    for (var j = 1; j < 0x10; ++j) {
-      var p = p2EdgeSymmetryConj(j, perm);
-      var hash = perms.encodeDestructablePerm(p);
-      if (this._rawToSym[hash] === 0xffff) {
-        this._rawToSym[hash] = (symHash << 4) | j;
-      }
-    }
-  }
-};
-
-// _generateMoves applies all 10 moves to each of the unique edge cases and
-// records the results.
-Phase2EdgeSym.prototype._generateMoves = function(perm8) {
-  for (var i = 0; i < 40320; ++i) {
+// The moveFunc argument is a function which takes a permutation and a phase-2
+// move and returns an encoded raw coordinate corresponding to the coordinate
+// after applying the given move.
+Phase2Sym.prototype._generateMoves = function(rawPerms, moveFunc) {
+  for (var i = 0, len = rawPerms.length; i < len; ++i) {
     var symCoord = this._rawToSym[i];
     
     // We only want symmetry coordinates with the identity symmetry.
@@ -122,29 +81,81 @@ Phase2EdgeSym.prototype._generateMoves = function(perm8) {
       continue;
     }
     
-    var perm = perm8[i];
+    var perm = rawPerms[i];
     var symCase = symCoord >>> 4;
     for (var m = 0; m < 10; ++m) {
       if (this._moves[symCase*10 + m] !== 0xffff) {
         continue;
       }
       
-      var res = moveUDEdgePerm(perm, m);
+      var res = moveFunc(perm, m);
       var resSym = this._rawToSym[res];
       this._moves[symCase*10 + m] = resSym;
       
-      // Avoid some extra calls to moveUDEdgePerm (which is relatively
-      // expensive) by also doing the inverse of the move.
+      // Avoid some extra calls to moveFunc (which may be relatively expensive)
+      // by also doing the inverse of the move.
+      
       var s = resSym & 0xf;
       var c1 = resSym >>> 4;
+      
       // We know that m*symCase = s'*c1*s. Using some algebra, we can show that
       // (s*m'*s')*c1 = s*symCase*s'.
+      
       var invMove = p2MoveSymmetryInvConj(s, p2MoveInverse(m));
       var invCoord = (symCase << 4) | symmetry.udSymmetryInverse(s);
       this._moves[c1*10 + invMove] = invCoord;
     }
   }
 };
+
+// _generateRawToSym generates the _rawToSym table which maps raw cases to their
+// symmetry coordinates.
+// The rawPerms argument contains the permutations corresponding to the raw
+// coordinate.
+// The symConjFunc argument is a function which takes a symmetry and a
+// permutation and returns a new permutation which was conjugated by the
+// symmetry.
+Phase2Sym.prototype._generateRawToSym = function(rawPerms, symConjFunc) {
+  // caseCount is incremented every time a new equivalence class is found. By
+  // the end of the loop, this should equal this._moves.length/10.
+  var caseCount = 0;
+  
+  // Find the first permutation for each symmetry equivalence class.
+  for (var i = 0, len = rawPerms.length; i < len; ++i) {
+    // Skip this iteration if the permutation has already been accounted for by
+    // a symmetrically equivalent permutation.
+    if (this._rawToSym[i] !== 0xffff) {
+      continue;
+    }
+    
+    // Get the index of the unique case up to symmetry.
+    var symHash = caseCount++;
+    
+    // Save this permutation in the table with the identity symmetry operator.
+    this._rawToSym[i] = symHash << 4;
+    
+    // Generate all the symmetries of this permutation and hash each one.
+    var perm = rawPerms[i];
+    for (var j = 1; j < 0x10; ++j) {
+      var p = symConjFunc(j, perm);
+      var hash = perms.encodeDestructablePerm(p);
+      if (this._rawToSym[hash] === 0xffff) {
+        this._rawToSym[hash] = (symHash << 4) | j;
+      }
+    }
+  }
+}
+
+// Phase2EdgeSym manages everything having to do with the phase-2 edge symmetry
+// coordinate.
+function Phase2EdgeSym(perm8) {
+  Phase2Sym.call(this, 40320, 2768);
+  
+  this._generateRawToSym(perm8, p2EdgeSymmetryConj);
+  this._generateMoves(perm8, moveUDEdgePerm);
+}
+
+Phase2EdgeSym.prototype = Object.create(Phase2Sym.prototype);
 
 function moveUDEdgePerm(perm, move) {
   // NOTE: this code was generated by translating Go code to JavaScript.
