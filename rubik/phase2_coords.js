@@ -676,8 +676,10 @@ function permute4Backwards(array, start) {
 exports.Phase2Coords = Phase2Coords;
 exports.Phase2CornerSym = Phase2CornerSym;
 exports.Phase2EdgeSym = Phase2EdgeSym;
+exports.Phase2SliceCoord = Phase2SliceCoord;
 exports.p2CornerSymmetryConj = p2CornerSymmetryConj;
 exports.p2CornerSymmetryPermute = p2CornerSymmetryPermute;
 exports.p2EdgeSymmetryConj = p2EdgeSymmetryConj;
 exports.p2EdgeSymmetryPermute = p2EdgeSymmetryPermute;
+exports.p2SliceSymmetryConj = p2SliceSymmetryPermute;
 exports.p2SliceSymmetryPermute = p2SliceSymmetryPermute;

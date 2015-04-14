@@ -68,6 +68,39 @@ function testP2EdgeSymmetryPermute() {
   }
 }
 
+function testP2SliceSymmetryPermute() {
+  var applied = [
+    // y0, y1, y2, y3
+    [0, 1, 2, 3],
+    [2, 0, 3, 1],
+    [3, 2, 1, 0],
+    [1, 3, 0, 2],
+    // LR*y0, LR*y1, LR*y2, LR*y3
+    [1, 0, 3, 2],
+    [0, 2, 1, 3],
+    [2, 3, 0, 1],
+    [3, 1, 2, 0],
+    // UD*y0, UD*y1, UD*y2, UD*y3
+    [0, 1, 2, 3],
+    [2, 0, 3, 1],
+    [3, 2, 1, 0],
+    [1, 3, 0, 2],
+    // UD*LR*y0, UD*LR*y1, UD*LR*y2, UD*LR*y3
+    [1, 0, 3, 2],
+    [0, 2, 1, 3],
+    [2, 3, 0, 1],
+    [3, 1, 2, 0],
+  ];
+  
+  var identity = applied[0];
+  for (var i = 0; i < 0x10; ++i) {
+    var sym = identity.slice();
+    rubik.p2SliceSymmetryPermute(i, sym);
+    assert.deepEqual(sym, applied[i], "Invalid result for symmetry " + i +
+      ": " + sym.join(', '));
+  }
+}
+
 function testPhase2CornerSym() {
   var sym = new rubik.Phase2CornerSym(perms.allPerms(8));
   
@@ -166,6 +199,7 @@ function testPhase2EdgeSymMove() {
 
 testP2CornerSymmetryPermute();
 testP2EdgeSymmetryPermute();
+testP2SliceSymmetryPermute();
 testPhase2CornerSym();
 testPhase2CornerSymMove();
 testPhase2EdgeSym();
