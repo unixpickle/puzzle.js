@@ -12,32 +12,29 @@ var moveSymInvConjugates = [
   [9, 9, 9, 9, 9, 9, 9, 9, 6, 6, 6, 6, 6, 6, 6, 6]
 ];
 
-// Phase2EdgeSym manages everything having to do with the phase-2 edge symmetry
-// coordinate.
-//
-// Edge symmetry coordinates are stored as (C << 4) | S, where S is some UD
-// symmetry and C is an edge case up to symmetry. Since there are 2768 edge
-// cases up to symmetry, there are a total of 44,288 coordinates. This is more
-// than 40,320, showing that symmetry coordinates have some redundancies. This
-// is acceptable, however, because symmetry coordinates are not required to act
-// as perfect hashes.
-function Phase2EdgeSym() {
+// Phase2Sym is an abstract base class which implements move application and raw
+// to symmetry conversion for symmetry coordinates.
+// The numRaw argument is the number of raw configurations there are.
+// The numSym argument is the number of configurations up to symmetry. This is
+// 1/16th the number of symmetry coordinates.
+function Phase2Sym(numRaw, numSym) {
   // this._moves maps every pair (C, M) to a symmetry coordinate, where C is a
   // unique edge case up to symmetry and M is a move between 0 and 10.
-  this._moves = new Uint16Array(27680);
+  this._moves = new Uint16Array(numSym * 10);
   
   // this._rawToSym maps every raw coordinate (obtained by encoding the
   // permutation of the UD edges) to a corresponding symmetry coordinate.
-  this._rawToSym = new Uint16Array(40320);
+  this._rawToSym = new Uint16Array(numRaw);
   
-  var perm8 = perms.allPerms(8);
-  this._generateRawToSym(perm8);
-  this._generateMoves(perm8);
+  // Set every entry in the rawToSym table to 0xffff.
+  for (var i = 0; i < numRaw; ++i) {
+    this._rawToSym[i] = 0xffff;
+  }
 }
 
 // move applies a move to a symmetry coordinate and returns a new symmetry
 // coordinate.
-Phase2EdgeSym.prototype.move = function(coord, move) {
+Phase2Sym.prototype.move = function(coord, move) {
   var s = coord & 0xf;
   var c = coord >>> 4;
   
@@ -55,18 +52,31 @@ Phase2EdgeSym.prototype.move = function(coord, move) {
 };
 
 // rawToSym converts a raw edge coordinate to a symmetry coordinate.
-Phase2EdgeSym.prototype.rawToSym = function(raw) {
+Phase2Sym.prototype.rawToSym = function(raw) {
   return this._rawToSym[raw];
 };
+
+// Phase2EdgeSym manages everything having to do with the phase-2 edge symmetry
+// coordinate.
+//
+// Edge symmetry coordinates are stored as (C << 4) | S, where S is some UD
+// symmetry and C is an edge case up to symmetry. Since there are 2768 edge
+// cases up to symmetry, there are a total of 44,288 coordinates. This is more
+// than 40,320, showing that symmetry coordinates have some redundancies. This
+// is acceptable, however, because symmetry coordinates are not required to act
+// as perfect hashes.
+function Phase2EdgeSym(perm8) {
+  Phase2Sym.call(this, 40320, 2768);
+  
+  this._generateRawToSym(perm8);
+  this._generateMoves(perm8);
+}
+
+Phase2EdgeSym.prototype = Object.create(Phase2Sym.prototype);
 
 // _generateRawToSym generates the _rawToSym table which maps raw cases to their
 // symmetry coordinates.
 Phase2EdgeSym.prototype._generateRawToSym = function(perm8) {
-  // Set every element to 0xffff so we can tell when elements have been set.
-  for (var i = 0; i < 40320; ++i) {
-    this._rawToSym[i] = 0xffff;
-  }
-  
   var permutationCache = [];
   
   // Go through each permutation, find the lowest symmetry of it, and use it.

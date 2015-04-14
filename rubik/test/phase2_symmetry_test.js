@@ -36,7 +36,7 @@ function testP2EdgeSymmetryPermute() {
 }
 
 function testPhase2EdgeSym() {
-  var sym = new rubik.Phase2EdgeSym();
+  var sym = new rubik.Phase2EdgeSym(perms.allPerms(8));
   
   // Make sure there are exactly 2768 unique cases (up to symmetry).
   var caseCount = 0;
@@ -52,7 +52,7 @@ function testPhase2EdgeSym() {
 }
 
 function testPhase2EdgeSymMove() {
-  var sym = new rubik.Phase2EdgeSym();
+  var sym = new rubik.Phase2EdgeSym(perms.allPerms(8));
   
   // Apply the completely random moves D' D' B2 B2 D D2 D2 D B2 U D2 B2 L2 U'
   // D' D U' R2 L2 U2 U2 U2 U D L2 U2 D' U' L2 U2 D2 D2 U D2 D F2 L2 F2 U' L2

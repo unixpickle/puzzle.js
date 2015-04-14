@@ -1,10 +1,12 @@
 var rubik = require('../../build/rubik.js');
+var perms = require('../../build/perms.js');
 var bench = require('../../bench.js');
 
 function benchmarkPhase2EdgeSym() {
+  var perm8 = perms.allPerms(8);
   bench('Phase2EdgeSym', function(n) {
     while (n--) {
-      new rubik.Phase2EdgeSym();
+      new rubik.Phase2EdgeSym(perm8);
     }
   });
 }
@@ -16,7 +18,7 @@ function benchmarkPhase2EdgeSymMove() {
     25099, 10331, 21511, 3993, 44060, 22141, 28300, 3368, 35519, 27598, 17737,
     11378, 24311, 30289, 37587, 13416, 25342, 39266, 43774, 32655, 15217, 4445,
     2545, 34688, 29912, 2667, 1503, 15434, 38614, 11406];
-  var sym = new rubik.Phase2EdgeSym();
+  var sym = new rubik.Phase2EdgeSym(perms.allPerms(8));
   bench('move', states.length*10, function(n) {
     for (var i = 0; i < n/(states.length*10); ++i) {
       for (var s = 0, len = states.length; s < len; ++s) {
