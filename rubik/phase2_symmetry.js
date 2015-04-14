@@ -26,6 +26,11 @@ function Phase2Sym(numRaw, numSym) {
   // permutation of the UD edges) to a corresponding symmetry coordinate.
   this._rawToSym = new Uint16Array(numRaw);
   
+  // Set every entry in the moves table to 0xffff.
+  for (var i = 0, len = numSym*10; i < len; ++i) {
+    this._moves[i] = 0xfffff;
+  }
+  
   // Set every entry in the rawToSym table to 0xffff.
   for (var i = 0; i < numRaw; ++i) {
     this._rawToSym[i] = 0xffff;
@@ -120,8 +125,23 @@ Phase2EdgeSym.prototype._generateMoves = function(perm8) {
     var perm = perm8[i];
     var symCase = symCoord >>> 4;
     for (var m = 0; m < 10; ++m) {
+      if (this._moves[symCase*10 + m] !== 0xffff) {
+        continue;
+      }
+      
       var res = moveUDEdgePerm(perm, m);
-      this._moves[symCase*10 + m] = this._rawToSym[res];
+      var resSym = this._rawToSym[res];
+      this._moves[symCase*10 + m] = resSym;
+      
+      // Avoid some extra calls to moveUDEdgePerm (which is relatively
+      // expensive) by also doing the inverse of the move.
+      var s = resSym & 0xf;
+      var c1 = resSym >>> 4;
+      // We know that m*symCase = s'*c1*s. Using some algebra, we can show that
+      // (s*m'*s')*c1 = s*symCase*s'.
+      var invMove = p2MoveSymmetryInvConj(s, p2MoveInverse(m));
+      var invCoord = (symCase << 4) | symmetry.udSymmetryInverse(s);
+      this._moves[c1*10 + invMove] = invCoord;
     }
   }
 };
