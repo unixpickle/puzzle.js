@@ -97,14 +97,14 @@ Phase2Sym.prototype._generateMoves = function(rawPerms, moveFunc) {
     
     var perm = rawPerms[i];
     var symCase = symCoord >>> 4;
-    for (var m = 0; m < 10; ++m) {
-      if (this._moves[symCase*10 + m] !== 0xffff) {
+    for (var move = 0; move < 10; ++move) {
+      if (this._moves[symCase*10 + move] !== 0xffff) {
         continue;
       }
       
-      var res = moveFunc(perm, m);
+      var res = moveFunc(perm, move);
       var resSym = this._rawToSym[res];
-      this._moves[symCase*10 + m] = resSym;
+      this._moves[symCase*10 + move] = resSym;
       
       // Avoid some extra calls to moveFunc (which may be relatively expensive)
       // by also doing the inverse of the move.
@@ -115,7 +115,7 @@ Phase2Sym.prototype._generateMoves = function(rawPerms, moveFunc) {
       // We know that m*symCase = s'*c1*s. Using some algebra, we can show that
       // (s*m'*s')*c1 = s*symCase*s'.
       
-      var invMove = p2MoveSymmetryInvConj(s, p2MoveInverse(m));
+      var invMove = p2MoveSymmetryInvConj(s, p2MoveInverse(move));
       var invCoord = (symCase << 4) | symmetry.udSymmetryInverse(s);
       this._moves[c1*10 + invMove] = invCoord;
     }
@@ -150,11 +150,11 @@ Phase2Sym.prototype._generateRawToSym = function(rawPerms, symConjFunc) {
     
     // Generate all the symmetries of this permutation and hash each one.
     var perm = rawPerms[i];
-    for (var j = 1; j < 0x10; ++j) {
-      var p = symConjFunc(j, perm);
+    for (var sym = 1; sym < 0x10; ++sym) {
+      var p = symConjFunc(sym, perm);
       var hash = perms.encodeDestructablePerm(p);
       if (this._rawToSym[hash] === 0xffff) {
-        this._rawToSym[hash] = (symHash << 4) | j;
+        this._rawToSym[hash] = (symHash << 4) | sym;
       }
     }
   }
@@ -214,9 +214,9 @@ Phase2SliceCoord.prototype.move = function(coord, move) {
 Phase2SliceCoord.prototype._generateMoves = function(perm4) {
   for (var i = 0; i < 24; ++i) {
     var perm = perm4[i];
-    for (var m = 0; m < 10; ++m) {
-      var newState = moveESlicePerm(perm, m);
-      this._moves[i*10 + m] = newState;
+    for (var move = 0; move < 10; ++move) {
+      var newState = moveESlicePerm(perm, move);
+      this._moves[i*10 + move] = newState;
     }
   }
 };
@@ -226,10 +226,10 @@ Phase2SliceCoord.prototype._generateMoves = function(perm4) {
 Phase2SliceCoord.prototype._generateSymmetries = function(perm4) {
   for (var i = 0; i < 24; ++i) {
     var perm = perm4[i];
-    for (var s = 0; s < 0x10; ++s) {
-      var p = p2SliceSymmetryConj(s, perm);
+    for (var sym = 0; sym < 0x10; ++sym) {
+      var p = p2SliceSymmetryConj(sym, perm);
       var hash = perms.encodeDestructablePerm(p);
-      this._symmetries[(i << 4) | s] = hash;
+      this._symmetries[(i << 4) | sym] = hash;
     }
   }
 };

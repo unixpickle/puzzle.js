@@ -200,57 +200,54 @@ function Phase1Moves() {
 }
 
 Phase1Moves.prototype._generateCO = function() {
-  // Set all elements to -1.
   for (var i = 0; i < 2187*18; ++i) {
     this.co[i] = -1;
   }
   
   for (var i = 0; i < 2187; ++i) {
     var corners = decodeCO(i);
-    for (var m = 0; m < 18; ++m) {
-      if (this.co[i*18 + m] >= 0) {
+    for (var move = 0; move < 18; ++move) {
+      if (this.co[i*18 + move] >= 0) {
         continue;
       }
       
       // Set the end state in the table.
       var aCase = corners.copy();
-      aCase.move(new Move(m));
+      aCase.move(new Move(move));
       var endState = encodeCO(aCase);
-      this.co[i*18 + m] = endState;
+      this.co[i*18 + move] = endState;
       
       // Set the inverse in the table.
-      this.co[endState*18 + new Move(m).inverse().number] = i;
+      this.co[endState*18 + new Move(move).inverse().number] = i;
     }
   }
 };
 
 Phase1Moves.prototype._generateEO = function() {
-  // Set all elements to -1.
   for (var i = 0; i < 2048*18; ++i) {
     this.eo[i] = -1;
   }
   
   for (var i = 0; i < 2048; ++i) {
     var edges = decodeEO(i);
-    for (var m = 0; m < 18; ++m) {
-      if (this.eo[i*18 + m] >= 0) {
+    for (var move = 0; move < 18; ++move) {
+      if (this.eo[i*18 + move] >= 0) {
         continue;
       }
       
       // Set the end state in the table.
       var aCase = edges.copy();
-      aCase.move(new Move(m));
+      aCase.move(new Move(move));
       var endState = encodeEO(aCase);
-      this.eo[i*18 + m] = endState;
+      this.eo[i*18 + move] = endState;
       
       // Set the inverse in the table.
-      this.eo[endState*18 + new Move(m).inverse().number] = i;
+      this.eo[endState*18 + new Move(move).inverse().number] = i;
     }
   }
 };
 
 Phase1Moves.prototype._generateESlice = function() {
-  // Set all elements to -1.
   for (var i = 0; i < 495*18; ++i) {
     this.slice[i] = -1;
   }
@@ -268,19 +265,20 @@ Phase1Moves.prototype._generateESlice = function() {
           state.edges[x].piece = -1;
           state.edges[y].piece = -1;
           state.edges[z].piece = -1;
-          for (var m = 0; m < 18; ++m) {
-            if (this.slice[sliceCase*18 + m] >= 0) {
+          for (var move = 0; move < 18; ++move) {
+            if (this.slice[sliceCase*18 + move] >= 0) {
               continue;
             }
             
             // Set the end state in the table.
             var aCase = state.copy();
-            aCase.move(new Move(m));
+            aCase.move(new Move(move));
             var encoded = encodeBogusSlice(aCase);
-            this.slice[sliceCase*18 + m] = encoded;
+            this.slice[sliceCase*18 + move] = encoded;
             
             // Set the inverse in the table.
-            this.slice[encoded*18 + new Move(m).inverse().number] = sliceCase;
+            this.slice[encoded*18 + new Move(move).inverse().number] =
+              sliceCase;
           }
           ++sliceCase;
         }
