@@ -202,12 +202,12 @@ function Phase2ChooseCoord() {
 
 // conjSym conjugates a coordinate with a given symmetry, returning
 // sym'*coord*sym.
-Phase2SliceCoord.prototype.conjSym = function(sym, coord) {
+Phase2ChooseCoord.prototype.conjSym = function(sym, coord) {
   return this._symmetries[(coord << 4) | sym];
 };
 
 // convertRawCorners converts a raw corner coordinate into a Phase2SliceCoord.
-Phase2SliceCoord.prototype.convertRawCorners = function(rawCoord) {
+Phase2ChooseCoord.prototype.convertRawCorners = function(rawCoord) {
   // NOTE: this could be made faster with a conversion table.
   var permutation = perms.decodePerm(rawCoord, 8);
   var choose = [];
@@ -218,7 +218,7 @@ Phase2SliceCoord.prototype.convertRawCorners = function(rawCoord) {
 };
 
 // move applies a move to the choose case.
-Phase2SliceCoord.prototype.move = function(coord, move) {
+Phase2ChooseCoord.prototype.move = function(coord, move) {
   return this._moves[coord*10 + move];
 };
 
