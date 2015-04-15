@@ -2,6 +2,39 @@ var rubik = require('../../build/rubik.js');
 var perms = require('../../build/perms.js');
 var bench = require('../../bench.js');
 
+function benchmarkPhase2ChooseCoord() {
+  bench('Phase2ChooseCoord', function(n) {
+    while (n--) {
+      new rubik.Phase2ChooseCoord();
+    }
+  });
+}
+
+function benchmarkPhase2ChooseCoordMove() {
+  // Generate a shuffled list of coordinates.
+  var states = [];
+  for (var i = 0; i < 70; ++i) {
+    states[i] = i;
+  }
+  for (var i = 0; i < 70; ++i) {
+    var idx = Math.floor(Math.random() * i);
+    var temp = states[i];
+    states[i] = states[idx];
+    states[idx] = temp;
+  }
+  
+  var coord = new rubik.Phase2ChooseCoord();
+  bench('Phase2ChooseCoord.move', 700, function(n) {
+    for (var i = 0; i < n/700; ++i) {
+      for (var m = 0; m < 10; ++m) {
+        for (var s = 0; s < 70; ++s) {
+          coord.move(states[s], m);
+        }
+      }
+    }
+  });
+}
+
 function benchmarkPhase2CornerSym() {
   var perm8 = perms.allPerms(8);
   bench('Phase2CornerSym', function(n) {
@@ -83,6 +116,8 @@ function benchmarkPhase2SliceCoordMove() {
   });
 }
 
+benchmarkPhase2ChooseCoord();
+benchmarkPhase2ChooseCoordMove();
 benchmarkPhase2CornerSym();
 benchmarkPhase2CornerSymMove();
 benchmarkPhase2EdgeSym();
