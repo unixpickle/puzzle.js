@@ -1,6 +1,15 @@
 var assert = require('assert');
 var perms = require('../../build/perms.js');
 
+function testDecodePerm() {
+  var perm8 = perms.allPerms(8);
+  for (var i = 0, len = perm8.length; i < len; ++i) {
+    var perm = perm8[i];
+    var decoded = perms.decodePerm(i, 8);
+    assert.deepEqual(decoded, perm);
+  }
+}
+
 function testEncodePerm() {
   for (var i = 0; i < 8; ++i) {
     var testSet = perms.allPerms(i);
@@ -64,6 +73,7 @@ function testRandomPermParity() {
   }
 }
 
+testDecodePerm();
 testEncodePerm();
 testFactorial();
 testParity();

@@ -59,6 +59,36 @@ function comparePerms(a, b) {
   return 0;
 }
 
+// decodePerm generates a permutation array from a permutation's perfect hash.
+function decodePerm(hash, size) {
+  var permutation = [];
+  
+  // Pre-allocate the array (i.e. avoid using a sparse array)
+  for (var i = 0; i < size; ++i) {
+    permutation[i] = 0;
+  }
+  
+  // Read the "digits" of the permutation.
+  for (var i = 0, len = size-1; i < len; ++i) {
+    var coefficient = factorial(len - i);
+    var digit = Math.floor(hash / coefficient);
+    permutation[i] = digit;
+    hash -= digit * coefficient;
+  }
+  
+  // Convert the digits into a real permutation.
+  for (var i = size-2; i >= 0; --i) {
+    var theDigit = permutation[i];
+    for (var j = i+1; j < size; ++j) {
+      if (permutation[j] >= theDigit) {
+        ++permutation[j];
+      }
+    }
+  }
+  
+  return permutation;
+}
+
 // encodeDestructablePerm optimally encodes an array of permuted integers. In
 // the process, it modifies the array. This avoids an extra memory allocation
 // which encodePerm() cannot avoid at the expense of the original array.
@@ -175,6 +205,7 @@ function randomPermParity(len, p) {
 exports.allPerms = allPerms;
 exports.applyPerm = applyPerm;
 exports.comparePerms = comparePerms;
+exports.decodePerm = decodePerm;
 exports.encodeDestructablePerm = encodeDestructablePerm;
 exports.encodePerm = encodePerm;
 exports.factorial = factorial;

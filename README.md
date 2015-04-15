@@ -80,6 +80,7 @@ If three arguments are provided to the benchmark function, the second argument w
 # TODO
 
  * Figure out an intelligent way to generate random states on the Skewb.
+ * Use integers to represent moves throughout 3x3 and 2x2.
  * Improve initialization time &amp; speed of...
    * the 3x3 solver
    * the 2x2 solver
