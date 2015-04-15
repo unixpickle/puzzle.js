@@ -1,6 +1,15 @@
 // p2LRMoveMirrors associates each phase-2 move with it's mirror on the LR axis.
 var p2LRMoveMirrors = [0, 1, 3, 2, 5, 4, 6, 8, 7, 9];
 
+// Phase2Coords manages all the coordinates needed for the phase-2 solver.
+function Phase2Coords() {
+  var perm8 = perms.allPerms(8);
+  this.choose = new Phase2ChooseCoord();
+  this.corners = new Phase2CornerSym(perm8);
+  this.edges = new Phase2EdgeSym(perm8);
+  this.slice = new Phase2SliceCoord(perms.allPerm(4));
+}
+
 // A Phase2Cube represents the state of a cube that is important to the phase-2
 // solver.
 function Phase2Cube() {
@@ -340,6 +349,7 @@ function p2MoveMove(m, axis) {
   return new Move(num);
 }
 
+exports.Phase2Coords = Phase2Coords;
 exports.Phase2Cube = Phase2Cube;
 exports.Phase2Moves = Phase2Moves;
 exports.convertCubieToPhase2 = convertCubieToPhase2;
