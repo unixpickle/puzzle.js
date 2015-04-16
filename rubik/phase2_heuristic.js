@@ -1,38 +1,43 @@
 // Phase2Heuristic estimates the lower bound for the number of moves to solve a
 // Phase2Cube.
-function Phase2Heuristic(moves) {
+function Phase2Heuristic(coords) {
   // This stores the number of moves needed to solve both the corners and the
   // E slice edges for each case. The cases are encoded as:
-  // CornerPerm*24 + SlicePerm.
-  this.cornersSlice = new CompactTable(967680);
+  // CornerSym*24 + SlicePerm.
+  this.cornersSlice = new CompactTable(2768 * 24);
   
   // This stores the number of moves needed to solve both the edges and the E
   // slice edges for each case. The cases are encoded as:
-  // EdgePerm*24 + SlicePerm.
-  this.edgesSlice = new CompactTable(967680);
+  // EdgeSym*24 + SlicePerm.
+  this.edgesSlice = new CompactTable(2768 * 24);
   
-  this._generateCornersSlice(moves);
-  this._generateEdgesSlice(moves);
+  this._generateCornersSlice(coords);
+  this._generateEdgesSlice(coords);
 }
 
 // lowerBound returns a lower bound for the number of moves to solve a given
-// Phase2Cube.
-Phase2Heuristic.prototype.lowerBound = function(c) {
-  var cMoves = this.cornersSlice.get(c.cornerPerm*24 + c.slicePerm);
-  var eMoves = this.edgesSlice.get(c.edgePerm*24 + c.slicePerm);
+// Phase2Cube. This requires a Phase2Coords table.
+Phase2Heuristic.prototype.lowerBound = function(c, coords) {
+  // Figure out the edge+slice heuristic coordinate.
+  var eHash = hashEdgesSlice(c.edgeCoord, c.sliceCoord, coords);
+  var eMoves = this.edgesSlice.get(eHash);
+
+  // Figure out the corner+slice heuristic coordinate.
+  var cHash = hashCornersSlice(c.cornerCoord, c.sliceCoord, coords);
+  var cMoves = this.cornersSlice.get(cHash);
+
   return Math.max(cMoves, eMoves);
 };
 
-Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
-  // We will never explore up to depth 12, so we set every depth to 12.
-  this.cornersSlice.fillWith(12);
+Phase2Heuristic.prototype._generateCornersSlice = function(coords) {
+  var maxDepth = 12;
+  this.cornersSlice.fillWith(maxDepth);
   
   // The arrangement of bits in the queue's nodes are as follows:
-  // (LSB) (4 bits: depth) (5 bits: slice) (20 bits: corners) (MSB)
+  // (LSB) (4 bits: depth) (5 bits: slice) (12 bits: corners) (MSB)
   
-  // Setup the queue to have the start node. I found empirically that the queue
-  // will never have more than 201210 nodes.
-  var queue = new NumberQueue(201210);
+  // Setup the queue to have the start node.
+  var queue = new NumberQueue(13590);
   queue.push(0);
   
   // We have explored the start node. It's depth is zero (obviously).
@@ -48,36 +53,38 @@ Phase2Heuristic.prototype._generateCornersSlice = function(moves) {
     
     // Apply all 10 moves to the node.
     for (var m = 0; m < 10; ++m) {
-      var newSlice = moves.sliceMoves[slice*10 + m];
-      var newCorners = moves.cornerMoves[corners*10 + m];
-      var hash = newCorners*24 + newSlice;
+      var newSlice = coords.slice.move(slice, m);
+      var newCorners = coords.corners.move(corners << 4, m);
+      var invSym = symmetry.udSymmetryInverse(newCorners & 0xf);
+      var symSlice = coords.slice.conjSym(invSym, newSlice);
+      var symCorners = (newCorners >>> 4);
+      hash = symSlice + symCorners*24;
       
       // If this node has not been visited, push it to the queue.
-      if (this.cornersSlice.get(hash) === 12) {
+      if (this.cornersSlice.get(hash) === maxDepth) {
         this.cornersSlice.set(hash, depth + 1);
-        if (depth < 10) {
-          queue.push((depth + 1) | (newSlice << 4) | (newCorners << 9));
+        if (depth < maxDepth-2) {
+          queue.push((depth + 1) | (symSlice << 4) | (symCorners << 9));
         }
       }
     }
   }
 };
 
-Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
-  // We will never search to depth 9.
-  this.edgesSlice.fillWith(9);
+Phase2Heuristic.prototype._generateEdgesSlice = function(coords) {
+  var maxDepth = 9;
+  this.edgesSlice.fillWith(maxDepth);
   
   // The arrangement of bits in the queue's nodes are as follows:
-  // (LSB) (4 bits: depth) (5 bits: slice) (20 bits: edges) (MSB)
+  // (LSB) (4 bits: depth) (5 bits: slice) (12 bits: edges) (MSB)
   
-  // Setup the queue to have the start node. I found that there will never be
-  // more than 290813 nodes in the queue.
-  var queue = new NumberQueue(290813);
+  // Setup the queue to have the start node.
+  var queue = new NumberQueue(19350);
   queue.push(0);
   
   // We have visited the first node.
   this.edgesSlice.set(0, 0);
-  
+
   while (!queue.empty()) {
     // Shift a node and extract its bitfields.
     var node = queue.shift();
@@ -87,19 +94,36 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(moves) {
     
     // Apply all 10 moves to the node.
     for (var m = 0; m < 10; ++m) {
-      var newSlice = moves.sliceMoves[slice*10 + m];
-      var newEdges = moves.edgeMoves[edges*10 + m];
-      var hash = newEdges*24 + newSlice;
+      var newSlice = coords.slice.move(slice, m);
+      var newEdges = coords.edges.move(edges << 4, m);
+      var invSym = symmetry.udSymmetryInverse(newEdges & 0xf);
+      var symSlice = coords.slice.conjSym(invSym, newSlice);
+      var symEdges = (newEdges >>> 4);
+      hash = symSlice + symEdges*24;
       
       // If this node has not been visited, push it to the queue.
-      if (this.edgesSlice.get(hash) === 9) {
+      if (this.edgesSlice.get(hash) === maxDepth) {
         this.edgesSlice.set(hash, depth + 1);
-        if (depth < 7) {
-          queue.push((depth + 1) | (newSlice << 4) | (newEdges << 9));
+        if (depth < maxDepth-2) {
+          queue.push((depth + 1) | (symSlice << 4) | (symEdges << 9));
         }
       }
     }
   }
 };
+
+function hashCornersSlice(corners, slice, coords) {
+  var invSym = symmetry.udSymmetryInverse(corners & 0xf);
+  var symSlice = coords.slice.conjSym(invSym, slice);
+  var symCorners = (corners >>> 4);
+  return symSlice + symCorners*24;
+}
+
+function hashEdgesSlice(edges, slice, coords) {
+  var invSym = symmetry.udSymmetryInverse(edges & 0xf);
+  var symSlice = coords.slice.conjSym(invSym, slice);
+  var symEdges = (edges >>> 4);
+  return symSlice + symEdges*24;
+}
 
 exports.Phase2Heuristic = Phase2Heuristic;

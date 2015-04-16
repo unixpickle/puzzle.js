@@ -1,158 +1,67 @@
-// p2LRMoveMirrors associates each phase-2 move with it's mirror on the LR axis.
-var p2LRMoveMirrors = [0, 1, 3, 2, 5, 4, 6, 8, 7, 9];
-
 // Phase2Coords manages all the coordinates needed for the phase-2 solver.
 function Phase2Coords() {
   var perm8 = perms.allPerms(8);
   this.choose = new Phase2ChooseCoord();
-  this.corners = new Phase2CornerSym(perm8);
-  this.edges = new Phase2EdgeSym(perm8);
-  this.slice = new Phase2SliceCoord(perms.allPerm(4));
+  this.corners = new Phase2CornerCoord(perm8);
+  this.edges = new Phase2EdgeCoord(perm8);
+  this.slice = new Phase2SliceCoord(perms.allPerms(4));
 }
 
 // A Phase2Cube represents the state of a cube that is important to the phase-2
 // solver.
 function Phase2Cube() {
-  this.cornerPerm = 0;
-  this.edgePerm = 0;
-  this.slicePerm = 0;
+  // The solved choose coordinate represents 00110011
+  this.chooseCoord = 60;
+  this.cornerCoord = 0;
+  this.edgeCoord = 0;
+  this.sliceCoord = 0;
 }
 
 // move applies a phase-2 move (a number in the range [0, 10)) to the cube given
-// a pre-computed Phase2Moves table.
-Phase2Cube.prototype.move = function(m, moves) {
-  this.cornerPerm = moves.cornerMoves[this.cornerPerm*10 + m];
-  this.edgePerm = moves.edgeMoves[this.edgePerm*10 + m];
-  this.slicePerm = moves.sliceMoves[this.slicePerm*10 + m];
+// a pre-computed Phase2Coords table.
+Phase2Cube.prototype.move = function(m, coords) {
+  this.chooseCoord = coords.choose.move(this.chooseCoord, m);
+  this.cornerCoord = coords.corners.move(this.cornerCoord, m);
+  this.edgeCoord = coords.edges.move(this.edgeCoord, m);
+  this.sliceCoord = coords.slice.move(this.sliceCoord, m);
 };
 
 // set updates this cube's coordinates to match the given cube.
 Phase2Cube.prototype.set = function(c) {
-  this.cornerPerm = c.cornerPerm;
-  this.edgePerm = c.edgePerm;
-  this.slicePerm = c.slicePerm;
+  this.chooseCoord = c.chooseCoord;
+  this.cornerCoord = c.cornerCoord;
+  this.edgeCoord = c.edgeCoord;
+  this.sliceCoord = c.sliceCoord;
 };
 
 // solved returns true if the Phase2Cube is solved.
 Phase2Cube.prototype.solved = function() {
-  return this.cornerPerm === 0 && this.edgePerm === 0 && this.slicePerm === 0;
+  return (this.cornerCoord >>> 4) === 0 && (this.edgeCoord >>> 4) === 0 &&
+    this.sliceCoord === 0;
 };
 
-// Phase2Moves stores a set of tables which can be used to apply moves to a
-// phase-2 state.
-function Phase2Moves() {
-  this.cornerMoves = new Uint16Array(403200);
-  this.edgeMoves = new Uint16Array(403200);
-  this.sliceMoves = new Uint16Array(240);
-  
-  var perm8 = perms.allPerms(8);
-  this._generateCornerMoves(perm8);
-  this._generateEdgeMoves(perm8);
-  this._generateSliceMoves();
-}
-
-Phase2Moves.prototype._generateCornerMoves = function(perm8) {
-  for (var i = 0; i < 403200; ++i) {
-    this.cornerMoves[i] = 0xffff;
-  }
-  
-  var lrMirrors = generateLRCornerMirrors(perm8);
-  
-  // Apply every move to every corner state.
-  for (var state = 0; state < 40320; ++state) {
-    var perm = perm8[state];
-    
-    // Loop through all 10 moves and apply them.
-    for (var m = 0; m < 10; ++m) {
-      if (this.cornerMoves[state*10 + m] !== 0xffff) {
-        continue;
-      }
-      
-      // Record the end state of this move.
-      var endState = moveYCornerPerm(perm, m);
-      this.cornerMoves[state*10 + m] = endState;
-      
-      // Set the inverse of this state.
-      this.cornerMoves[endState*10 + p2MoveInverse(m)] = state;
-      
-      // Set the LR mirror of this state.
-      var lrState = lrMirrors[state];
-      var lrEndState = lrMirrors[endState];
-      var moveMirror = p2LRMoveMirrors[m];
-      this.cornerMoves[lrState*10 + moveMirror] = lrEndState;
-      
-      // Set the inverse of the LR mirror.
-      this.cornerMoves[lrEndState*10 + p2MoveInverse(moveMirror)] = lrState;
-    }
-  }
-};
-
-Phase2Moves.prototype._generateEdgeMoves = function(perm8) {
-  for (var i = 0; i < 403200; ++i) {
-    this.edgeMoves[i] = 0xffff;
-  }
-  
-  var lrMirrors = generateLREdgeMirrors(perm8);
-  
-  // Apply every move to every edge state.
-  for (var state = 0; state < 40320; ++state) {
-    var perm = perm8[state];
-    
-    // Apply all 10 moves to the cube.
-    for (var m = 0; m < 10; ++m) {
-      if (this.edgeMoves[state*10 + m] !== 0xffff) {
-        continue;
-      }
-      
-      var endState = moveUDEdgePerm(perm, m);
-      this.edgeMoves[state*10 + m] = endState;
-      
-      // Set the inverse of this state.
-      this.edgeMoves[endState*10 + p2MoveInverse(m)] = state;
-      
-      // Set the LR mirror of this state.
-      var lrState = lrMirrors[state];
-      var lrEndState = lrMirrors[endState];
-      var moveMirror = p2LRMoveMirrors[m];
-      this.edgeMoves[lrState*10 + moveMirror] = lrEndState;
-      
-      // Set the inverse of the LR mirror.
-      this.edgeMoves[lrEndState*10 + p2MoveInverse(moveMirror)] = lrState;
-    }
-  }
-};
-
-Phase2Moves.prototype._generateSliceMoves = function() {
-  // NOTE: I don't bother with any optimizations here because it's only 24 cases
-  // as opposed to 40320 for the other types of state.
-  var perm4 = perms.allPerms(4);
-  for (var i = 0; i < 24; ++i) {
-    var perm = perm4[i];
-    
-    // Apply all 10 moves to the state.
-    for (var m = 0; m < 10; ++m) {
-      var endState = moveESlicePerm(perm, m);
-      this.sliceMoves[i*10 + m] = endState;
-    }
-  }
-};
-
-// convertCubieToPhase2 converts a Cube to a Phase2Cube on a given axis.
-function convertCubieToPhase2(cube, axis) {
+// convertCubieToPhase2 converts a Cube to a Phase2Cube on a given axis. This
+// requires a Phase2Coords table to work.
+function convertCubieToPhase2(cube, axis, coords) {
   var res = new Phase2Cube();
+  var cornerPerm = 0;
+  var edgePerm = 0;
   if (axis === 0) {
-    res.cornerPerm = encodeXCornerPerm(cube.corners);
-    res.edgePerm = encodeRLEdges(cube.edges);
-    res.slicePerm = encodeMSlicePerm(cube.edges);
+    cornerPerm = encodeXCornerPerm(cube.corners);
+    edgePerm = encodeRLEdges(cube.edges);
+    res.sliceCoord = encodeMSlicePerm(cube.edges);
   } else if (axis === 1) {
-    res.cornerPerm = encodeYCornerPerm(cube.corners);
-    res.edgePerm = encodeUDEdges(cube.edges);
-    res.slicePerm = encodeESlicePerm(cube.edges);
+    cornerPerm = encodeYCornerPerm(cube.corners);
+    edgePerm = encodeUDEdges(cube.edges);
+    res.sliceCoord = encodeESlicePerm(cube.edges);
   } else if (axis === 2) {
-    res.cornerPerm = encodeZCornerPerm(cube.corners);
-    res.edgePerm = encodeFBEdges(cube.edges);
-    res.slicePerm = encodeSSlicePerm(cube.edges);
+    cornerPerm = encodeZCornerPerm(cube.corners);
+    edgePerm = encodeFBEdges(cube.edges);
+    res.sliceCoord = encodeSSlicePerm(cube.edges);
   }
+  res.chooseCoord = coords.choose.convertRawCorners(cornerPerm);
+  res.cornerCoord = coords.corners.rawToSym(cornerPerm);
+  res.edgeCoord = coords.edges.rawToSym(edgePerm);
   return res;
 }
 
@@ -262,71 +171,6 @@ function encodeZCornerPerm(c) {
   return perms.encodeDestructablePerm(perm);
 }
 
-// generateLRCornerMirrors generates and returns an array which maps every
-// corner permutation to its left-right mirror.
-function generateLRCornerMirrors(perm8) {
-  var lrPerms = new Uint16Array(40320);
-  for (var i = 0; i < 40320; ++i) {
-    lrPerms[i] = 0xffff;
-  }
-  
-  for (var i = 0; i < 40320; ++i) {
-    if (lrPerms[i] !== 0xffff) {
-      continue;
-    }
-    
-    // Let F be the LR flip operation. We must find F*perm8[i]*F.
-    var mirrored = [1, 0, 3, 2, 5, 4, 7, 6];
-    perms.applyPerm(mirrored, perm8[i]);
-    // NOTE: the LR mirror on corners happened to be really simple: just swap
-    // every even corner with the corner after it.
-    for (var j = 0; j < 8; j += 2) {
-      var temp = mirrored[j];
-      mirrored[j] = mirrored[j + 1];
-      mirrored[j + 1] = temp;
-    }
-    
-    // Set both things in the array.
-    var mirror = perms.encodeDestructablePerm(mirrored)
-    lrPerms[i] = mirror;
-    lrPerms[mirror] = i;
-  }
-  
-  return lrPerms;
-}
-
-// generateLREdgeMirrors generates and returns an array which maps every edge
-// permutation to its left-right mirror.
-function generateLREdgeMirrors(perm8) {
-  var lrPerms = new Uint16Array(40320);
-  for (var i = 0; i < 40320; ++i) {
-    lrPerms[i] = 0xffff;
-  }
-  
-  for (var i = 0; i < 40320; ++i) {
-    if (lrPerms[i] !== 0xffff) {
-      continue;
-    }
-    
-    // Let F be the LR flip operation. We must find F*perm8[i]*F.
-    var mirrored = [0, 3, 2, 1, 4, 7, 6, 5];
-    perms.applyPerm(mirrored, perm8[i]);
-    var temp = mirrored[1];
-    mirrored[1] = mirrored[3];
-    mirrored[3] = temp;
-    temp = mirrored[5];
-    mirrored[5] = mirrored[7];
-    mirrored[7] = temp;
-    
-    // Set both things in the array.
-    var mirror = perms.encodeDestructablePerm(mirrored);
-    lrPerms[i] = mirror;
-    lrPerms[mirror] = i;
-  }
-  
-  return lrPerms;
-}
-
 // p2MoveFace returns the face of a phase-2 move.
 function p2MoveFace(m) {
   return [2, 3, 4, 5, 0, 0, 0, 1, 1, 1][m] + 1;
@@ -351,7 +195,6 @@ function p2MoveMove(m, axis) {
 
 exports.Phase2Coords = Phase2Coords;
 exports.Phase2Cube = Phase2Cube;
-exports.Phase2Moves = Phase2Moves;
 exports.convertCubieToPhase2 = convertCubieToPhase2;
 exports.p2MoveFace = p2MoveFace;
 exports.p2MoveInverse = p2MoveInverse;

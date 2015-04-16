@@ -2,8 +2,8 @@ var rubik = require('../../build/rubik.js');
 var assert = require('assert');
 
 function testPhase2Heuristic() {
-  var moves = new rubik.Phase2Moves();
-  var heuristic = new rubik.Phase2Heuristic(moves);
+  var coords = new rubik.Phase2Coords();
+  var heuristic = new rubik.Phase2Heuristic(coords);
   
   // Do random move sequences and ensure that the lower bound is never too high.
   for (var len = 0; len <= 18; ++len) {
@@ -13,11 +13,11 @@ function testPhase2Heuristic() {
       var scramble = [];
       for (var i = 0; i < len; ++i) {
         var move = Math.floor(Math.random() * 10);
-        cube.move(move, moves);
+        cube.move(move, coords);
         scramble.push(move)
       };
-      assert(heuristic.lowerBound(cube) <= len, 'Invalid lower bound ' +
-        heuristic.lowerBound(cube) + ' for moves: ' + scramble);
+      assert(heuristic.lowerBound(cube, coords) <= len, 'Invalid lower bound ' +
+        heuristic.lowerBound(cube, coords) + ' for moves: ' + scramble);
     }
   }
 }
