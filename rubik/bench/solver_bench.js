@@ -11,17 +11,21 @@ function benchmarkSolveTables() {
 
 function benchmarkSolveCube() {
   var scrambles = [
-    "L F L2 B2 U' L D2 B' L' U2 F2 D F B D2 R2 L U' B F D2 U B2 F D'",
-    "F' L2 F' L' F' L' U' B' F2 D L2 B' U D L' D F L2 R' U R' F B U F2",
-    "B L B' L D2 B R' F2 L2 D B U' B' D2 R' F B2 L2 D F D' L' D2 F R",
-    "F2 R2 U' R U' L' D' F2 B U' F R2 B' R' D2 F' B U' R' D2 L2 F' D2 B2 R2",
-    "U R2 U F2 U' L2 B D' F R2 B2 D' B' L2 B U R2 L U' R' D2 R' U' F L2",
-    "B2 L2 D2 L2 F' L2 F' D B' L' D L U' D2 R' U2 R' U' D' R' F' R U F2 L2",
-    "R2 D U2 B2 F' L2 D' L R B2 D' F R' U D' F2 L' U B2 R2 F R F L U'",
-    "F L R B F' D' R U D' F R2 B2 L U B U' B U' B2 R L' B2 U R' F",
-    "L2 D F U F' L D' U2 F U D B2 R' D R' D R B2 F' L' U' L R2 F B'",
-    "U2 F2 R U2 R2 D' F' D B' F R2 L' B2 F R2 D2 F2 B' L2 D F2 L D' R2 D",
-    "D' L2 U R2 B' L B2 D L U2 L U2 R' B U2 B' F R F2 D' B' F' L2 D2 R2"
+    "D2 L' F2 R2 U2 L U2 L' F2 L' F' R U' F2 R2 B D R D' U F'",
+    "U2 F' L2 F L2 R2 B' D2 F' R2 F R B U' B' F2 R2 U' L2 R D2",
+    "L2 F2 U2 B2 F2 D L2 D B2 U L2 B R U' L F D' R' B R2 F2",
+    "L2 B F U2 L2 U2 L2 F L2 F' U2 L U F2 R D' B R' F2 D2 R",
+    "B2 R2 D' R2 D2 F2 R2 F2 R2 U' L2 F R' F2 D L' U L' R' B' U'",
+    "F U F R F L2 D F L2 D' R2 U' B2 D' F2 R2 F2 B2 U2",
+    "B2 D R2 U' L2 F2 U2 L2 F2 D F2 R F2 U B' F2 D' F' D R2 F",
+    "R2 U2 F L2 F2 D2 R2 B' L2 D' F2 R D B F' D U B F2 R'",
+    "R' B' D' R' L U' R' F' D' B R' U2 L D2 L2 B2 L B2 U2 L F2",
+    "F2 L' B2 F2 U2 R D2 R U2 R' B' L2 D B' R' B2 F' R2 D2",
+    "D' F2 L2 D2 B2 F2 D' L2 R2 D' U' R U' R' U' L' R D' L2 B' L2",
+    "U' L' F' R F2 B' U' F' L D R2 L2 F2 R2 F L2 F2 L2 U2 B",
+    "R2 B2 R2 B' U2 L2 F' L2 B D2 L2 D B2 L' R U2 B' R' U' L' F'",
+    "L2 D2 L2 B2 U2 R' D2 L F2 D2 F2 U B' U2 R' B' D2 U' F' L2 R2",
+    "R2 U2 B2 U2 F' D2 B' L2 F D2 U B R2 U' F D R' F' D' F2"
   ];
   var tables = new rubik.SolveTables();
   var timeouts = new rubik.SolveTimeouts();
