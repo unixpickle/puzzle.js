@@ -21,11 +21,11 @@ Phase1Heuristic.prototype.lowerBound = function(c) {
   var xEO = c.xEO();
   
   var slice0 = this.eoSlice.get(c.mSlice*2048 | xEO);
-  var slice1 = this.eoSlice.get(c.eSlice*2048 | c.fbEO);
-  var slice2 = this.eoSlice.get(c.sSlice*2048 | c.udEO);
+  var slice1 = this.eoSlice.get(c.eSlice*2048 | c.yEO);
+  var slice2 = this.eoSlice.get(c.sSlice*2048 | c.zEO);
   var eo0 = this.coEO.get(xEO | (c.xCO << 11));
-  var eo1 = this.coEO.get(c.fbEO | (c.yCO << 11));
-  var eo2 = this.coEO.get(c.udEO | (c.zCO << 11));
+  var eo1 = this.coEO.get(c.yEO | (c.yCO << 11));
+  var eo2 = this.coEO.get(c.zEO | (c.zCO << 11));
   
   // Return the least of the three heuristic values.
   var a = Math.max(slice0, eo0);

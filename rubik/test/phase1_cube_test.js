@@ -32,13 +32,13 @@ function testPhase1CubeMove() {
   }
   
   assert.equal(cube.yCO, 881);
-  assert.equal(cube.fbEO, 358);
+  assert.equal(cube.yEO, 358);
   assert.equal(cube.eSlice, 337);
   assert.equal(cube.xCO, 1893);
   assert.equal(cube.mSlice, 476);
   assert.equal(cube.zCO, 43);
   assert.equal(cube.sSlice, 428);
-  assert.equal(cube.udEO, 740);
+  assert.equal(cube.zEO, 740);
 }
 
 function testPhase1XEO() {

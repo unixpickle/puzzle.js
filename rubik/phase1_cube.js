@@ -42,8 +42,8 @@ function Phase1Cube(cc) {
     this.yCO = encodeCO(cc.corners);
     this.zCO = xzCO[1];
     
-    this.fbEO = encodeEO(cc.edges);
-    this.udEO = encodeUDEO(cc.edges);
+    this.yEO = encodeYEO(cc.edges);
+    this.zEO = encodeZEO(cc.edges);
     
     var msSlice = encodeMSSlice(cc.edges);
     this.mSlice = msSlice[0];
@@ -56,8 +56,8 @@ function Phase1Cube(cc) {
     this.zCO = 1093;
   
     // These are the initial edge orientations.
-    this.fbEO = 0;
-    this.udEO = 0;
+    this.yEO = 0;
+    this.zEO = 0;
   
     // These are the initial slice permutations.
     this.mSlice = 220;
@@ -68,11 +68,11 @@ function Phase1Cube(cc) {
 
 // anySolved returns true if the phase-1 state is solved along any axis.
 Phase1Cube.prototype.anySolved = function() {
-  if (this.xCO === 1093 && this.mSlice === 220 && this.fbEO === 0) {
+  if (this.xCO === 1093 && this.mSlice === 220 && this.yEO === 0) {
     return true;
-  } else if (this.yCO === 1093 && this.eSlice === 220 && this.fbEO === 0) {
+  } else if (this.yCO === 1093 && this.eSlice === 220 && this.yEO === 0) {
     return true;
-  } else if (this.zCO === 1093 && this.sSlice === 220 && this.udEO === 0) {
+  } else if (this.zCO === 1093 && this.sSlice === 220 && this.zEO === 0) {
     return true;
   }
   return false;
@@ -85,8 +85,8 @@ Phase1Cube.prototype.copy = function() {
   res.xCO = this.xCO;
   res.yCO = this.yCO;
   res.zCO = this.zCO;
-  res.fbEO = this.fbEO;
-  res.udEO = this.udEO;
+  res.yEO = this.yEO;
+  res.zEO = this.zEO;
   res.mSlice = this.mSlice;
   res.eSlice = this.eSlice;
   res.sSlice = this.sSlice;
@@ -100,13 +100,13 @@ Phase1Cube.prototype.move = function(move, table) {
   
   // Apply the move to the y-axis cube.
   this.yCO = table.co[this.yCO*18 + m];
-  this.fbEO = table.eo[this.fbEO*18 + m];
+  this.yEO = table.eo[this.yEO*18 + m];
   this.eSlice = table.slice[this.eSlice*18 + m];
   
   // Apply the move to the z-axis cube.
   var zMove = zMoveTranslation[m];
   this.zCO = table.co[this.zCO*18 + zMove];
-  this.udEO = table.eo[this.udEO*18 + zMove];
+  this.zEO = table.eo[this.zEO*18 + zMove];
   this.sSlice = table.slice[this.sSlice*18 + zMove];
   
   // Apply the move to the x-axis cube.
@@ -120,8 +120,8 @@ Phase1Cube.prototype.set = function(obj) {
   this.xCO = obj.xCO;
   this.yCO = obj.yCO;
   this.zCO = obj.zCO;
-  this.fbEO = obj.fbEO;
-  this.udEO = obj.udEO;
+  this.yEO = obj.yEO;
+  this.zEO = obj.zEO;
   this.mSlice = obj.mSlice;
   this.eSlice = obj.eSlice;
   this.sSlice = obj.sSlice;
@@ -137,27 +137,27 @@ Phase1Cube.prototype.solved = function() {
     x = false;
   } else if (this.mSlice !== 220) {
     x = false;
-  } else if (this.fbEO !== 0) {
+  } else if (this.yEO !== 0) {
     x = false;
   }
   if (this.yCO !== 1093) {
     y = false;
   } else if (this.eSlice !== 220) {
     y = false;
-  } else if (this.fbEO !== 0) {
+  } else if (this.yEO !== 0) {
     y = false;
   }
   if (this.zCO !== 1093) {
     z = false;
   } else if (this.sSlice !== 220) {
     z = false;
-  } else if (this.udEO !== 0) {
+  } else if (this.zEO !== 0) {
     z = false;
   }
   return [x, y, z];
 };
 
-// xEO returns the fbEO, translated for the X axis cube.
+// xEO returns the yEO, translated for the X axis cube.
 Phase1Cube.prototype.xEO = function() {
   var res = 0;
   
@@ -166,14 +166,14 @@ Phase1Cube.prototype.xEO = function() {
   var parity = 0;
   for (var i = 0; i < 10; ++i) {
     var idx = xEdgeIndices[i];
-    if ((this.fbEO & (1 << idx)) !== 0) {
+    if ((this.yEO & (1 << idx)) !== 0) {
       res |= 1 << i;
       parity ^= 1;
     }
   }
   
   // If the last thing in the translated bitmap would be a 1, flip the parity.
-  if ((this.fbEO & (1 << xEdgeIndices[11])) !== 0) {
+  if ((this.yEO & (1 << xEdgeIndices[11])) !== 0) {
     parity ^= 1;
   }
   
@@ -238,7 +238,7 @@ Phase1Moves.prototype._generateEO = function() {
       // Set the end state in the table.
       var aCase = edges.copy();
       aCase.move(new Move(move));
-      var endState = encodeEO(aCase);
+      var endState = encodeYEO(aCase);
       this.eo[i*18 + move] = endState;
       
       // Set the inverse in the table.
@@ -366,17 +366,6 @@ function encodeCO(c) {
   return res;
 }
 
-// encodeEO encodes the EO case of a given set of Edges.
-function encodeEO(e) {
-  var res = 0;
-  for (var i = 0; i < 11; ++i) {
-    if (e.edges[i].flip) {
-      res |= (1 << i);
-    }
-  }
-  return res;
-}
-
 // encodeESlice encodes the E slice of a given set of Edges.
 function encodeESlice(edges) {
   var list = [];
@@ -414,34 +403,6 @@ function encodeMSSlice(edges) {
     }
   }
   return [perms.encodeChoose(mChoice), perms.encodeChoose(sChoice)];
-}
-
-// encodeUDEO encodes the UD EO case of Edges.
-function encodeUDEO(edges) {
-  var res = 0;
-  for (var i = 0; i < 11; ++i) {
-    var idx = zEdgeIndices[i];
-    var edge = edges.edges[idx];
-    var flip = edge.flip;
-    var p = edge.piece
-    if (p === 0 || p === 2 || p === 6 || p === 8) {
-      // This is an M slice edge piece, so it changes orientation if it
-      // was on the S slice or the E slice.
-      if (idx !== 0 && idx !== 2 && idx !== 6 && idx !== 8) {
-        flip = !flip;
-      }
-    } else {
-      // This is an E or S slice edge, so it changes orientation if it
-      // was on the M slice.
-      if (idx === 0 || idx === 2 || idx === 6 || idx === 8) {
-        flip = !flip
-      }
-    }
-    if (flip) {
-      res |= 1 << i;
-    }
-  }
-  return res;
 }
 
 // encodeXZCO encodes the CO of Corners on the X and Z axes.
@@ -502,6 +463,45 @@ function encodeXZCO(corners) {
   }
   
   return [xVal, zVal];
+}
+
+// encodeYEO encodes the EO case of a given set of Edges.
+function encodeYEO(e) {
+  var res = 0;
+  for (var i = 0; i < 11; ++i) {
+    if (e.edges[i].flip) {
+      res |= (1 << i);
+    }
+  }
+  return res;
+}
+
+// encodeZEO encodes the EO cases for the z-axis cube.
+function encodeZEO(edges) {
+  var res = 0;
+  for (var i = 0; i < 11; ++i) {
+    var idx = zEdgeIndices[i];
+    var edge = edges.edges[idx];
+    var flip = edge.flip;
+    var p = edge.piece
+    if (p === 0 || p === 2 || p === 6 || p === 8) {
+      // This is an M slice edge piece, so it changes orientation if it
+      // was on the S slice or the E slice.
+      if (idx !== 0 && idx !== 2 && idx !== 6 && idx !== 8) {
+        flip = !flip;
+      }
+    } else {
+      // This is an E or S slice edge, so it changes orientation if it
+      // was on the M slice.
+      if (idx === 0 || idx === 2 || idx === 6 || idx === 8) {
+        flip = !flip
+      }
+    }
+    if (flip) {
+      res |= 1 << i;
+    }
+  }
+  return res;
 }
 
 exports.Phase1Cube = Phase1Cube;
