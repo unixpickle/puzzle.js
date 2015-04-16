@@ -92,7 +92,7 @@ Phase2Heuristic.prototype._generateEdgesChoose = function(coords) {
   queue.push(60 << 4);
   
   // We have visited the first node.
-  this.edgesChoose.set(60 << 4, 0);
+  this.edgesChoose.set(60, 0);
 
   while (!queue.empty()) {
     // Shift a node and extract its bitfields.
