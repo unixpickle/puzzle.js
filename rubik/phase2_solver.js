@@ -17,7 +17,7 @@ Phase2Solver.prototype.deepen = function() {
 // solve runs a search at the current depth.
 Phase2Solver.prototype.solve = function(cube) {
   try {
-    return this._search(cube, 0, 0);
+    return this._search(cube, 0, 0, -1);
   } catch (e) {
     if (e !== 'solve timed out') {
       throw e;
@@ -32,7 +32,7 @@ Phase2Solver.prototype._checkExpired = function() {
   }
 };
 
-Phase2Solver.prototype._search = function(cube, depth, lastFace) {
+Phase2Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
   if (depth === this.depth) {
     if (cube.solved()) {
       this._checkExpired();
@@ -49,11 +49,17 @@ Phase2Solver.prototype._search = function(cube, depth, lastFace) {
     if (face === lastFace) {
       continue;
     }
+    var axis = p2MoveAxis(i);
+    if (axis === lastAxis && face >= lastFace) {
+      // Avoid redundancies like L2 R2 L2 and enforce an ordering for moves on
+      // the same axis.
+      continue;
+    }
     
     newCube.set(cube);
     newCube.move(i, this.coords);
     
-    var res = this._search(newCube, depth+1, face);
+    var res = this._search(newCube, depth+1, face, axis);
     if (res !== null) {
       res.splice(0, 0, i);
       return res;

@@ -9,7 +9,7 @@ function Phase2ChooseCoord() {
   // this._moves stores every move applied to every configuration. A given move
   // can be applied to a raw state using this.moves[raw*10 + move].
   this._moves = new Uint8Array(70 * 10);
-
+  
   var cases = this._cases();
   this._generateMoves(cases);
   this._generateInvSymmetries(cases);

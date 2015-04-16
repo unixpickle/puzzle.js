@@ -172,9 +172,14 @@ function encodeZCornerPerm(c) {
   return perms.encodeDestructablePerm(perm);
 }
 
+// p2MoveAxis returns the axis of a phase-2 move.
+function p2MoveAxis(m) {
+  return [2, 2, 0, 0, 1, 1, 1, 1, 1, 1][m];
+}
+
 // p2MoveFace returns the face of a phase-2 move.
 function p2MoveFace(m) {
-  return [2, 3, 4, 5, 0, 0, 0, 1, 1, 1][m] + 1;
+  return [3, 4, 5, 6, 1, 1, 1, 2, 2, 2][m];
 }
 
 // p2MoveInverse finds the inverse of a phase-2 move.
