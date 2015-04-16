@@ -5,7 +5,7 @@ var SHORT_LENGTH = 21;
 
 // SolveTables hold the move and heuristic tables for both phases of the solver.
 // The default SolveTables should be acceptable for most uses.
-function SolveTables(p1Moves, p1Heuristic, p2Moves, p2Heuristic) {
+function SolveTables(p1Moves, p1Heuristic, p2Coords, p2Heuristic) {
   this.p1Moves = p1Moves || new Phase1Moves();
   this.p1Heuristic = p1Heuristic || new Phase1Heuristic(this.p1Moves);
   this.p2Coords = p2Coords || new Phase2Coords();

@@ -39,7 +39,7 @@ Phase2Solver.prototype._search = function(cube, depth, lastFace) {
       return [];
     }
     return null;
-  } else if (this.heuristic.lowerBound(cube) > this.depth - depth) {
+  } else if (this.heuristic.lowerBound(cube, this.coords) > this.depth-depth) {
     return null;
   }
   

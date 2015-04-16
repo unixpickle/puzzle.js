@@ -22,16 +22,16 @@ function benchmarkSolvePhase2() {
     [0, 2, 0, 0, 7, 8, 5, 0, 3, 6, 9, 0, 3, 7, 8, 7, 8, 9, 8, 8, 6, 4, 6, 3, 4]
   ];
   
-  var moves = new rubik.Phase2Moves();
-  var heuristic = new rubik.Phase2Heuristic(moves);
+  var coords = new rubik.Phase2Coords();
+  var heuristic = new rubik.Phase2Heuristic(coords);
   bench('solvePhase2', scrambles.length, function(count) {
     for (var i = 0; i < count; ++i) {
       var scramble = scrambles[i % scrambles.length];
       var cube = new rubik.Phase2Cube();
       for (var j = 0; j < scramble.length; ++j) {
-        cube.move(scramble[j], moves);
+        cube.move(scramble[j], coords);
       }
-      rubik.solvePhase2(cube, 18, heuristic, moves);
+      rubik.solvePhase2(cube, 18, heuristic, coords);
     }
   });
 }
