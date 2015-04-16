@@ -8,8 +8,8 @@ var SHORT_LENGTH = 21;
 function SolveTables(p1Moves, p1Heuristic, p2Moves, p2Heuristic) {
   this.p1Moves = p1Moves || new Phase1Moves();
   this.p1Heuristic = p1Heuristic || new Phase1Heuristic(this.p1Moves);
-  this.p2Moves = p2Moves || new Phase2Moves();
-  this.p2Heuristic = p2Heuristic || new Phase2Heuristic(this.p2Moves);
+  this.p2Coords = p2Coords || new Phase2Coords();
+  this.p2Heuristic = p2Heuristic || new Phase2Heuristic(this.p2Coords);
 }
 
 // SolveTimeouts contain basic information about how much time to spend on
@@ -63,11 +63,11 @@ function solveLen(cube, tables, maxLen, timeout) {
       for (var i = 0; i < moves.length; ++i) {
         newCube.move(moves[i]);
       }
-      var p2Cube = convertCubieToPhase2(newCube, axis);
+      var p2Cube = convertCubieToPhase2(newCube, axis, tables.p2Coords);
       var p2Timeout = deadline - new Date().getTime();
       // Run the search
       var solution = solvePhase2(p2Cube, maxLen-moves.length,
-        tables.p2Heuristic, tables.p2Moves, p2Timeout);
+        tables.p2Heuristic, tables.p2Coords, p2Timeout);
       if (solution !== null) {
         result = moves;
         for (var i = 0; i < solution.length; ++i) {

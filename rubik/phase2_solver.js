@@ -1,7 +1,7 @@
 // Phase2Solver implements the backbone of solvePhase2().
-function Phase2Solver(heuristic, moves, deadline) {
+function Phase2Solver(heuristic, coords, deadline) {
   this.heuristic = heuristic;
-  this.moves = moves;
+  this.coords = coords;
   this.deadline = deadline;
   
   this.depth = 0;
@@ -51,7 +51,7 @@ Phase2Solver.prototype._search = function(cube, depth, lastFace) {
     }
     
     newCube.set(cube);
-    newCube.move(i, this.moves);
+    newCube.move(i, this.coords);
     
     var res = this._search(newCube, depth+1, face);
     if (res !== null) {
@@ -70,10 +70,10 @@ Phase2Solver.prototype._search = function(cube, depth, lastFace) {
 // solvePhase2 finds a solution to a Phase2Cube and returns it or returns null
 // if no solution was found (either because no solution exists or because of a
 // timeout).
-function solvePhase2(cube, maxLen, heuristic, moves, timeout) {
+function solvePhase2(cube, maxLen, heuristic, coords, timeout) {
   timeout = (timeout || 1000000);
   var deadline = new Date().getTime() + timeout;
-  var solver = new Phase2Solver(heuristic, moves, deadline);
+  var solver = new Phase2Solver(heuristic, coords, deadline);
   for (var depth = 0; depth <= maxLen; ++depth) {
     var solution = solver.solve(cube);
     if (solution !== null) {
