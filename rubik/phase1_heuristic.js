@@ -18,12 +18,10 @@ function Phase1Heuristic(moves) {
 // lowerBound returns the minimum number of moves needed to solve at least one
 // phase-1 axis.
 Phase1Heuristic.prototype.lowerBound = function(c) {
-  var xEO = c.xEO();
-  
-  var slice0 = this.eoSlice.get(c.mSlice*2048 | xEO);
-  var slice1 = this.eoSlice.get(c.eSlice*2048 | c.yEO);
-  var slice2 = this.eoSlice.get(c.sSlice*2048 | c.zEO);
-  var eo0 = this.coEO.get(xEO | (c.xCO << 11));
+  var slice0 = this.eoSlice.get(c.xEO | (c.mSlice << 11));
+  var slice1 = this.eoSlice.get(c.yEO | (c.eSlice << 11));
+  var slice2 = this.eoSlice.get(c.zEO | (c.sSlice << 11));
+  var eo0 = this.coEO.get(c.xEO | (c.xCO << 11));
   var eo1 = this.coEO.get(c.yEO | (c.yCO << 11));
   var eo2 = this.coEO.get(c.zEO | (c.zCO << 11));
   

@@ -37,23 +37,6 @@ function benchmarkPhase1Moves() {
   });
 }
 
-function benchmarkPhase1XEO() {
-  // Generate a semi-scrambled cube to test with. The cube itself doesn't matter
-  // too much, I just don't want it to be solved.
-  var cubieCube = new rubik.CubieCube();
-  for (var i = 0; i < 6; ++i) {
-    cubieCube.move(new rubik.Move(i));
-  }
-  var cube = new rubik.Phase1Cube(cubieCube);
-  
-  bench('xEO', function(count) {
-    for (var i = 0; i < count; ++i) {
-      cube.xEO();
-    }
-  });
-}
-
 benchmarkPhase1Conversion();
 benchmarkPhase1CubeMove();
 benchmarkPhase1Moves();
-benchmarkPhase1XEO();

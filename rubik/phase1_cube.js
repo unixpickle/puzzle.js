@@ -31,9 +31,8 @@ var zMoveTranslation = [3, 2, 0, 1, 4, 5, 9, 8, 6, 7, 10, 11, 15, 14, 12, 13,
 
 // A Phase1Cube is an efficient way to represent the parts of a cube which
 // matter for the first phase of Kociemba's algorithm.
-// The FB edge orientation can be used for both Y and X phase-1 goals, and the
-// UD edge orientation can be used for the Z phase-1 goal. Thus, no RL edge
-// orientations are needed.
+// This constructor takes an optional argument which should be a CubieCube if
+// it is supplied.
 function Phase1Cube(cc) {
   if ('undefined' !== typeof cc) {
     var xzCO = encodeXZCO(cc.corners);
@@ -44,6 +43,7 @@ function Phase1Cube(cc) {
     
     this.yEO = encodeYEO(cc.edges);
     this.zEO = encodeZEO(cc.edges);
+    this.xEO = convertYEOToXEO(this.yEO)
     
     var msSlice = encodeMSSlice(cc.edges);
     this.mSlice = msSlice[0];
@@ -55,9 +55,11 @@ function Phase1Cube(cc) {
     this.yCO = 1093;
     this.zCO = 1093;
   
-    // These are the initial edge orientations.
+    // These are the initial edge orientations. They are out of order to have
+    // the same hidden class as when we decode a CubieCube.
     this.yEO = 0;
     this.zEO = 0;
+    this.xEO = 0;
   
     // These are the initial slice permutations.
     this.mSlice = 220;
@@ -85,6 +87,7 @@ Phase1Cube.prototype.copy = function() {
   res.xCO = this.xCO;
   res.yCO = this.yCO;
   res.zCO = this.zCO;
+  res.xEO = this.xEO;
   res.yEO = this.yEO;
   res.zEO = this.zEO;
   res.mSlice = this.mSlice;
@@ -112,6 +115,7 @@ Phase1Cube.prototype.move = function(move, table) {
   // Apply the move to the x-axis cube.
   var xMove = xMoveTranslation[m];
   this.xCO = table.co[this.xCO*18 + xMove];
+  this.xEO = table.eo[this.xEO*18 + xMove];
   this.mSlice = table.slice[this.mSlice*18 + xMove];
 };
 
@@ -120,6 +124,7 @@ Phase1Cube.prototype.set = function(obj) {
   this.xCO = obj.xCO;
   this.yCO = obj.yCO;
   this.zCO = obj.zCO;
+  this.xEO = obj.xEO;
   this.yEO = obj.yEO;
   this.zEO = obj.zEO;
   this.mSlice = obj.mSlice;
@@ -137,7 +142,7 @@ Phase1Cube.prototype.solved = function() {
     x = false;
   } else if (this.mSlice !== 220) {
     x = false;
-  } else if (this.yEO !== 0) {
+  } else if (this.xEO !== 0) {
     x = false;
   }
   if (this.yCO !== 1093) {
@@ -155,32 +160,6 @@ Phase1Cube.prototype.solved = function() {
     z = false;
   }
   return [x, y, z];
-};
-
-// xEO returns the yEO, translated for the X axis cube.
-Phase1Cube.prototype.xEO = function() {
-  var res = 0;
-  
-  // Translate the EO bitmap, noting that xEdgeIndices[10] is 11 and is thus
-  // never set in the FB bitmap.
-  var parity = 0;
-  for (var i = 0; i < 10; ++i) {
-    var idx = xEdgeIndices[i];
-    if ((this.yEO & (1 << idx)) !== 0) {
-      res |= 1 << i;
-      parity ^= 1;
-    }
-  }
-  
-  // If the last thing in the translated bitmap would be a 1, flip the parity.
-  if ((this.yEO & (1 << xEdgeIndices[11])) !== 0) {
-    parity ^= 1;
-  }
-  
-  // If there is parity, then the missing element (i.e. #10) is 1.
-  res |= parity << 10;
-  
-  return res;
 };
 
 // Phase1Moves is a table containing the necessary data to efficiently perform
@@ -286,6 +265,32 @@ Phase1Moves.prototype._generateESlice = function() {
     }
   }
 };
+
+// convertYEOToXEO converts a y-axis EO case to the x axis.
+function convertYEOToXEO(yEO) {
+  var res = 0;
+  
+  // Translate the EO bitmap, noting that xEdgeIndices[10] is 11 and is thus
+  // never set in the FB bitmap.
+  var parity = 0;
+  for (var i = 0; i < 10; ++i) {
+    var idx = xEdgeIndices[i];
+    if ((yEO & (1 << idx)) !== 0) {
+      res |= 1 << i;
+      parity ^= 1;
+    }
+  }
+  
+  // If the last thing in the translated bitmap would be a 1, flip the parity.
+  if ((yEO & (1 << xEdgeIndices[11])) !== 0) {
+    parity ^= 1;
+  }
+  
+  // If there is parity, then the missing element (i.e. #10) is 1.
+  res |= parity << 10;
+  
+  return res;
+}
 
 // decodeCO generates Corners which represent a given CO case.
 function decodeCO(co) {

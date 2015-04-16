@@ -39,6 +39,7 @@ function testPhase1CubeMove() {
   assert.equal(cube.zCO, 43);
   assert.equal(cube.sSlice, 428);
   assert.equal(cube.zEO, 740);
+  assert.equal(cube.xEO, 1676);
 }
 
 function testPhase1XEO() {
@@ -59,7 +60,7 @@ function testPhase1XEO() {
     for (var j = 0; j < scramble.length; ++j) {
       cube.move(scramble[j], moves);
     }
-    assert.equal(cube.xEO(), expected);
+    assert.equal(cube.xEO, expected);
   }
 }
 
