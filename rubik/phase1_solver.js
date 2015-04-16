@@ -57,7 +57,11 @@ Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
   }
 
   var newCube = this.preAllocCubes[depth];
-  for (var i = 0; i < 18; ++i) {
+  
+  // The last move should not be a double turn since that would preserve the
+  // phase-1 state.
+  var moveCount = (depth === this.depth - 1 ? 12 : 18);
+  for (var i = 0; i < moveCount; ++i) {
     var face = (i % 6) + 1;
     var axis = (face - 1) >>> 1;
     if (face === lastFace) {
