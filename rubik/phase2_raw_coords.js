@@ -2,24 +2,18 @@
 // coordinate keeps track of which corners belong on the bottom layer or the top
 // layer. As a result, there are (8 choose 4) = 70 total cases.
 function Phase2ChooseCoord() {
+  // this._invSymmetries stores every case conjugated by every symmetry. The
+  // value this._invSymmetries[raw*16 + sym] gives sym*raw*sym'.
+  this._invSymmetries = new Uint8Array(70 * 16);
+  
   // this._moves stores every move applied to every configuration. A given move
   // can be applied to a raw state using this.moves[raw*10 + move].
   this._moves = new Uint8Array(70 * 10);
 
-  // this._symmetries stores every case conjugated by every symmetry. The value
-  // this._symmetries[raw*16 + sym] gives sym'*raw*sym.
-  this._symmetries = new Uint8Array(70 * 16);
-
   var cases = this._cases();
   this._generateMoves(cases);
-  this._generateSymmetries(cases);
+  this._generateInvSymmetries(cases);
 }
-
-// conjSym conjugates a coordinate with a given symmetry, returning
-// sym'*coord*sym.
-Phase2ChooseCoord.prototype.conjSym = function(sym, coord) {
-  return this._symmetries[(coord << 4) | sym];
-};
 
 // convertRawCorners converts a raw corner coordinate into a Phase2SliceCoord.
 Phase2ChooseCoord.prototype.convertRawCorners = function(rawCoord) {
@@ -28,6 +22,12 @@ Phase2ChooseCoord.prototype.convertRawCorners = function(rawCoord) {
   var permutation = perms.decodePerm(rawCoord, 8);
   return cornerPermToChoose(permutation);
 };
+
+// invConjSym conjugates a coordinate with the inverse of a symmetry, returning
+// sym*coord*sym'.
+Phase2ChooseCoord.prototype.invConjSym = function(sym, coord) {
+  return this._invSymmetries[(coord << 4) | sym];
+}
 
 // move applies a move to the choose case.
 Phase2ChooseCoord.prototype.move = function(coord, move) {
@@ -55,6 +55,21 @@ Phase2ChooseCoord.prototype._cases = function() {
   return res;
 };
 
+// _generateInvSymmetries generates the symmetries for every case.
+Phase2ChooseCoord.prototype._generateInvSymmetries = function(cases) {
+  for (var i = 0; i < 70; ++i) {
+    // The identity symmetry does not change the case.
+    this._invSymmetries[i << 4] = i;
+    
+    var cornerPerm = cornerPermFromChoose(cases[i]);
+    for (var sym = 1; sym < 0x10; ++sym) {
+      var newPerm = p2CornerSymmetryConj(symmetry.udSymmetryInverse(sym),
+        cornerPerm);
+      this._invSymmetries[(i << 4) | sym] = cornerPermToChoose(newPerm);
+    }
+  }
+};
+
 // _generateMoves generates the moves for every case.
 Phase2ChooseCoord.prototype._generateMoves = function(cases) {
   for (var i = 0, len = 70*10; i < len; ++i) {
@@ -77,44 +92,27 @@ Phase2ChooseCoord.prototype._generateMoves = function(cases) {
   }
 };
 
-// _generateSymmetries generates the symmetries for every case.
-Phase2ChooseCoord.prototype._generateSymmetries = function(cases) {
-  for (var i = 0; i < 70; ++i) {
-    // The identity symmetry does not change the case.
-    this._symmetries[i << 4] = i;
-    
-    var cornerPerm = cornerPermFromChoose(cases[i]);
-    for (var sym = 1; sym < 0x10; ++sym) {
-      // NOTE: if performance becomes an issue, you can also store the inverse
-      // of the symmetry to avoid calls to p2CornerSymmetryConj and
-      // perms.encodeChoose. However, I do not anticipate needing to do this.
-      var newPerm = p2CornerSymmetryConj(sym, cornerPerm);
-      this._symmetries[(i << 4) | sym] = cornerPermToChoose(newPerm);
-    }
-  }
-};
-
 // Phase2SliceCoord manages the M slice coordinate for the phase-2 solver. This
 // coordinate is very small (only 24 permutations), so this object is very
 // lightweight.
 function Phase2SliceCoord(perm4) {
+  // this._invSymmetries makes it easy and efficient to apply any of the 16
+  // symmetries to a slice coordinate. The value
+  // this._invSymmetries[raw*16 + sym] is equal to sym*raw*sym'.
+  this._invSymmetries = new Uint8Array(24 * 16);
+  
   // this._moves stores every move applied to every configuration. A given move
   // can be applied to a raw state using this._moves[raw*10 + move].
   this._moves = new Uint8Array(24 * 10);
-  
-  // this._symmetries makes it easy and efficient to apply any of the 16
-  // symmetries to a slice coordinate. The value this._symmetries[raw*16 + sym]
-  // is equal to sym'*raw*sym.
-  this._symmetries = new Uint8Array(24 * 16);
   
   this._generateMoves(perm4);
   this._generateSymmetries(perm4);
 }
 
-// conjSym conjugates a coordinate with a given symmetry, returning
-// sym'*coord*sym.
-Phase2SliceCoord.prototype.conjSym = function(sym, coord) {
-  return this._symmetries[(coord << 4) | sym];
+// invConjSym conjugates a coordinate with the inverse of a symmetry, returning
+// sym*coord*sym'.
+Phase2SliceCoord.prototype.invConjSym = function(sym, coord) {
+  return this._invSymmetries[(coord << 4) | sym];
 };
 
 // move applies a move to the slice.
@@ -139,14 +137,14 @@ Phase2SliceCoord.prototype._generateSymmetries = function(perm4) {
   for (var i = 0; i < 24; ++i) {
     var perm = perm4[i];
     for (var sym = 0; sym < 0x10; ++sym) {
-      var p = p2SliceSymmetryConj(sym, perm);
+      var p = p2SliceSymmetryConj(symmetry.udSymmetryInverse(sym), perm);
       var hash = perms.encodeDestructablePerm(p);
-      this._symmetries[(i << 4) | sym] = hash;
+      this._invSymmetries[(i << 4) | sym] = hash;
     }
   }
 };
 
-// cornerPermForChoose generates a corner permutation that represents the given
+// cornerPermFromChoose generates a corner permutation that represents the given
 // choose array for top/bottom corners. A true in the choose array indicates a
 // top-layer corner.
 function cornerPermFromChoose(choose) {

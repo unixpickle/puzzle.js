@@ -64,8 +64,7 @@ Phase2Heuristic.prototype._generateCornersSlice = function(coords) {
     for (var m = 0; m < 10; ++m) {
       var newSlice = coords.slice.move(slice, m);
       var newCorners = coords.corners.move(corners << 4, m);
-      var invSym = symmetry.udSymmetryInverse(newCorners & 0xf);
-      var symSlice = coords.slice.conjSym(invSym, newSlice);
+      var symSlice = coords.slice.invConjSym(newCorners & 0xf, newSlice);
       var symCorners = (newCorners >>> 4);
       hash = symSlice + symCorners*24;
       
@@ -105,8 +104,7 @@ Phase2Heuristic.prototype._generateEdgesChoose = function(coords) {
     for (var m = 0; m < 10; ++m) {
       var newChoose = coords.choose.move(choose, m);
       var newEdges = coords.edges.move(edges << 4, m);
-      var invSym = symmetry.udSymmetryInverse(newEdges & 0xf);
-      var symChoose = coords.choose.conjSym(invSym, newChoose);
+      var symChoose = coords.choose.invConjSym(newEdges & 0xf, newChoose);
       var symEdges = (newEdges >>> 4);
       hash = symChoose + symEdges*70;
       
@@ -146,8 +144,7 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(coords) {
     for (var m = 0; m < 10; ++m) {
       var newSlice = coords.slice.move(slice, m);
       var newEdges = coords.edges.move(edges << 4, m);
-      var invSym = symmetry.udSymmetryInverse(newEdges & 0xf);
-      var symSlice = coords.slice.conjSym(invSym, newSlice);
+      var symSlice = coords.slice.invConjSym(newEdges & 0xf, newSlice);
       var symEdges = (newEdges >>> 4);
       hash = symSlice + symEdges*24;
       
@@ -163,22 +160,19 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(coords) {
 };
 
 function hashCornersSlice(corners, slice, coords) {
-  var invSym = symmetry.udSymmetryInverse(corners & 0xf);
-  var symSlice = coords.slice.conjSym(invSym, slice);
+  var symSlice = coords.slice.invConjSym(corners & 0xf, slice);
   var symCorners = (corners >>> 4);
   return symSlice + symCorners*24;
 }
 
 function hashEdgesChoose(edges, choose, coords) {
-  var invSym = symmetry.udSymmetryInverse(edges & 0xf);
-  var symChoose = coords.choose.conjSym(invSym, choose);
+  var symChoose = coords.choose.invConjSym(edges & 0xf, choose);
   var symEdges = (edges >>> 4);
   return symChoose + symEdges*70;
 }
 
 function hashEdgesSlice(edges, slice, coords) {
-  var invSym = symmetry.udSymmetryInverse(edges & 0xf);
-  var symSlice = coords.slice.conjSym(invSym, slice);
+  var symSlice = coords.slice.invConjSym(edges & 0xf, slice);
   var symEdges = (edges >>> 4);
   return symSlice + symEdges*24;
 }
