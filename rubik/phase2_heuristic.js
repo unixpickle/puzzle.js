@@ -1,3 +1,7 @@
+var P2_CORNERS_SLICE_MAX = 12;
+var P2_EDGES_CHOOSE_MAX = 10;
+var P2_EDGES_SLICE_MAX = 9;
+
 // Phase2Heuristic estimates the lower bound for the number of moves to solve a
 // Phase2Cube.
 function Phase2Heuristic(coords) {
@@ -23,24 +27,43 @@ function Phase2Heuristic(coords) {
 // lowerBound returns a lower bound for the number of moves to solve a given
 // Phase2Cube. This requires a Phase2Coords table.
 Phase2Heuristic.prototype.lowerBound = function(c, coords) {
-  // Figure out the edge+slice heuristic coordinate.
-  var eHash = hashEdgesSlice(c.edgeCoord, c.sliceCoord, coords);
-  var eMoves = this.edgesSlice.get(eHash);
-
   // Figure out the corner+slice heuristic coordinate.
   var cHash = hashCornersSlice(c.cornerCoord, c.sliceCoord, coords);
   var cMoves = this.cornersSlice.get(cHash);
+  if (cMoves >= P2_EDGES_CHOOSE_MAX && cMoves >= P2_EDGES_SLICE_MAX) {
+    return cMoves;
+  }
   
   // Figure out the edge+choose heuristic coordinate.
   var ecHash = hashEdgesChoose(c.edgeCoord, c.chooseCoord, coords);
   var ecMoves = this.edgesChoose.get(ecHash);
+  if (ecMoves > cMoves && ecMoves >= P2_EDGES_SLICE_MAX) {
+    return ecMoves;
+  }
+  
+  // Figure out the edge+slice heuristic coordinate.
+  var eHash = hashEdgesSlice(c.edgeCoord, c.sliceCoord, coords);
+  var eMoves = this.edgesSlice.get(eHash);
 
-  return Math.max(ecMoves, Math.max(cMoves, eMoves));
+  // Don't call Math.max because it's a slight amount of extra overhead and this
+  // function's performance is critical.
+  if (ecMoves > cMoves) {
+    if (ecMoves > eMoves) {
+      return ecMoves;
+    } else {
+      return eMoves;
+    }
+  } else {
+    if (cMoves > eMoves) {
+      return cMoves;
+    } else {
+      return eMoves;
+    }
+  }
 };
 
 Phase2Heuristic.prototype._generateCornersSlice = function(coords) {
-  var maxDepth = 12;
-  this.cornersSlice.fillWith(maxDepth);
+  this.cornersSlice.fillWith(P2_CORNERS_SLICE_MAX);
   
   // The arrangement of bits in the queue's nodes are as follows:
   // (LSB) (4 bits: depth) (5 bits: slice) (12 bits: corners) (MSB)
@@ -69,9 +92,9 @@ Phase2Heuristic.prototype._generateCornersSlice = function(coords) {
       hash = symSlice + symCorners*24;
       
       // If this node has not been visited, push it to the queue.
-      if (this.cornersSlice.get(hash) === maxDepth) {
+      if (this.cornersSlice.get(hash) === P2_CORNERS_SLICE_MAX) {
         this.cornersSlice.set(hash, depth + 1);
-        if (depth < maxDepth-2) {
+        if (depth < P2_CORNERS_SLICE_MAX-2) {
           queue.push((depth + 1) | (symSlice << 4) | (symCorners << 9));
         }
       }
@@ -80,8 +103,7 @@ Phase2Heuristic.prototype._generateCornersSlice = function(coords) {
 };
 
 Phase2Heuristic.prototype._generateEdgesChoose = function(coords) {
-  var maxDepth = 10;
-  this.edgesChoose.fillWith(maxDepth);
+  this.edgesChoose.fillWith(P2_EDGES_CHOOSE_MAX);
   
   // The arrangement of bits in the queue's nodes are as follows:
   // (LSB) (4 bits: depth) (7 bits: choose) (12 bits: edges) (MSB)
@@ -109,9 +131,9 @@ Phase2Heuristic.prototype._generateEdgesChoose = function(coords) {
       hash = symChoose + symEdges*70;
       
       // If this node has not been visited, push it to the queue.
-      if (this.edgesChoose.get(hash) === maxDepth) {
+      if (this.edgesChoose.get(hash) === P2_EDGES_CHOOSE_MAX) {
         this.edgesChoose.set(hash, depth + 1);
-        if (depth < maxDepth-2) {
+        if (depth < P2_EDGES_CHOOSE_MAX-2) {
           queue.push((depth + 1) | (symChoose << 4) | (symEdges << 11));
         }
       }
@@ -120,8 +142,7 @@ Phase2Heuristic.prototype._generateEdgesChoose = function(coords) {
 };
 
 Phase2Heuristic.prototype._generateEdgesSlice = function(coords) {
-  var maxDepth = 9;
-  this.edgesSlice.fillWith(maxDepth);
+  this.edgesSlice.fillWith(P2_EDGES_SLICE_MAX);
   
   // The arrangement of bits in the queue's nodes are as follows:
   // (LSB) (4 bits: depth) (5 bits: slice) (12 bits: edges) (MSB)
@@ -149,9 +170,9 @@ Phase2Heuristic.prototype._generateEdgesSlice = function(coords) {
       hash = symSlice + symEdges*24;
       
       // If this node has not been visited, push it to the queue.
-      if (this.edgesSlice.get(hash) === maxDepth) {
+      if (this.edgesSlice.get(hash) === P2_EDGES_SLICE_MAX) {
         this.edgesSlice.set(hash, depth + 1);
-        if (depth < maxDepth-2) {
+        if (depth < P2_EDGES_SLICE_MAX-2) {
           queue.push((depth + 1) | (symSlice << 4) | (symEdges << 9));
         }
       }
