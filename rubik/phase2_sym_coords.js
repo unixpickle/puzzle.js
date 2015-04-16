@@ -29,16 +29,18 @@ function Phase2SymCoord(numRaw, numSym) {
       'equivalence classes');
   }
   
-  // this._moves maps every pair (C, M) to a symmetry coordinate, where C is a
-  // unique edge case up to symmetry and M is a move between 0 and 10.
-  this._moves = new Uint16Array(numSym * 10);
+  this.numRaw = numRaw;
+  this.numSym = numSym;
+  
+  // TODO: document this.
+  this._moves = new Uint16Array(numSym * 160);
   
   // this._rawToSym maps every raw coordinate to a corresponding symmetry
   // coordinate.
   this._rawToSym = new Uint16Array(numRaw);
   
   // Set every entry in the moves table to 0xffff.
-  for (var i = 0, len = numSym*10; i < len; ++i) {
+  for (var i = 0, len = numSym*160; i < len; ++i) {
     this._moves[i] = 0xffff;
   }
   
@@ -51,20 +53,7 @@ function Phase2SymCoord(numRaw, numSym) {
 // move applies a move to a symmetry coordinate and returns a new symmetry
 // coordinate.
 Phase2SymCoord.prototype.move = function(coord, move) {
-  var s = coord & 0xf;
-  var c = coord >>> 4;
-  
-  // Find the move s*m*s'. We do this because s'*(s*m*s')*c*s is equivalent to
-  // m*s'*c*s, which is what we are really looking for.
-  var moveInvConj = p2MoveSymmetryInvConj(s, move);
-  var x = this._moves[c*10 + moveInvConj];
-  
-  var s1 = x & 0xf;
-  var c1 = x >>> 4;
-  
-  // We now have s*m*s'*c expressed as s1'*c1*s1, but we want m*s'*c*s. This is
-  // equal to s*x*s', so the result is (s'*s1')*c1*(s1*s).
-  return (c1 << 4) | symmetry.udSymmetryProduct(s1, s);
+  return this._moves[coord*10 + move];
 };
 
 // rawToSym converts a raw edge coordinate to a symmetry coordinate.
@@ -79,6 +68,7 @@ Phase2SymCoord.prototype.rawToSym = function(raw) {
 // move and returns an encoded raw coordinate corresponding to the coordinate
 // after applying the given move.
 Phase2SymCoord.prototype._generateMoves = function(rawPerms, moveFunc) {
+  // Generate moves for all symmetry coordinates.
   for (var i = 0, len = rawPerms.length; i < len; ++i) {
     var symCoord = this._rawToSym[i];
     
@@ -90,13 +80,13 @@ Phase2SymCoord.prototype._generateMoves = function(rawPerms, moveFunc) {
     var perm = rawPerms[i];
     var symCase = symCoord >>> 4;
     for (var move = 0; move < 10; ++move) {
-      if (this._moves[symCase*10 + move] !== 0xffff) {
+      if (this._moves[symCase*160 + move] !== 0xffff) {
         continue;
       }
       
       var res = moveFunc(perm, move);
       var resSym = this._rawToSym[res];
-      this._moves[symCase*10 + move] = resSym;
+      this._moves[symCase*160 + move] = resSym;
       
       // Avoid some extra calls to moveFunc (which may be relatively expensive)
       // by also doing the inverse of the move.
@@ -109,7 +99,27 @@ Phase2SymCoord.prototype._generateMoves = function(rawPerms, moveFunc) {
       
       var invMove = p2MoveSymmetryInvConj(s, p2MoveInverse(move));
       var invCoord = (symCase << 4) | symmetry.udSymmetryInverse(s);
-      this._moves[c1*10 + invMove] = invCoord;
+      this._moves[c1*160 + invMove] = invCoord;
+    }
+  }
+  
+  // Generate moves for the rest of the coordinates.
+  for (var c = 0, numSym = this.numSym; c < numSym; ++c) {
+    for (var sym = 1; sym < 0x10; ++sym) {
+      for (var move = 0; move < 10; ++move) {
+        // Find the move s*m*s'. We do this because s'*(s*m*s')*c*s is
+        // equivalent to m*s'*c*s, which is what we are really looking for.
+        var moveInvConj = p2MoveSymmetryInvConj(sym, move);
+        var x = this._moves[c*160 + moveInvConj];
+  
+        var s1 = x & 0xf;
+        var c1 = x >>> 4;
+  
+        // We now have s*m*s'*c expressed as s1'*c1*s1, but we want m*s'*c*s.
+        // This is equal to s*x*s', so the result is (s'*s1')*c1*(s1*s).
+        this._moves[((c << 4) | sym)*10 + move] =
+          (c1 << 4) | symmetry.udSymmetryProduct(s1, sym);
+      }
     }
   }
 };
@@ -122,8 +132,7 @@ Phase2SymCoord.prototype._generateMoves = function(rawPerms, moveFunc) {
 // permutation and returns a new permutation which was conjugated by the
 // symmetry.
 Phase2SymCoord.prototype._generateRawToSym = function(rawPerms, symConjFunc) {
-  // caseCount is incremented every time a new equivalence class is found. By
-  // the end of the loop, this should equal this._moves.length/10.
+  // caseCount is incremented every time a new equivalence class is found.
   var caseCount = 0;
   
   // Find the first permutation for each symmetry equivalence class.
