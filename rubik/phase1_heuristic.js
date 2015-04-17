@@ -5,6 +5,11 @@ function Phase1Heuristic(moves) {
   // orientations and the edge orientations for each case. Indices in this
   // array are computed as EdgeOrientations + CornerOrientations*2048.
   this.coEO = new CompactTable(4478976);
+
+  // This stores the number of moves needed to solve the corner orientations and
+  // to put the E slice edges in the E slice. Indices in this array are computed
+  // as CornerOrientations + Slice*2187.
+  this.coSlice = new CompactTable(1082565);
   
   // This stores the number of moves needed to both solve the edge orientations
   // and to put the E slice edges in the E slice. Indices in this array are
@@ -12,6 +17,7 @@ function Phase1Heuristic(moves) {
   this.eoSlice = new CompactTable(1013760);
   
   this._computeCOEO(moves);
+  this._computeCOSlice(moves);
   this._computeEOSlice(moves);
 }
 
@@ -24,21 +30,16 @@ Phase1Heuristic.prototype.lowerBound = function(c) {
   var eo0 = this.coEO.get(c.xEO | (c.xCO << 11));
   var eo1 = this.coEO.get(c.yEO | (c.yCO << 11));
   var eo2 = this.coEO.get(c.zEO | (c.zCO << 11));
+  var coSlice0 = this.coSlice.get(c.xCO + c.mSlice*2187);
+  var coSlice1 = this.coSlice.get(c.yCO + c.eSlice*2187);
+  var coSlice2 = this.coSlice.get(c.zCO + c.sSlice*2187);
   
   // Return the least of the three heuristic values.
-  var a = Math.max(slice0, eo0);
-  var b = Math.max(slice1, eo1);
-  var c = Math.max(slice2, eo2);
-  if (b < a) {
-    return Math.min(b, c);
-  } else {
-    return Math.min(a, c);
-  }
-  
-  // NOTE: using Math.min() with three arguments might slow down v8 since it
-  // doesn't like polymorphic functions.
-  // return Math.min(Math.max(slice0, eo0), Math.max(slice1, eo1),
-  //   Math.max(slice2, eo2));
+  // NOTE: we don't use polymorphic Math.max because it hurts some JS engines.
+  var a = Math.max(Math.max(slice0, eo0), coSlice0);
+  var b = Math.max(Math.max(slice1, eo1), coSlice1);
+  var c = Math.max(Math.max(slice2, eo2), coSlice2);
+  return Math.min(Math.min(a, b), c);
 };
 
 // _computeCOEO generates the CO+EO table.
@@ -80,6 +81,51 @@ Phase1Heuristic.prototype._computeCOEO = function(moves) {
       }
     }
   }
+};
+
+Phase1Heuristic.prototype._computeCOSlice = function(moves) {
+  this.coSlice.fillWith(0xf);
+  
+  // Each node is encoded as follows:
+  // (LSB) (4 bits: depth) (12 bits: CO) (9 bits: slice)
+  
+  // States are hashed as CO + 2187*slice
+  
+  var queue = new NumberQueue(1000000);
+  queue.push((1093 << 4) | (220 << 16));
+  
+  // Set the first node to have a depth of zero.
+  this.coSlice.set(1093 + 2187*220, 0);
+  
+  while (!queue.empty()) {
+    // Shift a node and extract its fields.
+    var node = queue.shift();
+    var depth = node & 0xf;
+    var co = (node >>> 4) & 0xfff;
+    var slice = (node >>> 16);
+    
+    // Apply moves to this state.
+    for (var i = 0; i < 18; ++i) {
+      var newSlice = moves.slice[slice*18 + i];
+      var newCO = moves.co[co*18 + i];
+      var hash = newCO + newSlice*2187;
+      if (this.coSlice.get(hash) === 0xf) {
+        this.coSlice.set(hash, depth + 1);
+        queue.push((depth + 1) | (newCO << 4) | (newSlice << 16));
+      }
+    }
+  }
+
+  var arr = {};
+  for (var i = 0; i < 2187*495; ++i) {
+    var count = this.coSlice.get(i);
+    if (arr[count]) {
+      ++arr[count];
+    } else {
+      arr[count] = 1;
+    }
+  }
+  console.log(arr);
 };
 
 // _computeEOSlice generates the EOSlice table.
