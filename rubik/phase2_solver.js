@@ -6,6 +6,8 @@ function Phase2Solver(heuristic, coords, deadline) {
   
   this.depth = 0;
   this.cubes = [];
+
+  this.nodesSinceDate = 0;
 }
 
 // deepen prepares this solver for a deeper search.
@@ -33,9 +35,13 @@ Phase2Solver.prototype._checkExpired = function() {
 };
 
 Phase2Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
+  if (++this.nodesSinceDate === 500000) {
+    this.nodesSinceDate = 0;
+    this._checkExpired();
+  }
+
   if (depth === this.depth) {
     if (cube.solved()) {
-      this._checkExpired();
       return [];
     }
     return null;
@@ -63,10 +69,6 @@ Phase2Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
     if (res !== null) {
       res.splice(0, 0, i);
       return res;
-    }
-    
-    if (this.depth - depth >= 7) {
-      this._checkExpired();
     }
   }
   
