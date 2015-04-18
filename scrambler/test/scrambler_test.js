@@ -13,6 +13,12 @@ function test3x3State() {
   // Make sure the scrambler doesn't generate an exception.
   scrambler.generateScramble('3x3x3', 'State', -1);
   scrambler.generateScramble('3x3x3', 'State', -1);
+  scrambler.generateScramble('3x3x3', 'Last Layer', -1);
+  scrambler.generateScramble('3x3x3', 'Last Layer', -1);
+  scrambler.generateScramble('3x3x3', 'ZBLL', -1);
+  scrambler.generateScramble('3x3x3', 'ZBLL', -1);
+  scrambler.generateScramble('3x3x3', 'Moves', -1);
+  scrambler.generateScramble('3x3x3', 'Moves', -1);
 }
 
 function testSkewbState() {

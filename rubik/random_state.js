@@ -1,28 +1,5 @@
-function randomCOLL() {
-  var result = new Cube();
-  
-  // Generate random corners using pocketcube.
-  result.corners = pocketcube.randomLastLayer();
-  
-  // Compute the corner parity.
-  var cornerPerm = [];
-  for (var i = 0; i < 8; ++i) {
-    cornerPerm[i] = result.corners.corners[i].piece;
-  }
-  var cornerParity = perms.parity(cornerPerm);
-  
-  // Generate the edge permutation.
-  var edgePerm = perms.randomPermParity(4, cornerParity);
-  var topEdges = [0, 4, 5, 6];
-  for (var i = 0; i < 4; ++i) {
-    result.edges.edges[topEdges[i]].piece = topEdges[edgePerm[i]];
-  }
-  
-  return result;
-}
-
 function randomLastLayer() {
-  var result = randomCOLL();
+  var result = randomZBLL();
   
   // Generate the edge orientations.
   var topEdges = [0, 4, 5, 6];
@@ -110,6 +87,29 @@ function randomState() {
   return result;
 }
 
-exports.randomCOLL = randomCOLL;
+function randomZBLL() {
+  var result = new Cube();
+  
+  // Generate random corners using pocketcube.
+  result.corners = pocketcube.randomLastLayer();
+  
+  // Compute the corner parity.
+  var cornerPerm = [];
+  for (var i = 0; i < 8; ++i) {
+    cornerPerm[i] = result.corners.corners[i].piece;
+  }
+  var cornerParity = perms.parity(cornerPerm);
+  
+  // Generate the edge permutation.
+  var edgePerm = perms.randomPermParity(4, cornerParity);
+  var topEdges = [0, 4, 5, 6];
+  for (var i = 0; i < 4; ++i) {
+    result.edges.edges[topEdges[i]].piece = topEdges[edgePerm[i]];
+  }
+  
+  return result;
+}
+
 exports.randomLastLayer = randomLastLayer;
 exports.randomState = randomState;
+exports.randomZBLL = randomZBLL;

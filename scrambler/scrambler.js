@@ -48,9 +48,9 @@ function createScramblers() {
           name: "Moves"
         },
         {
-          f: rubikCOLL,
+          f: rubikZBLL,
           moves: false,
-          name: "COLL"
+          name: "ZBLL"
         },
         {
           f: rubikLastLayer,

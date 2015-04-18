@@ -1,8 +1,8 @@
 var rubikTables = null;
 var rubikTimeouts = null;
 
-function rubikCOLL() {
-  return solveRubikState(rubik.randomCOLL());
+function rubikZBLL() {
+  return solveRubikState(rubik.randomZBLL());
 }
 
 function rubikLastLayer() {
