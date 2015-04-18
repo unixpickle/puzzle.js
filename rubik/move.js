@@ -3,7 +3,7 @@
 function cancelMoves(moves) {
   var res = moves.slice();
   
-  // TODO: remove redundancy like L R L'.
+  // TODO: remove redundancies like L R L'.
   
   // Loop through each move and make sure it has a different face than the move
   // before it.

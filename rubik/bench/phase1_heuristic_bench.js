@@ -10,22 +10,22 @@ function benchmarkHeuristic() {
   });
 }
 
-function benchmarkLowerBound() {
+function benchmarkShouldPrune() {
   var moves = new rubik.Phase1Moves();
   var heuristic = new rubik.Phase1Heuristic(moves);
   
   // Generate a semi-scrambled cube to test with.
-  var cube = new rubik.Phase1Cube();
+  var cube = new rubik.Phase1AxisCubes();
   for (var i = 0; i < 6; ++i) {
     cube.move(new rubik.Move(i), moves);
   }
   
-  bench('lowerBound', function(count) {
+  bench('shouldPrune', function(count) {
     while (count--) {
-      heuristic.lowerBound(cube);
+      heuristic.shouldPrune(cube, 13);
     }
   });
 }
 
 benchmarkHeuristic();
-benchmarkLowerBound();
+benchmarkShouldPrune();

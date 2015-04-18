@@ -7,12 +7,18 @@ function testHeuristic() {
   for (var length = 1; length <= 12; ++length) {
     for (var i = 0; i < 100; ++i) {
       var scramble = rubik.scrambleMoves(length);
-      var cube = new rubik.Phase1Cube();
+      var cube = new rubik.Phase1AxisCubes();
       for (var j = 0; j < length; ++j) {
         cube.move(scramble[j], moves);
       }
-      assert(heuristic.lowerBound(cube) <= length, "Bad heuristic value for " +
-        scramble.join(' ') + ': ' + heuristic.lowerBound(cube));
+      
+      var axes = ['x', 'y', 'z'];
+      for (var axis = 0; axis < 3; ++axis) {
+        var bound = heuristic.axisLowerBound(cube[axes[axis]]);
+        assert(bound <= length, 'Bad ' + axes[axis] + ' lower bound for ' +
+          scramble.join(' ') + ': ' + bound);
+      }
+      assert(!heuristic.shouldPrune(cube, length));
     }
   }
 }

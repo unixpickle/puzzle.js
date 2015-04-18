@@ -1,127 +1,90 @@
-// Phase1Heuristic stores the data needed to effectively prune the search for a
-// solution for phase-1.
+// PHASE1_CO_EO_DEPTH is the maximum depth which will be found in the COEO
+// pruning table. This is not as high as it could be; it is optimized to avoid
+// searching the entire space while still searching most of it.
+var PHASE1_CO_EO_DEPTH = 8;
+
+// PHASE1_EO_SLICE_DEPTH is the maximum depth which will be found in the EOSLICE
+// pruning table. See PHASE1_CO_EO_DEPTH for more.
+var PHASE1_EO_SLICE_DEPTH = 8;
+
+// Phase1Heuristic prunes a phase-1 search.
 function Phase1Heuristic(moves) {
-  // This stores the number of moves needed to solve both the corner 
-  // orientations and the edge orientations for each case. Indices in this
-  // array are computed as EdgeOrientations + CornerOrientations*2048.
-  this.coEO = new CompactTable(4478976);
-  
-  // This stores the number of moves needed to both solve the edge orientations
-  // and to put the E slice edges in the E slice. Indices in this array are
-  // computed as EdgeOrientations + Slice*2048.
-  this.eoSlice = new CompactTable(1013760);
+  this.coEO = new CompactTable(PHASE1_CO_COUNT * PHASE1_EO_COUNT);
+  this.eoSlice = new CompactTable(PHASE1_SLICE_COUNT * PHASE1_EO_COUNT);
   
   this._computeCOEO(moves);
   this._computeEOSlice(moves);
 }
 
-// lowerBound returns the minimum number of moves needed to solve at least one
-// phase-1 axis.
-Phase1Heuristic.prototype.lowerBound = function(c) {
-  var slice0 = this.eoSlice.get(c.xEO | (c.mSlice << 11));
-  var slice1 = this.eoSlice.get(c.yEO | (c.eSlice << 11));
-  var slice2 = this.eoSlice.get(c.zEO | (c.sSlice << 11));
-  var eo0 = this.coEO.get(c.xEO | (c.xCO << 11));
-  var eo1 = this.coEO.get(c.yEO | (c.yCO << 11));
-  var eo2 = this.coEO.get(c.zEO | (c.zCO << 11));
-  
-  // Return the least of the three heuristic values.
-  var a = Math.max(slice0, eo0);
-  var b = Math.max(slice1, eo1);
-  var c = Math.max(slice2, eo2);
-  if (b < a) {
-    return Math.min(b, c);
-  } else {
-    return Math.min(a, c);
-  }
-  
-  // NOTE: using Math.min() with three arguments might slow down v8 since it
-  // doesn't like polymorphic functions.
-  // return Math.min(Math.max(slice0, eo0), Math.max(slice1, eo1),
-  //   Math.max(slice2, eo2));
+// axisLowerBound returns a lower bound for the number of moves needed to solve
+// a Phase1Cube.
+Phase1Heuristic.prototype.axisLowerBound = function(c) {
+  var slice = this.eoSlice.get(c.eo | (c.slice << 11));
+  var eo = this.coEO.get(c.eo | (c.co << 11));
+  return Math.max(slice, eo);
 };
 
-// _computeCOEO generates the CO+EO table.
+// shouldPrune takes a Phase1AxisCubes and a number and returns true if the cube
+// definitely cannot be solved within that number of moves.
+Phase1Heuristic.prototype.shouldPrune = function(c, depth) {
+  if (this.axisLowerBound(c.x) < depth) {
+    return false;
+  } else if (this.axisLowerBound(c.y) < depth) {
+    return false;
+  } else if (this.axisLowerBound(c.z) < depth) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
 Phase1Heuristic.prototype._computeCOEO = function(moves) {
-  // Set all the depths to 8 since we will never search that deep.
-  this.coEO.fillWith(8);
+  // The number 549711 was found emperically and does not seem to belong in a
+  // global constant because it is so specific to the implementation of
+  // makePhase1EOHeuristic.
+  makePhase1EOHeuristic(549711, PHASE1_SOLVED_CO, PHASE1_CO_EO_DEPTH,
+    this.coEO, moves.eo, moves.co);
+};
+
+// _computeEOSlice generates the EOSlice table.
+Phase1Heuristic.prototype._computeEOSlice = function(moves) {
+  // For info on the number 238263, see the comment in _computeCOEO.
+  makePhase1EOHeuristic(238263, PHASE1_SOLVED_SLICE, PHASE1_EO_SLICE_DEPTH,
+    this.eoSlice, moves.eo, moves.slice);
+};
+
+// makePhase1Heuristic generates a heuristic which is composed of edge
+// orientations combined with some other coordinate.
+function makePhase1EOHeuristic(queueCap, otherStart, maxDepth, table, eoMoves,
+                               otherMoves) {
+  // Some info on bitfields might help you:
+  // A hash is computed as: EO | (otherCoord << 11).
+  // A search node is computed as: depth | (hash << 4).
   
-  // Each node is encoded as follows:
-  // (LSB) (4 bits: depth) (11 bits: EO) (12 bits: CO)
+  table.fillWith(maxDepth);
+  table.set(otherStart << 11, 0);
   
-  // States are hashed as follows:
-  // (LSB) (11 bits: EO) (12 bits: CO)
-  
-  // Create the queue with the starting node. I found empirically that there
-  // will never be more than 549711 nodes in the queue.
-  var queue = new NumberQueue(549711);
-  queue.push(1093 << 15);
-  
-  // Set the first node to have a depth of zero.
-  this.coEO.set(1093 << 11, 0);
+  var queue = new NumberQueue(queueCap);
+  queue.push(otherStart << 15);
   
   while (!queue.empty()) {
-    // Shift a node and extract its fields.
     var node = queue.shift();
     var depth = node & 0xf;
     var eo = (node >>> 4) & 0x7ff;
-    var co = (node >>> 15);
+    var other = (node >>> 15);
     
-    // Apply moves to this state.
-    for (var i = 0; i < 18; ++i) {
-      var newEO = moves.eo[eo*18 + i];
-      var newCO = moves.co[co*18 + i];
-      var hash = newEO | (newCO << 11);
-      if (this.coEO.get(hash) === 8) {
-        this.coEO.set(hash, depth + 1);
-        if (depth < 6) {
+    for (var move = 0; move < 18; ++move) {
+      var newEO = eoMoves[eo*18 + move];
+      var newOther = otherMoves[other*18 + move];
+      var hash = (newOther << 11) | newEO;
+      if (table.get(hash) === maxDepth) {
+        table.set(hash, depth + 1);
+        if (depth < maxDepth-2) {
           queue.push((depth + 1) | (hash << 4));
         }
       }
     }
   }
-};
-
-// _computeEOSlice generates the EOSlice table.
-Phase1Heuristic.prototype._computeEOSlice = function(moves) {
-  // Set all the depths to 8 since that is as deep as we will search.
-  this.eoSlice.fillWith(8);
-  
-  // Each node is encoded as follows:
-  // (LSB) (3 bits: depth) (11 bits: EO) (9 bits: slice)
-  
-  // States are hashed for eoSlice as follows: (slice << 11) | EO.
-  // In other words, shifting the node to the right by 3 bits gives you the hash
-  // for that node (although I never actually use this, lol).
-  
-  // Generate the queue with the starting node. I have found empirically that
-  // there are never more than 238263 nodes in the queue.
-  var queue = new NumberQueue(238263);
-  queue.push(220 << 14);
-  
-  // We have visited the first node.
-  this.eoSlice.set(220 << 11, 0);
-  
-  while (!queue.empty()) {
-    // Shift the node and extract its bitfields.
-    var node = queue.shift();
-    var depth = node & 0x7;
-    var eo = (node >>> 3) & 0x7ff;
-    var slice = (node >>> 14);
-    
-    // Apply each move to the node.
-    for (var i = 0; i < 18; ++i) {
-      var newEO = moves.eo[eo*18 + i];
-      var newSlice = moves.slice[slice*18 + i];
-      var hash = (newSlice << 11) | newEO;
-      if (this.eoSlice.get(hash) === 8) {
-        this.eoSlice.set(hash, depth + 1);
-        if (depth < 6) {
-          queue.push((depth + 1) | (hash << 3));
-        }
-      }
-    }
-  }
-};
+}
 
 exports.Phase1Heuristic = Phase1Heuristic;

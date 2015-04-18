@@ -33,7 +33,7 @@ function benchmarkSolver() {
   bench('solvePhase1', len, function(count) {
     for (var i = 0; i < count; ++i) {
       var scramble = rubik.parseMoves(scrambles[i % len]);
-      var cube = new rubik.Phase1Cube();
+      var cube = new rubik.Phase1AxisCubes();
       for (var j = 0; j < scramble.length; ++j) {
         cube.move(scramble[j], moves);
       }

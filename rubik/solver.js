@@ -49,7 +49,7 @@ function solveCube(cube, tables, timeouts) {
 
 function solveLen(cube, tables, maxLen, timeout) {
   var deadline = new Date().getTime() + timeout;
-  var p1Cube = new Phase1Cube(cube);
+  var p1Cube = new Phase1AxisCubes(cube);
   var result = null;
   solvePhase1(p1Cube, tables.p1Heuristic, tables.p1Moves, function(moves, c) {
     // Go through each axis and see if it's solved on that axis.

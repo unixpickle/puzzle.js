@@ -1,5 +1,6 @@
-// A Solver keeps track of context for a depth-first search.
-function Solver(heuristic, moves, cb, deadline, depth) {
+// A Phase1Solver keeps track of context for a depth-first search of the first
+// phase of Kociemba's algorithm.
+function Phase1Solver(heuristic, moves, cb, deadline, depth) {
   this.heuristic = heuristic;
   this.moves = moves;
   this.cb = cb;
@@ -15,7 +16,7 @@ function Solver(heuristic, moves, cb, deadline, depth) {
   // this.preAllocCubes caches a cube per level of depth in the search.
   this.preAllocCubes = [];
   for (var i = 0; i < depth; ++i) {
-    this.preAllocCubes[i] = new Phase1Cube();
+    this.preAllocCubes[i] = new Phase1AxisCubes();
   }
   
   // this.solution is used to track the current solution; using this allows us
@@ -27,23 +28,22 @@ function Solver(heuristic, moves, cb, deadline, depth) {
 }
 
 // deepen increases the depth of this solver by 1.
-Solver.prototype.deepen = function() {
-  var i = this.depth;
-  this.depth++;
-  this.preAllocCubes[i] = new Phase1Cube();
+Phase1Solver.prototype.deepen = function() {
+  var i = this.depth++;
+  this.preAllocCubes[i] = new Phase1AxisCubes();
   this.solution[i] = new Move(0);
 };
 
 // solve finds solutions for the cube.
-Solver.prototype.solve = function(cube) {
+Phase1Solver.prototype.solve = function(cube) {
   return this._search(cube, 0, 0, -1);
 }
 
-Solver.prototype._expired = function() {
+Phase1Solver.prototype._expired = function() {
   return new Date().getTime() > this.deadline;
 };
 
-Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
+Phase1Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
   if (depth === this.depth) {
     if (cube.anySolved()) {
       if (this._expired()) {
@@ -52,7 +52,7 @@ Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
       return this.cb(this.solution.slice(), cube.copy());
     }
     return true;
-  } else if (this.heuristic.lowerBound(cube) > this.depth - depth) {
+  } else if (this.heuristic.shouldPrune(cube, this.depth - depth)) {
     return true;
   }
 
@@ -94,15 +94,17 @@ Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
 };
 
 // solvePhase1 uses iterative deepening to solve the cube.
+//
 // The cb argument is a callback which receives two arguments, a solution and a
-// Phase1Cube, for each solution. If the callback returns true, the search will
-// continue. If it returns false, the search will stop.
+// Phase1AxisCubes. If the callback returns true, the search will continue. If
+// it returns false, the search will stop.
+//
 // The timeout argument represents the number of milliseconds after which the
 // solver should stop. This is 1000000 by default.
 function solvePhase1(cube, heuristic, moves, cb, timeout) {
   var deadline = new Date().getTime() + (timeout || 1000000);
   var depth = 0;
-  var solver = new Solver(heuristic, moves, cb, deadline, 0);
+  var solver = new Phase1Solver(heuristic, moves, cb, deadline, 0);
   while (true) {
     if (!solver.solve(cube)) {
       return;

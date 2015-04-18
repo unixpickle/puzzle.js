@@ -29,145 +29,112 @@ var zEdgeIndices = [2, 11, 8, 10, 3, 1, 0, 5, 6, 4, 9, 7]
 var zMoveTranslation = [3, 2, 0, 1, 4, 5, 9, 8, 6, 7, 10, 11, 15, 14, 12, 13,
   16, 17];
 
-// A Phase1Cube is an efficient way to represent the parts of a cube which
-// matter for the first phase of Kociemba's algorithm.
-// This constructor takes an optional argument which should be a CubieCube if
-// it is supplied.
-function Phase1Cube(cc) {
-  if ('undefined' !== typeof cc) {
-    var xzCO = encodeXZCO(cc.corners);
-    
-    this.xCO = xzCO[0];
-    this.yCO = encodeCO(cc.corners);
-    this.zCO = xzCO[1];
-    
-    this.yEO = encodeYEO(cc.edges);
-    this.zEO = encodeZEO(cc.edges);
-    this.xEO = convertYEOToXEO(this.yEO)
-    
-    var msSlice = encodeMSSlice(cc.edges);
-    this.mSlice = msSlice[0];
-    this.eSlice = encodeESlice(cc.edges);
-    this.sSlice = msSlice[1];
+// These constants store the number of states for each coordinate.
+var PHASE1_CO_COUNT = 2187;
+var PHASE1_EO_COUNT = 2048;
+var PHASE1_SLICE_COUNT = 495;
+
+// These constants store the solved value for each coordinate.
+var PHASE1_SOLVED_CO = 1093;
+var PHASE1_SOLVED_EO = 0;
+var PHASE1_SOLVED_SLICE = 220;
+
+// A Phase1Cube holds and operates on the coordinates for one phase-1 axis of a
+// cube.
+function Phase1Cube(co, eo, slice) {
+  this.co = co || PHASE1_SOLVED_CO;
+  this.eo = eo || PHASE1_SOLVED_EO;
+  this.slice = slice || PHASE1_SOLVED_SLICE;
+}
+
+// copy generates a copy of this Phase1Cube and returns it.
+Phase1Cube.prototype.copy = function() {
+  return new Phase1Cube(this.co, this.eo, this.slice);
+};
+
+// move applies a move number to this cube given a set of move tables.
+Phase1Cube.prototype.move = function(move, moves) {
+  this.co = moves.co[this.co*18 + move];
+  this.eo = moves.eo[this.eo*18 + move];
+  this.slice = moves.slice[this.slice*18 + move];
+};
+
+// set sets the attributes of this cube to be the attributes of a given cube.
+Phase1Cube.prototype.set = function(c) {
+  this.co = c.co;
+  this.eo = c.eo;
+  this.slice = c.slice;
+};
+
+// solved returns true if and only if the phase-1 state is solved.
+Phase1Cube.prototype.solved = function() {
+  // I do not use constants like PHASE1_SOLVED_EO here because global variables
+  // hurt performance, and this is a hot function during searches.
+  return this.co === 1093 && this.slice === 220 && this.eo === 0;
+};
+
+// A Phase1AxisCubes object operates simultaneously on all three phase-1 cubes.
+// The optional argument, a CubieCube, can be supplied to convert a CubieCube to
+// a Phase1AxisCube.
+function Phase1AxisCubes(cc) {
+  if ('undefined' === typeof cc) {
+    this.x = new Phase1Cube();
+    this.y = new Phase1Cube();
+    this.z = new Phase1Cube();
   } else {
-    // These are the initial corner orientations.
-    this.xCO = 1093;
-    this.yCO = 1093;
-    this.zCO = 1093;
-  
-    // These are the initial edge orientations. They are out of order to have
-    // the same hidden class as when we decode a CubieCube.
-    this.yEO = 0;
-    this.zEO = 0;
-    this.xEO = 0;
-  
-    // These are the initial slice permutations.
-    this.mSlice = 220;
-    this.eSlice = 220;
-    this.sSlice = 220;
+    var xzCO = encodeXZCO(cc.corners);
+    var yCO = encodeYCO(cc.corners);
+    
+    var yEO = encodeYEO(cc.edges);
+    var xEO = convertYEOToXEO(yEO);
+    var zEO = encodeZEO(cc.edges);
+    
+    var msSlices = encodeMSSlice(cc.edges)
+    var eSlice = encodeESlice(cc.edges);
+    
+    this.x = new Phase1Cube(xzCO[0], xEO, msSlices[0]);
+    this.y = new Phase1Cube(yCO, yEO, eSlice);
+    this.z = new Phase1Cube(xzCO[1], zEO, msSlices[1]);
   }
 }
 
-// anySolved returns true if the phase-1 state is solved along any axis.
-Phase1Cube.prototype.anySolved = function() {
-  if (this.xCO === 1093 && this.mSlice === 220 && this.yEO === 0) {
-    return true;
-  } else if (this.yCO === 1093 && this.eSlice === 220 && this.yEO === 0) {
-    return true;
-  } else if (this.zCO === 1093 && this.sSlice === 220 && this.zEO === 0) {
-    return true;
-  }
-  return false;
+// anySolved returns true if any three of the axis cubes are solved.
+Phase1AxisCubes.prototype.anySolved = function() {
+  return this.x.solved() || this.y.solved() || this.z.solved();
 };
 
-// copy returns a copy of the Phase1Cube.
-Phase1Cube.prototype.copy = function() {
-  var res = Object.create(Phase1Cube.prototype);
-
-  res.xCO = this.xCO;
-  res.yCO = this.yCO;
-  res.zCO = this.zCO;
-  res.xEO = this.xEO;
-  res.yEO = this.yEO;
-  res.zEO = this.zEO;
-  res.mSlice = this.mSlice;
-  res.eSlice = this.eSlice;
-  res.sSlice = this.sSlice;
-
+// copy generates a copy of all three axes and returns it.
+Phase1AxisCubes.prototype.copy = function() {
+  var res = new Phase1AxisCubes();
+  res.x.set(this.x);
+  res.y.set(this.y);
+  res.z.set(this.z);
   return res;
 };
 
-// move applies a move to the Phase1Cube.
-Phase1Cube.prototype.move = function(move, table) {
-  var m = move.number;
-  
-  // Apply the move to the y-axis cube.
-  this.yCO = table.co[this.yCO*18 + m];
-  this.yEO = table.eo[this.yEO*18 + m];
-  this.eSlice = table.slice[this.eSlice*18 + m];
-  
-  // Apply the move to the z-axis cube.
-  var zMove = zMoveTranslation[m];
-  this.zCO = table.co[this.zCO*18 + zMove];
-  this.zEO = table.eo[this.zEO*18 + zMove];
-  this.sSlice = table.slice[this.sSlice*18 + zMove];
-  
-  // Apply the move to the x-axis cube.
-  var xMove = xMoveTranslation[m];
-  this.xCO = table.co[this.xCO*18 + xMove];
-  this.xEO = table.eo[this.xEO*18 + xMove];
-  this.mSlice = table.slice[this.mSlice*18 + xMove];
+// move applies a move to all three axes.
+Phase1AxisCubes.prototype.move = function(move, moves) {
+  var number = move.number;
+  this.y.move(number, moves);
+  this.z.move(zMoveTranslation[number], moves);
+  this.x.move(xMoveTranslation[number], moves);
 };
 
-// set updates this object's fields to reflect a given Phase1Cube.
-Phase1Cube.prototype.set = function(obj) {
-  this.xCO = obj.xCO;
-  this.yCO = obj.yCO;
-  this.zCO = obj.zCO;
-  this.xEO = obj.xEO;
-  this.yEO = obj.yEO;
-  this.zEO = obj.zEO;
-  this.mSlice = obj.mSlice;
-  this.eSlice = obj.eSlice;
-  this.sSlice = obj.sSlice;
+// set updates the object's fields to represent another Phase1AxisCubes.
+Phase1AxisCubes.prototype.set = function(c) {
+  this.x.set(c.x);
+  this.y.set(c.y);
+  this.z.set(c.z);
 };
 
-// solved returns an array with three booleans, [x, y, z], which indicates
-// whether any axis is solved for phase-1.
-Phase1Cube.prototype.solved = function() {
-  var x = true;
-  var y = true;
-  var z = true;
-  if (this.xCO !== 1093) {
-    x = false;
-  } else if (this.mSlice !== 220) {
-    x = false;
-  } else if (this.xEO !== 0) {
-    x = false;
-  }
-  if (this.yCO !== 1093) {
-    y = false;
-  } else if (this.eSlice !== 220) {
-    y = false;
-  } else if (this.yEO !== 0) {
-    y = false;
-  }
-  if (this.zCO !== 1093) {
-    z = false;
-  } else if (this.sSlice !== 220) {
-    z = false;
-  } else if (this.zEO !== 0) {
-    z = false;
-  }
-  return [x, y, z];
+// solved returns an array with three booleans, corresponding to whether the x,
+// y, or z cubes are solved respectively.
+Phase1AxisCubes.prototype.solved = function() {
+  return [this.x.solved(), this.y.solved(), this.z.solved()];
 };
 
 // Phase1Moves is a table containing the necessary data to efficiently perform
 // moves on a Phase1Cube.
-// Note that only one move table is needed for all 3 axes (i.e. all three
-// phase-1 goals). Thus, the move tables apply directly to the Y-oriented
-// phase-1 goal. Moves much be translated for the X-oriented and Z-oriented
-// goals.
 function Phase1Moves() {
   this.slice = new Int16Array(495 * 18);
   this.eo = new Int16Array(2048 * 18);
@@ -193,7 +160,7 @@ Phase1Moves.prototype._generateCO = function() {
       // Set the end state in the table.
       var aCase = corners.copy();
       aCase.move(new Move(move));
-      var endState = encodeCO(aCase);
+      var endState = encodeYCO(aCase);
       this.co[i*18 + move] = endState;
       
       // Set the inverse in the table.
@@ -360,8 +327,8 @@ function encodeBogusSlice(edges) {
   return perms.encodeChoose(list);
 }
 
-// encodeCO encodes the CO case of a given set of Corners.
-function encodeCO(c) {
+// encodeYCO encodes the CO case of a given set of Corners.
+function encodeYCO(c) {
   var res = 0;
   var scaler = 1;
   for (var i = 0; i < 7; ++i) {
@@ -509,5 +476,6 @@ function encodeZEO(edges) {
   return res;
 }
 
+exports.Phase1AxisCubes = Phase1AxisCubes;
 exports.Phase1Cube = Phase1Cube;
 exports.Phase1Moves = Phase1Moves;

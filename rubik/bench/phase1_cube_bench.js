@@ -12,14 +12,14 @@ function benchmarkPhase1Conversion() {
   
   bench('conversion', function(count) {
     for (var i = 0; i < count; ++i) {
-      new rubik.Phase1Cube(cube);
+      new rubik.Phase1AxisCubes(cube);
     }
   });
 }
 
-function benchmarkPhase1CubeMove() {
+function benchmarkPhase1AxisCubesMove() {
   var moves = new rubik.Phase1Moves();
-  var cube = new rubik.Phase1Cube();
+  var cube = new rubik.Phase1AxisCubes();
   var movesToUse = rubik.allMoves();
   
   bench('move', function(count) {
@@ -38,5 +38,5 @@ function benchmarkPhase1Moves() {
 }
 
 benchmarkPhase1Conversion();
-benchmarkPhase1CubeMove();
+benchmarkPhase1AxisCubesMove();
 benchmarkPhase1Moves();

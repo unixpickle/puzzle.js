@@ -7,7 +7,7 @@ function testSolver() {
   for (var length = 1; length <= 12; ++length) {
     for (var i = 0; i < 3; ++i) {
       var scramble = rubik.scrambleMoves(length);
-      var cube = new rubik.Phase1Cube();
+      var cube = new rubik.Phase1AxisCubes();
       for (var j = 0; j < length; ++j) {
         cube.move(scramble[j], moves);
       }
