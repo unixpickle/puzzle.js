@@ -29,6 +29,18 @@ var zEdgeIndices = [2, 11, 8, 10, 3, 1, 0, 5, 6, 4, 9, 7]
 var zMoveTranslation = [3, 2, 0, 1, 4, 5, 9, 8, 6, 7, 10, 11, 15, 14, 12, 13,
   16, 17];
 
+// These constants store the number of states for each coordinate.
+var PHASE1_CO_COUNT = 2187;
+var PHASE1_EO_COUNT = 2048;
+var PHASE1_SLICE_COUNT = 495;
+
+// These constants store the solved value for each coordinate.
+var PHASE1_SOLVED_CO = 1093;
+var PHASE1_SOLVED_EO = 0;
+var PHASE1_SOLVED_SLICE = 220;
+
+var PHASE1_MOVE_COUNT = 18;
+
 // A Phase1Cube is an efficient way to represent the parts of a cube which
 // matter for the first phase of Kociemba's algorithm.
 // This constructor takes an optional argument which should be a CubieCube if
@@ -50,26 +62,25 @@ function Phase1Cube(cc) {
     this.eSlice = encodeESlice(cc.edges);
     this.sSlice = msSlice[1];
   } else {
-    // These are the initial corner orientations.
-    this.xCO = 1093;
-    this.yCO = 1093;
-    this.zCO = 1093;
-  
-    // These are the initial edge orientations. They are out of order to have
-    // the same hidden class as when we decode a CubieCube.
-    this.yEO = 0;
-    this.zEO = 0;
-    this.xEO = 0;
-  
-    // These are the initial slice permutations.
-    this.mSlice = 220;
-    this.eSlice = 220;
-    this.sSlice = 220;
+    // These fields are intentionally ordered exactly the same as the fields are
+    // when decoding a CubieCube. This makes the hidden class the same in some
+    // JS engines.
+    this.xCO = PHASE1_SOLVED_CO;
+    this.yCO = PHASE1_SOLVED_CO;
+    this.zCO = PHASE1_SOLVED_CO;
+    this.yEO = PHASE1_SOLVED_EO;
+    this.zEO = PHASE1_SOLVED_EO;
+    this.xEO = PHASE1_SOLVED_EO;
+    this.mSlice = PHASE1_SOLVED_SLICE;
+    this.eSlice = PHASE1_SOLVED_SLICE;
+    this.sSlice = PHASE1_SOLVED_SLICE;
   }
 }
 
 // anySolved returns true if the phase-1 state is solved along any axis.
 Phase1Cube.prototype.anySolved = function() {
+  // I don't use the PHASE1_SOLVED_ globals because accessing global variables
+  // is relatively inefficient and this is a hot function.
   if (this.xCO === 1093 && this.mSlice === 220 && this.yEO === 0) {
     return true;
   } else if (this.yCO === 1093 && this.eSlice === 220 && this.yEO === 0) {
@@ -135,6 +146,9 @@ Phase1Cube.prototype.set = function(obj) {
 // solved returns an array with three booleans, [x, y, z], which indicates
 // whether any axis is solved for phase-1.
 Phase1Cube.prototype.solved = function() {
+  // I don't use the PHASE1_SOLVED_ globals because accessing global variables
+  // is relatively inefficient and this is a hot function.
+  
   var x = true;
   var y = true;
   var z = true;
@@ -169,9 +183,9 @@ Phase1Cube.prototype.solved = function() {
 // phase-1 goal. Moves much be translated for the X-oriented and Z-oriented
 // goals.
 function Phase1Moves() {
-  this.slice = new Int16Array(495 * 18);
-  this.eo = new Int16Array(2048 * 18);
-  this.co = new Int16Array(2187 * 18);
+  this.slice = new Int16Array(PHASE1_SLICE_COUNT * PHASE1_MOVE_COUNT);
+  this.eo = new Int16Array(PHASE1_EO_COUNT * PHASE1_MOVE_COUNT);
+  this.co = new Int16Array(PHASE1_CO_COUNT * PHASE1_MOVE_COUNT);
   
   this._generateCO();
   this._generateEO();
@@ -179,14 +193,14 @@ function Phase1Moves() {
 }
 
 Phase1Moves.prototype._generateCO = function() {
-  for (var i = 0; i < 2187*18; ++i) {
+  for (var i = 0, len = this.co.length; i < len; ++i) {
     this.co[i] = -1;
   }
   
-  for (var i = 0; i < 2187; ++i) {
+  for (var i = 0; i < PHASE1_CO_COUNT; ++i) {
     var corners = decodeCO(i);
-    for (var move = 0; move < 18; ++move) {
-      if (this.co[i*18 + move] >= 0) {
+    for (var move = 0; move < PHASE1_MOVE_COUNT; ++move) {
+      if (this.co[i*PHASE1_MOVE_COUNT + move] >= 0) {
         continue;
       }
       
@@ -194,23 +208,23 @@ Phase1Moves.prototype._generateCO = function() {
       var aCase = corners.copy();
       aCase.move(new Move(move));
       var endState = encodeCO(aCase);
-      this.co[i*18 + move] = endState;
+      this.co[i*PHASE1_MOVE_COUNT + move] = endState;
       
       // Set the inverse in the table.
-      this.co[endState*18 + new Move(move).inverse().number] = i;
+      this.co[endState*PHASE1_MOVE_COUNT + new Move(move).inverse().number] = i;
     }
   }
 };
 
 Phase1Moves.prototype._generateEO = function() {
-  for (var i = 0; i < 2048*18; ++i) {
+  for (var i = 0, len = this.eo.length; i < len; ++i) {
     this.eo[i] = -1;
   }
   
-  for (var i = 0; i < 2048; ++i) {
+  for (var i = 0; i < PHASE1_EO_COUNT; ++i) {
     var edges = decodeEO(i);
-    for (var move = 0; move < 18; ++move) {
-      if (this.eo[i*18 + move] >= 0) {
+    for (var move = 0; move < PHASE1_MOVE_COUNT; ++move) {
+      if (this.eo[i*PHASE1_MOVE_COUNT + move] >= 0) {
         continue;
       }
       
@@ -218,16 +232,16 @@ Phase1Moves.prototype._generateEO = function() {
       var aCase = edges.copy();
       aCase.move(new Move(move));
       var endState = encodeYEO(aCase);
-      this.eo[i*18 + move] = endState;
+      this.eo[i*PHASE1_MOVE_COUNT + move] = endState;
       
       // Set the inverse in the table.
-      this.eo[endState*18 + new Move(move).inverse().number] = i;
+      this.eo[endState*PHASE1_MOVE_COUNT + new Move(move).inverse().number] = i;
     }
   }
 };
 
 Phase1Moves.prototype._generateESlice = function() {
-  for (var i = 0; i < 495*18; ++i) {
+  for (var i = 0, len = this.slice.length; i < len; ++i) {
     this.slice[i] = -1;
   }
   
@@ -244,8 +258,8 @@ Phase1Moves.prototype._generateESlice = function() {
           state.edges[x].piece = -1;
           state.edges[y].piece = -1;
           state.edges[z].piece = -1;
-          for (var move = 0; move < 18; ++move) {
-            if (this.slice[sliceCase*18 + move] >= 0) {
+          for (var move = 0; move < PHASE1_MOVE_COUNT; ++move) {
+            if (this.slice[sliceCase*PHASE1_MOVE_COUNT + move] >= 0) {
               continue;
             }
             
@@ -253,10 +267,11 @@ Phase1Moves.prototype._generateESlice = function() {
             var aCase = state.copy();
             aCase.move(new Move(move));
             var encoded = encodeBogusSlice(aCase);
-            this.slice[sliceCase*18 + move] = encoded;
+            this.slice[sliceCase*PHASE1_MOVE_COUNT + move] = encoded;
             
             // Set the inverse in the table.
-            this.slice[encoded*18 + new Move(move).inverse().number] =
+            var invMove = new Move(move).inverse().number;
+            this.slice[encoded*PHASE1_MOVE_COUNT + invMove] =
               sliceCase;
           }
           ++sliceCase;
