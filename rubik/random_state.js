@@ -1,6 +1,6 @@
 function randomLastLayer() {
   var result = randomZBLL();
-  
+
   // Generate the edge orientations.
   var topEdges = [0, 4, 5, 6];
   var lastFlip = false;
@@ -12,32 +12,32 @@ function randomLastLayer() {
     }
   }
   result.edges.edges[topEdges[3]].flip = lastFlip;
-  
+
   return result;
 }
 
 function randomState() {
   var result = new Cube();
-  
+
   // NOTE: we do not use pocketcube.randomState() because that state will always
   // leave the BDL corner solved. For 3x3 we don't want this restriction.
-  
+
   // Generate a random permutation.
   var pieces = perms.randomPerm(8);
   for (var i = 0; i < 8; ++i) {
     result.corners.corners[i].piece = pieces[i];
   }
-  
+
   // Generate random orientations for the first 7 corners.
   for (var i = 0; i < 7; ++i) {
     result.corners.corners[i].orientation = Math.floor(Math.random() * 3);
   }
-  
+
   // Compute the last corner's orientation. This uses the sune combo (which
   // twists two adjacent corners) to "solve" every corner except the last one.
   // The twist of the last corner (which started out solved) tells us which
   // orientation it should have had.
-    
+
   // All corners in this ordering are adjacent, allowing the sune combo to work.
   var ordering = [0, 1, 5, 4, 6, 2, 3, 7];
   var orientations = [];
@@ -57,7 +57,7 @@ function randomState() {
       orientations[i+1] = (nextOrientation + 1) % 3;
     }
   }
-  
+
   // The twist of the last corner is the inverse of what it should be in the
   // scramble.
   if (orientations[7] === 0) {
@@ -65,14 +65,14 @@ function randomState() {
   } else if (orientations[7] === 2) {
     result.corners.corners[7].orientation = 0;
   }
-  
+
   // Generate a random edge permutation.
   var cornerParity = perms.parity(pieces);
   var edgePerm = perms.randomPermParity(12, cornerParity);
   for (var i = 0; i < 12; ++i) {
     result.edges.edges[i].piece = edgePerm[i];
   }
-  
+
   // Generate random EO.
   var parity = false;
   for (var i = 0; i < 11; ++i) {
@@ -83,30 +83,30 @@ function randomState() {
     }
   }
   result.edges.edges[11].flip = parity;
-  
+
   return result;
 }
 
 function randomZBLL() {
   var result = new Cube();
-  
+
   // Generate random corners using pocketcube.
   result.corners = pocketcube.randomLastLayer();
-  
+
   // Compute the corner parity.
   var cornerPerm = [];
   for (var i = 0; i < 8; ++i) {
     cornerPerm[i] = result.corners.corners[i].piece;
   }
   var cornerParity = perms.parity(cornerPerm);
-  
+
   // Generate the edge permutation.
   var edgePerm = perms.randomPermParity(4, cornerParity);
   var topEdges = [0, 4, 5, 6];
   for (var i = 0; i < 4; ++i) {
     result.edges.edges[topEdges[i]].piece = topEdges[edgePerm[i]];
   }
-  
+
   return result;
 }
 

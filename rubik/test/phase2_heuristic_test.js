@@ -4,7 +4,7 @@ var assert = require('assert');
 function testPhase2Heuristic() {
   var coords = new rubik.Phase2Coords();
   var heuristic = new rubik.Phase2Heuristic(coords);
-  
+
   // Do random move sequences and ensure that the lower bound is never too high.
   for (var len = 0; len <= 18; ++len) {
     var count = 50;

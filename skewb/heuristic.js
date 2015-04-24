@@ -33,18 +33,18 @@ function makeCOHeuristic() {
   while (nodes.length > 0) {
     var node = nodes[0];
     nodes.splice(0, 1);
-    
+
     // Check if the state has been visited before.
     if (res.hasOwnProperty(node.hash)) {
       continue;
     }
     res[node.hash] = node.depth;
-    
+
     // Branch out.
     for (var i = 0, len = moves.length; i < len; ++i) {
       var newNode = node.state.copy();
       newNode.move(moves[i]);
-      
+
       var hash = encodeCO(newNode.corners);
       if (!visited[hash]) {
         nodes.push({state: newNode, depth: node.depth+1, hash: hash});
@@ -64,19 +64,19 @@ function makeCenterHeuristic() {
   while (nodes.length > 0) {
     var node = nodes[0];
     nodes.splice(0, 1);
-    
+
     // Check if the state has been visited before.
     var idx = encodeCenters(node.state.centers);
     if (res.hasOwnProperty(idx)) {
       continue;
     }
     res[idx] = node.depth;
-    
+
     // Branch out.
     for (var i = 0, len = moves.length; i < len; ++i) {
       var newNode = node.state.copy();
       newNode.move(moves[i]);
-      
+
       var hash = encodeCenters(newNode.centers);
       if (!visited[hash]) {
         nodes.push({state: newNode, depth: node.depth+1, hash: hash});

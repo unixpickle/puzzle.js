@@ -5,7 +5,7 @@ function testPhase1Conversion() {
   var moves = new rubik.Phase1Moves();
   var goodCube = new rubik.Phase1Cube();
   var checkCube = new rubik.CubieCube();
-  
+
   // Apply a scramble to both a Phase1Cube and a CubieCube. Make sure the result
   // is the same.
   var scramble = rubik.parseMoves("L R2 B2 F2 L2 U' B2 F U R2 F' L2 R' B' F2 " +
@@ -24,13 +24,13 @@ function testPhase1Conversion() {
 function testPhase1CubeMove() {
   var moves = new rubik.Phase1Moves();
   var cube = new rubik.Phase1Cube();
-  
+
   var scramble = rubik.parseMoves("L R2 B2 F2 L2 U' B2 F U R2 F' L2 R' B' F2 " +
     "D2 R U' L' R U2 F2 D U' R2 U B2 F D U");
   for (var i = 0, len = scramble.length; i < len; ++i) {
     cube.move(scramble[i], moves);
   }
-  
+
   assert.equal(cube.yCO, 881);
   assert.equal(cube.yEO, 358);
   assert.equal(cube.eSlice, 337);
@@ -52,7 +52,7 @@ function testPhase1XEO() {
     "U R2 F B R B2 R U2 L B2 R U' D' R2 F R' L B2 U2 F2",
   ];
   var expectedValues = [0x68c, 0xb7, 0x7ff];
-  
+
   for (var i = 0, len = scrambles.length; i < len; ++i) {
     var expected = expectedValues[i];
     var cube = new rubik.Phase1Cube();

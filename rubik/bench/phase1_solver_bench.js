@@ -25,10 +25,10 @@ function benchmarkSolver() {
     "L2 R2 B2 U2 L2 F R2 B F2 D2 R' D R2 F L D U L2 B' D' F'",
     "D' R2 U2 F2 L2 U' L2 U' L2 R2 U2 R' F2 D' F2 R B L2 F' U"
   ];
-  
+
   var moves = new rubik.Phase1Moves();
   var heuristic = new rubik.Phase1Heuristic(moves);
-  
+
   var len = scrambles.length;
   bench('solvePhase1', len, function(count) {
     for (var i = 0; i < count; ++i) {

@@ -6,7 +6,7 @@ var PermsAPI = includeAPI('perms');
 function FullHeuristic(depth) {
   this.depth = depth;
   this.table = {};
-  
+
   // Do a breadth-first search to generate the heuristic table.
   var moves = basisMoves();
   var queue = [{depth: 0, cube: new Cube(), hash: '' + encodeCube(new Cube())}];
@@ -14,16 +14,16 @@ function FullHeuristic(depth) {
   while (queue.length > 0) {
     node = queue[0];
     queue.splice(0, 1);
-    
+
     if (this.table.hasOwnProperty(node.hash)) {
       continue;
     }
     this.table[node.hash] = node.depth;
-    
+
     if (node.depth === this.depth) {
       continue;
     }
-    
+
     // Branch off.
     for (var i = 0, len = moves.length; i < len; ++i) {
       var newCube = node.cube.copy();

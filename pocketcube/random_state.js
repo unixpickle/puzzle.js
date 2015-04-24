@@ -7,7 +7,7 @@ function randomLastLayer() {
     orientations[i] = Math.floor(Math.random() * 3);
   }
   orientations[3] = 1;
-  
+
   // Find the orientation of the last corner.
   var o = orientations.slice();
   for (var i = 0; i < 4; ++i) {
@@ -24,7 +24,7 @@ function randomLastLayer() {
   } else if (o[3] === 2) {
     orientations[3] = 0;
   }
-  
+
   var cube = new Cube();
   var perm = randomPerm(4);
   var pieces = [2, 3, 7, 6];
@@ -32,13 +32,13 @@ function randomLastLayer() {
     cube.corners[pieces[i]].piece = pieces[perm[i]];
     cube.corners[pieces[i]].orientation = orientations[i];
   }
-  
+
   return cube;
 }
 
 function randomState() {
   var result = new Cube();
-  
+
   // Generate a random permutation and random twists.
   // Corner 0 needs to stay solved so that no B, L, or D moves are needed.
   var pieces = randomPerm(7);
@@ -48,7 +48,7 @@ function randomState() {
   for (var i = 1; i < 7; ++i) {
     result.corners[i].orientation = Math.floor(Math.random() * 3);
   }
-  
+
   // Compute the last corner's orientation.
   // The way this works is based on the fact that a sune combo which twists two
   // adjacent corners is all that is necessary to generate any corner
@@ -78,7 +78,7 @@ function randomState() {
   } else if (orientations[7] === 2) {
     result.corners[7].orientation = 0;
   }
-  
+
   return result;
 }
 

@@ -5,11 +5,11 @@ function Phase2ChooseCoord() {
   // this._invSymmetries stores every case conjugated by every symmetry. The
   // value this._invSymmetries[raw*16 + sym] gives sym*raw*sym'.
   this._invSymmetries = new Uint8Array(70 * 16);
-  
+
   // this._moves stores every move applied to every configuration. A given move
   // can be applied to a raw state using this.moves[raw*10 + move].
   this._moves = new Uint8Array(70 * 10);
-  
+
   var cases = this._cases();
   this._generateMoves(cases);
   this._generateInvSymmetries(cases);
@@ -60,7 +60,7 @@ Phase2ChooseCoord.prototype._generateInvSymmetries = function(cases) {
   for (var i = 0; i < 70; ++i) {
     // The identity symmetry does not change the case.
     this._invSymmetries[i << 4] = i;
-    
+
     var cornerPerm = cornerPermFromChoose(cases[i]);
     for (var sym = 1; sym < 0x10; ++sym) {
       var newPerm = p2CornerSymmetryConj(symmetry.udSymmetryInverse(sym),
@@ -75,17 +75,17 @@ Phase2ChooseCoord.prototype._generateMoves = function(cases) {
   for (var i = 0, len = 70*10; i < len; ++i) {
     this._moves[i] = 0xff;
   }
-  
+
   for (var i = 0; i < 70; ++i) {
     var choose = cases[i];
     for (var move = 0; move < 10; ++move) {
       if (this._moves[i*10 + move] !== 0xff) {
         continue;
       }
-      
+
       var appliedCase = moveYCornerChoose(choose, move);
       this._moves[i*10 + move] = appliedCase;
-      
+
       // Store the inverse of the move to avoid extra moveYCornerChoose calls.
       this._moves[appliedCase*10 + p2MoveInverse(move)] = i;
     }
@@ -100,11 +100,11 @@ function Phase2SliceCoord(perm4) {
   // symmetries to a slice coordinate. The value
   // this._invSymmetries[raw*16 + sym] is equal to sym*raw*sym'.
   this._invSymmetries = new Uint8Array(24 * 16);
-  
+
   // this._moves stores every move applied to every configuration. A given move
   // can be applied to a raw state using this._moves[raw*10 + move].
   this._moves = new Uint8Array(24 * 10);
-  
+
   this._generateMoves(perm4);
   this._generateSymmetries(perm4);
 }
@@ -305,13 +305,13 @@ function p2SliceSymmetryConj(sym, array) {
   // Apply sym to the identity permutation.
   var result = [0, 1, 2, 3];
   p2SliceSymmetryPermute(sym, result);
-  
+
   // Apply array to get array*sym.
   perms.applyPerm(result, array);
-  
+
   // Apply sym' to get sym'*array*sym.
   p2SliceSymmetryPermute(symmetry.udSymmetryInverse(sym), result);
-  
+
   return result;
 }
 
@@ -319,10 +319,10 @@ function p2SliceSymmetryConj(sym, array) {
 // elements which represent slice edge pieces on a phase-2 cube.
 function p2SliceSymmetryPermute(sym, array) {
   var lrFlip = symmetry.udSymmetryLRFlip(sym);
-  
+
   // NOTE: the edges in the E slice are ordered: FR, FL, BR, BL. This is not a
   // direct ring around the cube, so we have to do permutations manually.
-  
+
   // Apply whatever y rotation we need to. Unfortunately, we can't use the nice
   // permute4...() functions because the slice array isn't ordered in a ring.
   var yRot = symmetry.udSymmetryY(sym);
@@ -341,7 +341,7 @@ function p2SliceSymmetryPermute(sym, array) {
   } else if (yRot === 2) {
     // y^2 is LRflip*FBflip.
     lrFlip = !lrFlip;
-    
+
     // Perform an FBflip.
     var temp = array[0];
     array[0] = array[2];
@@ -350,7 +350,7 @@ function p2SliceSymmetryPermute(sym, array) {
     array[1] = array[3];
     array[3] = temp;
   }
-  
+
   if (lrFlip) {
     var temp = array[0];
     array[0] = array[1];
@@ -359,7 +359,7 @@ function p2SliceSymmetryPermute(sym, array) {
     array[2] = array[3];
     array[3] = temp;
   }
-  
+
   // NOTE: a UD flip has no effect on the E slice.
 }
 

@@ -30,7 +30,7 @@ module.exports = function(name, coefficient, f) {
     f = coefficient;
     coefficient = 1;
   }
-  
+
   // Run the function with a big enough argument that we can measure it.
   var power = 0;
   while (true) {
@@ -39,7 +39,7 @@ module.exports = function(name, coefficient, f) {
     f(count);
     var totalDuration = process.hrtime(start);
     var duration = totalDuration[0]*1000000000 + totalDuration[1];
-    
+
     // If the duration was less than MIN_TIME, we increase it as needed.
     if (duration < MIN_TIME && power < 31) {
       if (duration === 0) {
@@ -50,7 +50,7 @@ module.exports = function(name, coefficient, f) {
       }
       continue;
     }
-    
+
     // Compute the amount of time and print it out.
     var scaledDuration = duration / count;
     var unit;

@@ -25,7 +25,7 @@ function testP2SliceSymmetryPermute() {
     [2, 3, 0, 1],
     [3, 1, 2, 0],
   ];
-  
+
   var identity = applied[0];
   for (var i = 0; i < 0x10; ++i) {
     var sym = identity.slice();
@@ -37,7 +37,7 @@ function testP2SliceSymmetryPermute() {
 
 function testPhase2ChooseCoordMove() {
   var coord = new rubik.Phase2ChooseCoord();
-  
+
   // Apply the completely random moves D' D' B2 B2 D D2 D2 D B2 U D2 B2 L2 U'
   // D' D U' R2 L2 U2 U2 U2 U D L2 U2 D' U' L2 U2 D2 D2 U D2 D F2 L2 F2 U' L2
   // U' D U2 D D2 F2 U' F2 U D.
@@ -45,20 +45,20 @@ function testPhase2ChooseCoordMove() {
   var moves = [8, 8, 1, 1, 7, 9, 9, 7, 1, 4, 9, 1, 3, 5, 8, 7, 5, 2, 3, 6, 6,
     6, 4, 7, 3, 6, 8, 5, 3, 6, 9, 9, 4, 9, 7, 0, 3, 0, 5, 3, 5, 7, 6, 7, 9, 0,
     5, 0, 4, 7];
-  
+
   var choose = perms.encodeChoose([false, false, true, true, false, false, true,
     true]);
   for (var i = 0; i < moves.length; ++i) {
     choose = coord.move(choose, moves[i]);
   }
-  
+
   assert.equal(choose, perms.encodeChoose([true, false, false, false, true,
     true, false, true]));
 }
 
 function testPhase2SliceCoordMove() {
   var coord = new rubik.Phase2SliceCoord(perms.allPerms(4));
-  
+
   // Apply the completely random moves D' D' B2 B2 D D2 D2 D B2 U D2 B2 L2 U'
   // D' D U' R2 L2 U2 U2 U2 U D L2 U2 D' U' L2 U2 D2 D2 U D2 D F2 L2 F2 U' L2
   // U' D U2 D D2 F2 U' F2 U D.
@@ -66,12 +66,12 @@ function testPhase2SliceCoordMove() {
   var moves = [8, 8, 1, 1, 7, 9, 9, 7, 1, 4, 9, 1, 3, 5, 8, 7, 5, 2, 3, 6, 6,
     6, 4, 7, 3, 6, 8, 5, 3, 6, 9, 9, 4, 9, 7, 0, 3, 0, 5, 3, 5, 7, 6, 7, 9, 0,
     5, 0, 4, 7];
-  
+
   var slicePerm = 0;
   for (var i = 0; i < moves.length; ++i) {
     slicePerm = coord.move(slicePerm, moves[i]);
   }
-  
+
   assert.equal(slicePerm, perms.encodePerm([3, 2, 0, 1]));
 }
 

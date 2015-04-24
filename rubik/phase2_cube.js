@@ -12,7 +12,7 @@ function Phase2Coords() {
 function Phase2Cube() {
   // The solved choose coordinate represents 00110011
   this.chooseCoord = 60;
-  
+
   this.cornerCoord = 0;
   this.edgeCoord = 0;
   this.sliceCoord = 0;

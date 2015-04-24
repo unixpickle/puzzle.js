@@ -21,7 +21,7 @@ function choose(a, b) {
   if (a < 13) {
     return pascalsTriangle[a][b];
   }
-  
+
   var res = 1;
   for (var i = 0; i < b; ++i) {
     res *= a;
@@ -63,7 +63,7 @@ function encodeExplicitChoose(start, choice, numTrue) {
       }
     }
   }
-  
+
   var numMissed = 0;
   for (var i = start, len = choice.length; i < len; ++i) {
     if (choice[i] === true) {

@@ -8,7 +8,7 @@ function depthFirst(start, remaining, heuristic, lastFace) {
   } else if (heuristic.lookup(start) > remaining) {
     return null;
   }
-  
+
   for (var i = 0; i < 4; ++i) {
     if (i === lastFace) {
       continue;

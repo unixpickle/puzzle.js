@@ -9,7 +9,7 @@ function benchmarkPhase1Conversion() {
   for (var i = 0; i < scramble.length; ++i) {
     cube.move(scramble[i]);
   }
-  
+
   bench('conversion', function(count) {
     for (var i = 0; i < count; ++i) {
       new rubik.Phase1Cube(cube);
@@ -21,7 +21,7 @@ function benchmarkPhase1CubeMove() {
   var moves = new rubik.Phase1Moves();
   var cube = new rubik.Phase1Cube();
   var movesToUse = rubik.allMoves();
-  
+
   bench('move', function(count) {
     for (var i = 0; i < count; ++i) {
       cube.move(movesToUse[i % 18], moves);

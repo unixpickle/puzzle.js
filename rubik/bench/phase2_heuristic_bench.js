@@ -13,7 +13,7 @@ function benchmarkPhase2Heuristic() {
 function benchmarkPhase2LowerBound() {
   var coords = new rubik.Phase2Coords();
   var heuristic = new rubik.Phase2Heuristic(coords);
-  
+
   // Generate a semi-scrambled cube to test with.
   var cube = new rubik.Phase2Cube();
   var cubes = [];
@@ -23,7 +23,7 @@ function benchmarkPhase2LowerBound() {
     c.set(cube);
     cubes.push(c);
   }
-  
+
   // TODO: figure out why this benchmark is clearly wrong...
   bench('lowerBound', 10, function(count) {
     for (var i = 0; i < count; ++i) {

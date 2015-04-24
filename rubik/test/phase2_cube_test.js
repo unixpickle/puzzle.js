@@ -36,7 +36,7 @@ function testPhase2Conversion() {
 		"R2 F D2 B2 L2 B' U2 R2 L2 B2 F' D2 B R2 F R2 B2"
   ];
   var axes = [1, 0, 2];
-  
+
   for (var i = 0; i < scrambles.length; ++i) {
     // Generate the CubieCube.
     var scramble = rubik.parseMoves(scrambles[i]);

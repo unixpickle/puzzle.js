@@ -5,19 +5,19 @@ function Solver(heuristic, moves, cb, deadline, depth) {
   this.cb = cb;
   this.deadline = deadline;
   this.depth = depth;
-  
+
   // this.basis caches 18 Move objects to avoid allocation.
   this.basis = [];
   for (var i = 0; i < 18; ++i) {
     this.basis[i] = new Move(i);
   }
-  
+
   // this.preAllocCubes caches a cube per level of depth in the search.
   this.preAllocCubes = [];
   for (var i = 0; i < depth; ++i) {
     this.preAllocCubes[i] = new Phase1Cube();
   }
-  
+
   // this.solution is used to track the current solution; using this allows us
   // to avoid memory allocation in some browsers.
   this.solution = [];
@@ -57,7 +57,7 @@ Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
   }
 
   var newCube = this.preAllocCubes[depth];
-  
+
   // The last move should not be a double turn since that would preserve the
   // phase-1 state.
   var moveCount = (depth === this.depth - 1 ? 12 : 18);
@@ -71,18 +71,18 @@ Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
       // be a solution with L R, but not one with R L).
       continue;
     }
-    
+
     // Get the cube which results from applying the given move.
     var move = this.basis[i];
     newCube.set(cube);
     newCube.move(move, this.moves);
-    
+
     // Recurse one level deeper, setting the move in the solution buffer.
     this.solution[depth] = move;
     if (!this._search(newCube, depth+1, face, axis)) {
       return false;
     }
-    
+
     // this._expired allocates memory and thus consumes time. Luckily, short
     // circuit evaluation makes this a three-liner.
     if (this._depth - depth >= 7 && this._expired()) {

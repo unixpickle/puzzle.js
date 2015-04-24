@@ -30,17 +30,17 @@ function testEncodeChoose() {
     for (var j = i+1; j < 12; ++j) {
       for (var k = j+1; k < 12; ++k) {
         for (var l = k+1; l < 12; ++l) {
-          
+
           var perm = [false, false, false, false, false, false, false, false,
             false, false, false, false];
           perm[i] = true;
           perm[j] = true;
           perm[k] = true;
           perm[l] = true;
-          
+
           assert.equal(answer, perms.encodeChoose(perm));
           answer++;
-          
+
         }
       }
     }

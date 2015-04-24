@@ -1,5 +1,5 @@
 (function() {
-  
+
   // If this is not in the browser, we do nothing.
   if ('undefined' === typeof window || 'undefined' === typeof document) {
     return;
@@ -38,7 +38,7 @@
         }, 10);
         return;
       }
-      
+
       // Create the WebWorker.
       try {
         setupWorker();
@@ -55,7 +55,7 @@
     scrambleWorker.postMessage({puzzle: puzzle, scrambler: scrambler,
       moves: moves, id: ticket});
   }
-  
+
   function setupWorker() {
     // Setup the webworker to call our callbacks.
     scrambleWorker = new window.Worker(workerPath);

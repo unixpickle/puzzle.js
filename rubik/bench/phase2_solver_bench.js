@@ -21,7 +21,7 @@ function benchmarkSolvePhase2() {
     [6, 6, 2, 7, 8, 2, 5, 6, 8, 7, 4, 9, 2, 8, 1, 1, 1, 0, 7, 1, 7, 4, 8, 4, 4],
     [0, 2, 0, 0, 7, 8, 5, 0, 3, 6, 9, 0, 3, 7, 8, 7, 8, 9, 8, 8, 6, 4, 6, 3, 4]
   ];
-  
+
   var coords = new rubik.Phase2Coords();
   var heuristic = new rubik.Phase2Heuristic(coords);
   bench('solvePhase2', scrambles.length, function(count) {

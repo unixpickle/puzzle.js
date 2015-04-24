@@ -48,15 +48,15 @@ var PHASE1_MOVE_COUNT = 18;
 function Phase1Cube(cc) {
   if ('undefined' !== typeof cc) {
     var xzCO = encodeXZCO(cc.corners);
-    
+
     this.xCO = xzCO[0];
     this.yCO = encodeCO(cc.corners);
     this.zCO = xzCO[1];
-    
+
     this.yEO = encodeYEO(cc.edges);
     this.zEO = encodeZEO(cc.edges);
     this.xEO = convertYEOToXEO(this.yEO)
-    
+
     var msSlice = encodeMSSlice(cc.edges);
     this.mSlice = msSlice[0];
     this.eSlice = encodeESlice(cc.edges);
@@ -111,18 +111,18 @@ Phase1Cube.prototype.copy = function() {
 // move applies a move to the Phase1Cube.
 Phase1Cube.prototype.move = function(move, table) {
   var m = move.number;
-  
+
   // Apply the move to the y-axis cube.
   this.yCO = table.co[this.yCO*18 + m];
   this.yEO = table.eo[this.yEO*18 + m];
   this.eSlice = table.slice[this.eSlice*18 + m];
-  
+
   // Apply the move to the z-axis cube.
   var zMove = zMoveTranslation[m];
   this.zCO = table.co[this.zCO*18 + zMove];
   this.zEO = table.eo[this.zEO*18 + zMove];
   this.sSlice = table.slice[this.sSlice*18 + zMove];
-  
+
   // Apply the move to the x-axis cube.
   var xMove = xMoveTranslation[m];
   this.xCO = table.co[this.xCO*18 + xMove];
@@ -148,7 +148,7 @@ Phase1Cube.prototype.set = function(obj) {
 Phase1Cube.prototype.solved = function() {
   // I don't use the PHASE1_SOLVED_ globals because accessing global variables
   // is relatively inefficient and this is a hot function.
-  
+
   var x = true;
   var y = true;
   var z = true;
@@ -186,7 +186,7 @@ function Phase1Moves() {
   this.slice = new Int16Array(PHASE1_SLICE_COUNT * PHASE1_MOVE_COUNT);
   this.eo = new Int16Array(PHASE1_EO_COUNT * PHASE1_MOVE_COUNT);
   this.co = new Int16Array(PHASE1_CO_COUNT * PHASE1_MOVE_COUNT);
-  
+
   this._generateCO();
   this._generateEO();
   this._generateESlice();
@@ -196,20 +196,20 @@ Phase1Moves.prototype._generateCO = function() {
   for (var i = 0, len = this.co.length; i < len; ++i) {
     this.co[i] = -1;
   }
-  
+
   for (var i = 0; i < PHASE1_CO_COUNT; ++i) {
     var corners = decodeCO(i);
     for (var move = 0; move < PHASE1_MOVE_COUNT; ++move) {
       if (this.co[i*PHASE1_MOVE_COUNT + move] >= 0) {
         continue;
       }
-      
+
       // Set the end state in the table.
       var aCase = corners.copy();
       aCase.move(new Move(move));
       var endState = encodeCO(aCase);
       this.co[i*PHASE1_MOVE_COUNT + move] = endState;
-      
+
       // Set the inverse in the table.
       this.co[endState*PHASE1_MOVE_COUNT + new Move(move).inverse().number] = i;
     }
@@ -220,20 +220,20 @@ Phase1Moves.prototype._generateEO = function() {
   for (var i = 0, len = this.eo.length; i < len; ++i) {
     this.eo[i] = -1;
   }
-  
+
   for (var i = 0; i < PHASE1_EO_COUNT; ++i) {
     var edges = decodeEO(i);
     for (var move = 0; move < PHASE1_MOVE_COUNT; ++move) {
       if (this.eo[i*PHASE1_MOVE_COUNT + move] >= 0) {
         continue;
       }
-      
+
       // Set the end state in the table.
       var aCase = edges.copy();
       aCase.move(new Move(move));
       var endState = encodeYEO(aCase);
       this.eo[i*PHASE1_MOVE_COUNT + move] = endState;
-      
+
       // Set the inverse in the table.
       this.eo[endState*PHASE1_MOVE_COUNT + new Move(move).inverse().number] = i;
     }
@@ -244,7 +244,7 @@ Phase1Moves.prototype._generateESlice = function() {
   for (var i = 0, len = this.slice.length; i < len; ++i) {
     this.slice[i] = -1;
   }
-  
+
   // Generate the E slice cases by looping through all the possible ways to
   // choose 4 elements from a set of 12.
   var sliceCase = 0;
@@ -262,13 +262,13 @@ Phase1Moves.prototype._generateESlice = function() {
             if (this.slice[sliceCase*PHASE1_MOVE_COUNT + move] >= 0) {
               continue;
             }
-            
+
             // Set the end state in the table.
             var aCase = state.copy();
             aCase.move(new Move(move));
             var encoded = encodeBogusSlice(aCase);
             this.slice[sliceCase*PHASE1_MOVE_COUNT + move] = encoded;
-            
+
             // Set the inverse in the table.
             var invMove = new Move(move).inverse().number;
             this.slice[encoded*PHASE1_MOVE_COUNT + invMove] =
@@ -284,7 +284,7 @@ Phase1Moves.prototype._generateESlice = function() {
 // convertYEOToXEO converts a y-axis EO case to the x axis.
 function convertYEOToXEO(yEO) {
   var res = 0;
-  
+
   // Translate the EO bitmap, noting that xEdgeIndices[10] is 11 and is thus
   // never set in the FB bitmap.
   var parity = 0;
@@ -295,29 +295,29 @@ function convertYEOToXEO(yEO) {
       parity ^= 1;
     }
   }
-  
+
   // If the last thing in the translated bitmap would be a 1, flip the parity.
   if ((yEO & (1 << xEdgeIndices[11])) !== 0) {
     parity ^= 1;
   }
-  
+
   // If there is parity, then the missing element (i.e. #10) is 1.
   res |= parity << 10;
-  
+
   return res;
 }
 
 // decodeCO generates Corners which represent a given CO case.
 function decodeCO(co) {
   var c = new Corners();
-  
+
   // Compute the orientations of the first 7 corners.
   var scaler = 1;
   for (var x = 0; x < 7; ++x) {
     c.corners[x].orientation = Math.floor(co / scaler) % 3;
     scaler *= 3;
   }
-  
+
   // Compute the last corner's orientation.
   // The way this works is based on the fact that a sune combo which twists two
   // adjacent corners is all that is necessary to generate any corner
@@ -347,7 +347,7 @@ function decodeCO(co) {
   } else if (orientations[7] === 2) {
     c.corners[7].orientation = 0;
   }
-  
+
   return c;
 }
 
@@ -431,11 +431,11 @@ function encodeXZCO(corners) {
   var z = [];
   var xVal = 0;
   var zVal = 0;
-  
+
   // For each corner, find the direction of the x and z stickers.
   for (var i = 0; i < 8; ++i) {
     var corner = corners.corners[i];
-    
+
     // If the corner was in its original slot, here's what the directions
     // would be.
     var o = corner.orientation;
@@ -459,7 +459,7 @@ function encodeXZCO(corners) {
       z[i] = oldX;
     }
   }
-  
+
   // Add the information together to generate the final values.
   var scaler = 1;
   for (var i = 0; i < 7; ++i) {
@@ -470,7 +470,7 @@ function encodeXZCO(corners) {
       xDirection = 1;
     }
     xVal += scaler * xDirection;
-    
+
     var zDirection = z[zCornerIndices[i]];
     if (zDirection === 1) {
       zDirection = 2;
@@ -478,10 +478,10 @@ function encodeXZCO(corners) {
       zDirection = 1;
     }
     zVal += scaler * zDirection;
-    
+
     scaler *= 3;
   }
-  
+
   return [xVal, zVal];
 }
 

@@ -24,7 +24,7 @@ function solveRubikState(state) {
     rubikTables = new rubik.SolveTables();
     rubikTimeouts = new rubik.SolveTimeouts();
   }
-  
+
   // Solve the cube!
   var solution = rubik.solveCube(state, rubikTables, rubikTimeouts);
   if (solution === null) {

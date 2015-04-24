@@ -25,7 +25,7 @@ Phase1Heuristic.prototype.lowerBound = function(c) {
   var eo0 = this.coEO.get(c.xEO | (c.xCO << 11));
   var eo1 = this.coEO.get(c.yEO | (c.yCO << 11));
   var eo2 = this.coEO.get(c.zEO | (c.zCO << 11));
-  
+
   // Return the least of the three heuristic values.
   var a = Math.max(slice0, eo0);
   var b = Math.max(slice1, eo1);
@@ -35,7 +35,7 @@ Phase1Heuristic.prototype.lowerBound = function(c) {
   } else {
     return Math.min(a, c);
   }
-  
+
   // NOTE: using Math.min() with three arguments might slow down v8 since it
   // doesn't like polymorphic functions.
   // return Math.min(Math.max(slice0, eo0), Math.max(slice1, eo1),
@@ -65,19 +65,19 @@ function makePhase1EOHeuristic(queueCap, otherStart, maxDepth, table, eoMoves,
   // Some info on bitfields might help you:
   // A hash is computed as: EO | (otherCoord << 11).
   // A search node is computed as: depth | (hash << 4).
-  
+
   table.fillWith(maxDepth);
   table.set(otherStart << 11, 0);
-  
+
   var queue = new NumberQueue(queueCap);
   queue.push(otherStart << 15);
-  
+
   while (!queue.empty()) {
     var node = queue.shift();
     var depth = node & 0xf;
     var eo = (node >>> 4) & 0x7ff;
     var other = (node >>> 15);
-    
+
     for (var move = 0; move < 18; ++move) {
       var newEO = eoMoves[eo*18 + move];
       var newOther = otherMoves[other*18 + move];

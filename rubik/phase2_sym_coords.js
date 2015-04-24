@@ -28,20 +28,20 @@ function Phase2SymCoord(numRaw, numSym) {
     throw new Error('Phase2SymCoord cannot represent more than 4096 ' +
       'equivalence classes');
   }
-  
+
   // this._moves maps every pair (C, M) to a symmetry coordinate, where C is a
   // unique edge case up to symmetry and M is a move between 0 and 10.
   this._moves = new Uint16Array(numSym * 10);
-  
+
   // this._rawToSym maps every raw coordinate to a corresponding symmetry
   // coordinate.
   this._rawToSym = new Uint16Array(numRaw);
-  
+
   // Set every entry in the moves table to 0xffff.
   for (var i = 0, len = numSym*10; i < len; ++i) {
     this._moves[i] = 0xffff;
   }
-  
+
   // Set every entry in the rawToSym table to 0xffff.
   for (var i = 0; i < numRaw; ++i) {
     this._rawToSym[i] = 0xffff;
@@ -53,15 +53,15 @@ function Phase2SymCoord(numRaw, numSym) {
 Phase2SymCoord.prototype.move = function(coord, move) {
   var s = coord & 0xf;
   var c = coord >>> 4;
-  
+
   // Find the move s*m*s'. We do this because s'*(s*m*s')*c*s is equivalent to
   // m*s'*c*s, which is what we are really looking for.
   var moveInvConj = p2MoveSymmetryInvConj(s, move);
   var x = this._moves[c*10 + moveInvConj];
-  
+
   var s1 = x & 0xf;
   var c1 = x >>> 4;
-  
+
   // We now have s*m*s'*c expressed as s1'*c1*s1, but we want m*s'*c*s. This is
   // equal to s*x*s', so the result is (s'*s1')*c1*(s1*s).
   return (c1 << 4) | symmetry.udSymmetryProduct(s1, s);
@@ -81,32 +81,32 @@ Phase2SymCoord.prototype.rawToSym = function(raw) {
 Phase2SymCoord.prototype._generateMoves = function(rawPerms, moveFunc) {
   for (var i = 0, len = rawPerms.length; i < len; ++i) {
     var symCoord = this._rawToSym[i];
-    
+
     // We only want symmetry coordinates with the identity symmetry.
     if ((symCoord & 0xf) !== 0) {
       continue;
     }
-    
+
     var perm = rawPerms[i];
     var symCase = symCoord >>> 4;
     for (var move = 0; move < 10; ++move) {
       if (this._moves[symCase*10 + move] !== 0xffff) {
         continue;
       }
-      
+
       var res = moveFunc(perm, move);
       var resSym = this._rawToSym[res];
       this._moves[symCase*10 + move] = resSym;
-      
+
       // Avoid some extra calls to moveFunc (which may be relatively expensive)
       // by also doing the inverse of the move.
-      
+
       var s = resSym & 0xf;
       var c1 = resSym >>> 4;
-      
+
       // We know that m*symCase = s'*c1*s. Using some algebra, we can show that
       // (s*m'*s')*c1 = s*symCase*s'.
-      
+
       var invMove = p2MoveSymmetryInvConj(s, p2MoveInverse(move));
       var invCoord = (symCase << 4) | symmetry.udSymmetryInverse(s);
       this._moves[c1*10 + invMove] = invCoord;
@@ -125,7 +125,7 @@ Phase2SymCoord.prototype._generateRawToSym = function(rawPerms, symConjFunc) {
   // caseCount is incremented every time a new equivalence class is found. By
   // the end of the loop, this should equal this._moves.length/10.
   var caseCount = 0;
-  
+
   // Find the first permutation for each symmetry equivalence class.
   for (var i = 0, len = rawPerms.length; i < len; ++i) {
     // Skip this iteration if the permutation has already been accounted for by
@@ -133,13 +133,13 @@ Phase2SymCoord.prototype._generateRawToSym = function(rawPerms, symConjFunc) {
     if (this._rawToSym[i] !== 0xffff) {
       continue;
     }
-    
+
     // Get the index of the unique case up to symmetry.
     var symHash = caseCount++;
-    
+
     // Save this permutation in the table with the identity symmetry operator.
     this._rawToSym[i] = symHash << 4;
-    
+
     // Generate all the symmetries of this permutation and hash each one.
     var perm = rawPerms[i];
     for (var sym = 1; sym < 0x10; ++sym) {
@@ -156,7 +156,7 @@ Phase2SymCoord.prototype._generateRawToSym = function(rawPerms, symConjFunc) {
 // symmetry coordinate.
 function Phase2CornerCoord(perm8) {
   Phase2SymCoord.call(this, 40320, 2768);
-  
+
   this._generateRawToSym(perm8, p2CornerSymmetryConj);
   this._generateMoves(perm8, moveYCornerPerm);
 }
@@ -167,7 +167,7 @@ Phase2CornerCoord.prototype = Object.create(Phase2SymCoord.prototype);
 // symmetry coordinate.
 function Phase2EdgeCoord(perm8) {
   Phase2SymCoord.call(this, 40320, 2768);
-  
+
   this._generateRawToSym(perm8, p2EdgeSymmetryConj);
   this._generateMoves(perm8, moveUDEdgePerm);
 }
@@ -348,13 +348,13 @@ function p2CornerSymmetryConj(sym, array) {
   // Apply sym to the identity permutation.
   var result = [0, 1, 2, 3, 4, 5, 6, 7];
   p2CornerSymmetryPermute(sym, result);
-  
+
   // Apply array to get array*sym.
   perms.applyPerm(result, array);
-  
+
   // Apply sym' to get sym'*array*sym.
   p2CornerSymmetryPermute(symmetry.udSymmetryInverse(sym), result);
-  
+
   return result;
 }
 
@@ -362,7 +362,7 @@ function p2CornerSymmetryConj(sym, array) {
 // elements which represent the corner pieces on a phase-2 cube.
 function p2CornerSymmetryPermute(sym, array) {
   var lrFlip = symmetry.udSymmetryLRFlip(sym);
-  
+
   // Apply whatever y rotation there might be.
   var yRot = symmetry.udSymmetryY(sym);
   if (yRot === 1) {
@@ -393,7 +393,7 @@ function p2CornerSymmetryPermute(sym, array) {
     // y2 is equivalent to LRflip*FBflip, so I will do an FBflip and switch
     // lrFlip.
     lrFlip = !lrFlip;
-    
+
     // Swap the first four corners with the last four corners (0YX + 4 = 1YX).
     for (var i = 0; i < 4; ++i) {
       var temp = array[i];
@@ -401,7 +401,7 @@ function p2CornerSymmetryPermute(sym, array) {
       array[i | 4] = temp;
     }
   }
-  
+
   if (lrFlip) {
     // Swap even corners with odd corners, since ZY0 + 1 = ZY1.
     for (var i = 0; i < 8; i += 2) {
@@ -410,17 +410,17 @@ function p2CornerSymmetryPermute(sym, array) {
       array[i | 1] = temp;
     }
   }
-  
+
   if (symmetry.udSymmetryUDFlip(sym)) {
     // Swap corners with coordinates Z0X with those with coordinates Z1X.
     for (var i = 0; i < 4; ++i) {
       // Right now, I is the number ZX. We want Z0X, so we shift up the second
       // bit.
       var bottomIdx = (i & 1) | ((i & 2) << 1);
-      
+
       // ORing the bottom index with 2 turns X0Z into X1Z.
       var topIdx = bottomIdx | 2;
-      
+
       // Do the swap itself.
       var temp = array[bottomIdx];
       array[bottomIdx] = array[topIdx];
@@ -435,13 +435,13 @@ function p2EdgeSymmetryConj(sym, array) {
   // Apply sym to the identity permutation.
   var result = [0, 1, 2, 3, 4, 5, 6, 7];
   p2EdgeSymmetryPermute(sym, result);
-  
+
   // Apply array to get array*sym.
   perms.applyPerm(result, array);
-  
+
   // Apply sym' to get sym'*array*sym.
   p2EdgeSymmetryPermute(symmetry.udSymmetryInverse(sym), result);
-  
+
   return result;
 }
 
@@ -449,7 +449,7 @@ function p2EdgeSymmetryConj(sym, array) {
 // elements which represent UD edge pieces on a phase-2 cube.
 function p2EdgeSymmetryPermute(sym, array) {
   var lrFlip = symmetry.udSymmetryLRFlip(sym);
-  
+
   // Apply whatever y rotation there might be.
   var yRot = symmetry.udSymmetryY(sym);
   if (yRot === 1) {
@@ -461,7 +461,7 @@ function p2EdgeSymmetryPermute(sym, array) {
   } else if (yRot === 2) {
     // Doing y^2 is equivalent to doing LRflip*FBflip.
     lrFlip = !lrFlip;
-    
+
     // Do an FBflip.
     var temp = array[0];
     array[0] = array[2];
@@ -470,7 +470,7 @@ function p2EdgeSymmetryPermute(sym, array) {
     array[4] = array[6];
     array[6] = temp;
   }
-  
+
   // If there is an LR reflection, swap [1] with [3] and [5] with [7].
   if (lrFlip) {
     var temp = array[1];
@@ -480,7 +480,7 @@ function p2EdgeSymmetryPermute(sym, array) {
     array[5] = array[7];
     array[7] = temp;
   }
-  
+
   // If there is a UD reflection, swap the first four elements with the last
   // four elements.
   if (symmetry.udSymmetryUDFlip(sym)) {

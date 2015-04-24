@@ -22,10 +22,10 @@ CompactTable.prototype.get = function(idx) {
 CompactTable.prototype.set = function(idx, value) {
   var rawIdx = idx >>> 1;
   var shift = (idx & 1) << 2;
-  
+
   // Zero out the 4-bit field.
   this._data[rawIdx] &= 0xff ^ (0xf << shift);
-  
+
   // Set the 4-bit field.
   this._data[rawIdx] |= (value << shift);
 };

@@ -4,9 +4,9 @@ var assert = require('assert');
 function testSolve() {
   var cube = new pocketcube.Cube();
   var heuristic = new pocketcube.FullHeuristic(5);
-  
+
   var count = 10;
-  
+
   for (var i = 0; i < count; ++i) {
     var cube = pocketcube.randomState();
     var solution = pocketcube.solve(cube, heuristic);

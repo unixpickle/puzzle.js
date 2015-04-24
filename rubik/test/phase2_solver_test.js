@@ -15,14 +15,14 @@ function phase2Scramble(coords) {
 function testPhase2Solver() {
   var coords = new rubik.Phase2Coords();
   var heuristic = new rubik.Phase2Heuristic(coords);
-  
+
   // Do a bunch of random sequences and make sure a solution is found.
   for (var k = 0; k < 10; ++k) {
     var x = phase2Scramble(coords);
     var cube = x.cube;
     var solution = rubik.solvePhase2(cube, 18, heuristic, coords);
     assert(solution !== null, 'failed to solve: ' + x.scramble);
-    
+
     // Make sure the solution actually works.
     for (var i = 0; i < solution.length; ++i) {
       cube.move(solution[i], coords);

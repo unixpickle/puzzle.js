@@ -4,7 +4,7 @@ function allPuzzles() {
   if (scramblers === null) {
     createScramblers();
   }
-  
+
   var res = [];
   for (var i = 0, len = scramblers.length; i < len; ++i) {
     res[i] = scramblers[i].name;
@@ -81,7 +81,7 @@ function generateScramble(puzzle, scrambler, moves) {
   if (scramblers === null) {
     createScramblers();
   }
-  
+
   // Find the info for the scrambler.
   var info = null;
   for (var i = 0, len = scramblers.length; i < len; ++i) {
@@ -95,7 +95,7 @@ function generateScramble(puzzle, scrambler, moves) {
       }
     }
   }
-  
+
   if (info === null) {
     throw new Error('unknown scrambler: ' + puzzle + '/' + scrambler);
   }

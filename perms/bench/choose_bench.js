@@ -18,7 +18,7 @@ function benchmarkEncodeChoose() {
       }
     }
   }
-  
+
   bench('encodeChoose', cases.length, function(count) {
     var len = cases.length;
     var count = Math.round(count / len);

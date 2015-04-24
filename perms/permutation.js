@@ -9,7 +9,7 @@ function allPerms(size) {
   } else if (size === 1) {
     return [[0]];
   }
-  
+
   // Recursively generate permutations
   var result = [];
   var subPermutations = allPerms(size-1);
@@ -62,12 +62,12 @@ function comparePerms(a, b) {
 // decodePerm generates a permutation array from a permutation's perfect hash.
 function decodePerm(hash, size) {
   var permutation = [];
-  
+
   // Pre-allocate the array (i.e. avoid using a sparse array)
   for (var i = 0; i < size; ++i) {
     permutation[i] = 0;
   }
-  
+
   // Read the "digits" of the permutation.
   for (var i = 0, len = size-1; i < len; ++i) {
     var coefficient = factorial(len - i);
@@ -75,7 +75,7 @@ function decodePerm(hash, size) {
     permutation[i] = digit;
     hash -= digit * coefficient;
   }
-  
+
   // Convert the digits into a real permutation.
   for (var i = size-2; i >= 0; --i) {
     var theDigit = permutation[i];
@@ -85,7 +85,7 @@ function decodePerm(hash, size) {
       }
     }
   }
-  
+
   return permutation;
 }
 
@@ -96,17 +96,17 @@ function encodeDestructablePerm(permutation) {
   if (permutation.length <= 1) {
     return 0;
   }
-  
+
   var result = 0;
   for (var i = 0, len = permutation.length-1; i < len; ++i) {
     var current = permutation[i];
-    
+
     // If the first item of the sub-permutation does not belong at the
     // beginning, we need to offset our result.
     if (current !== 0) {
       result += factorial(len-i)*current;
     }
-    
+
     // Get rid of any trace of "current" from the sub-permutation .
     for (var j = i+1; j < len; ++j) {
       if (permutation[j] > current) {
@@ -114,7 +114,7 @@ function encodeDestructablePerm(permutation) {
       }
     }
   }
-  
+
   return result;
 }
 
@@ -148,9 +148,9 @@ function paritySort(list) {
     if (list[i] === i) {
       continue;
     }
-    
+
     parity = !parity;
-    
+
     // Find the other value (which we know is after i)
     for (var j = i+1; j < len+1; ++j) {
       if (list[j] === i) {
@@ -169,7 +169,7 @@ function randomPerm(len) {
   for (var i = 0; i < len; ++i) {
     symbols[i] = i;
   }
-  
+
   // Picking random symbols from the list and add them to the result.
   var result = [];
   while (symbols.length > 0) {
@@ -178,7 +178,7 @@ function randomPerm(len) {
     symbols.splice(idx, 1);
     result.push(value);
   }
-  
+
   return result;
 }
 
@@ -189,16 +189,16 @@ function randomPermParity(len, p) {
   if (len <= 1 && p === false) {
     throw new Error('cannot generate odd permutation on ' + len + ' symbols');
   }
-  
+
   var res = randomPerm(len);
-  
+
   // Do a swap if the parity is wrong.
   if (parity(res) !== p) {
     var first = res[0];
     res[0] = res[1];
     res[1] = first;
   }
-  
+
   return res;
 }
 

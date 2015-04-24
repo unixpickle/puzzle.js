@@ -41,11 +41,11 @@ function testParity() {
   assert.equal(perms.parity([0, 1, 2, 3]), true);
   assert.equal(perms.parity([2, 0, 1, 3]), true);
   assert.equal(perms.parity([1, 0, 2, 3]), false);
-  
+
   // Rigorous tests
   for (var swaps = 0; swaps < 20; ++swaps) {
     var list = [0, 1, 2, 3, 4, 5, 6, 7];
-    
+
     // Perform the given number of swaps.
     for (var i = 0; i < swaps; ++i) {
       var firstIdx = Math.floor(Math.random() * list.length);
@@ -57,7 +57,7 @@ function testParity() {
       list[firstIdx] = list[secondIdx];
       list[secondIdx] = first;
     }
-    
+
     assert.equal(perms.parity(list), (swaps%2) == 0);
   }
 }

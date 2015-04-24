@@ -8,12 +8,12 @@ function depthFirst(cube, heuristic, moves, depth, lastFace, lastLastFace) {
   } else if (heuristic.lookup(cube) > depth) {
     return null;
   }
-  
+
   // Apply all the moves.
   for (var i = 0, len = moves.length; i < len; ++i) {
     var move = moves[i];
     var face = move.face();
-    
+
     // Prevent redundant moves.
     if (face === lastFace) {
       continue;
@@ -24,18 +24,18 @@ function depthFirst(cube, heuristic, moves, depth, lastFace, lastLastFace) {
         continue;
       }
     }
-    
+
     // Generate the new state.
     var newState = cube.copy();
     newState.move(move);
-    
+
     var result = depthFirst(newState, heuristic, moves, depth-1, face,
       lastFace);
     if (result !== null) {
       return [move].concat(result);
     }
   }
-  
+
   return null;
 }
 

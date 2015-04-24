@@ -22,7 +22,7 @@ function benchmarkPhase2ChooseCoordMove() {
     states[i] = states[idx];
     states[idx] = temp;
   }
-  
+
   var coord = new rubik.Phase2ChooseCoord();
   bench('Phase2ChooseCoord.move', 700, function(n) {
     for (var i = 0; i < n/700; ++i) {

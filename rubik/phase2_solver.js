@@ -3,7 +3,7 @@ function Phase2Solver(heuristic, coords, deadline) {
   this.heuristic = heuristic;
   this.coords = coords;
   this.deadline = deadline;
-  
+
   this.depth = 0;
   this.cubes = [];
 
@@ -48,7 +48,7 @@ Phase2Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
   } else if (this.heuristic.lowerBound(cube, this.coords) > this.depth-depth) {
     return null;
   }
-  
+
   var newCube = this.cubes[depth];
   for (var i = 0; i < 10; ++i) {
     var face = p2MoveFace(i);
@@ -61,17 +61,17 @@ Phase2Solver.prototype._search = function(cube, depth, lastFace, lastAxis) {
       // the same axis.
       continue;
     }
-    
+
     newCube.set(cube);
     newCube.move(i, this.coords);
-    
+
     var res = this._search(newCube, depth+1, face, axis);
     if (res !== null) {
       res.splice(0, 0, i);
       return res;
     }
   }
-  
+
   return null;
 };
 

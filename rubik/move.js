@@ -2,9 +2,9 @@
 // returned and the original array is not modified.
 function cancelMoves(moves) {
   var res = moves.slice();
-  
+
   // TODO: remove redundancy like L R L'.
-  
+
   // Loop through each move and make sure it has a different face than the move
   // before it.
   var lastFace = 0;
@@ -31,7 +31,7 @@ function cancelMoves(moves) {
     }
     lastFace = face;
   }
-  
+
   return res;
 }
 
@@ -39,18 +39,18 @@ function scrambleMoves(len) {
   var axis = -1;
   var moves = allMoves();
   var result = [];
-  
+
   for (var i = 0; i < len; ++i) {
     // Pick a random move
     var moveIdx = Math.floor(Math.random() * moves.length);
     var move = moves[moveIdx];
-    
+
     // Reset the moves and the axis if necessary.
     if (move.axis() !== axis) {
       axis = move.axis();
       moves = allMoves();
     }
-    
+
     // Remove all moves which affect this face to prevent redundant moves.
     for (var j = 0; j < moves.length; ++j) {
       if (moves[j].face() === move.face()) {
@@ -58,10 +58,10 @@ function scrambleMoves(len) {
         --j;
       }
     }
-    
+
     result[i] = move;
   }
-  
+
   return result;
 }
 
