@@ -10,18 +10,18 @@ function randomCorners() {
     result.corners.corners[i].orientation = Math.floor(Math.random() * 3);
   }
   result.corners.fixLastCorner();
-  
+
   return result;
 }
 
 function randomEdges() {
   var result = new Cube();
-  
+
   var pieces = perms.randomPermParity(12, true);
   for (var i = 0; i < 12; ++i) {
     result.edges.edges[i].piece = pieces[i];
   }
-  
+
   var flipLast = false;
   for (var i = 0; i < 11; ++i) {
     var flag = Math.random() >= 0.5;
@@ -31,7 +31,7 @@ function randomEdges() {
     }
   }
   result.edges.edges[11].flip = flipLast;
-  
+
   return result;
 }
 

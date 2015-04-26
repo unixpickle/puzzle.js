@@ -40,7 +40,7 @@ echo "// This is the compiled ${APINAME} API.
     }
     exports = module.exports;
   }
-  
+
   function includeAPI(name) {
     if ('undefined' !== typeof window) {
       return window.puzzlejs[name];
@@ -55,7 +55,7 @@ echo "// This is the compiled ${APINAME} API.
 " >$TEMPFILE
 
 # Read the source file and indent it.
-cat $SOURCEFILE | sed -e 's/^/  /g' >>$TEMPFILE
+cat $SOURCEFILE | sed -e 's/^/  /g' | sed -e 's/[ \t]*$//g' >>$TEMPFILE
 
 echo "" >>$TEMPFILE
 echo "})();" >>$TEMPFILE
