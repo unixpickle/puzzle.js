@@ -1,3 +1,40 @@
+function randomCorners() {
+  var result = new Cube();
+
+  var pieces = perms.randomPermParity(8, true);
+  for (var i = 0; i < 8; ++i) {
+    result.corners.corners[i].piece = pieces[i];
+  }
+
+  for (var i = 0; i < 7; ++i) {
+    result.corners.corners[i].orientation = Math.floor(Math.random() * 3);
+  }
+  result.corners.fixLastCorner();
+  
+  return result;
+}
+
+function randomEdges() {
+  var result = new Cube();
+  
+  var pieces = perms.randomPermParity(12, true);
+  for (var i = 0; i < 12; ++i) {
+    result.edges.edges[i].piece = pieces[i];
+  }
+  
+  var flipLast = false;
+  for (var i = 0; i < 11; ++i) {
+    var flag = Math.random() >= 0.5;
+    result.edges.edges[i].flip = flag;
+    if (flag) {
+      flipLast = !flipLast;
+    }
+  }
+  result.edges.edges[11].flip = flipLast;
+  
+  return result;
+}
+
 function randomLastLayer() {
   var result = randomZBLL();
 
@@ -28,43 +65,11 @@ function randomState() {
     result.corners.corners[i].piece = pieces[i];
   }
 
-  // Generate random orientations for the first 7 corners.
+  // Generate random orientations.
   for (var i = 0; i < 7; ++i) {
     result.corners.corners[i].orientation = Math.floor(Math.random() * 3);
   }
-
-  // Compute the last corner's orientation. This uses the sune combo (which
-  // twists two adjacent corners) to "solve" every corner except the last one.
-  // The twist of the last corner (which started out solved) tells us which
-  // orientation it should have had.
-
-  // All corners in this ordering are adjacent, allowing the sune combo to work.
-  var ordering = [0, 1, 5, 4, 6, 2, 3, 7];
-  var orientations = [];
-  for (var i = 0; i < 8; ++i) {
-    orientations[i] = result.corners.corners[ordering[i]].orientation;
-  }
-  for (var i = 0; i < 7; ++i) {
-    var thisOrientation = orientations[i];
-    var nextOrientation = orientations[i+1];
-    // Twist thisOrientation to be solved, affecting the next corner in the
-    // sequence.
-    if (thisOrientation === 2) {
-      // y -> x, x -> z, z -> y
-      orientations[i+1] = (nextOrientation + 2) % 3;
-    } else if (thisOrientation === 0) {
-      // z -> x, x -> y, y -> z
-      orientations[i+1] = (nextOrientation + 1) % 3;
-    }
-  }
-
-  // The twist of the last corner is the inverse of what it should be in the
-  // scramble.
-  if (orientations[7] === 0) {
-    result.corners.corners[7].orientation = 2;
-  } else if (orientations[7] === 2) {
-    result.corners.corners[7].orientation = 0;
-  }
+  result.corners.fixLastCorner();
 
   // Generate a random edge permutation.
   var cornerParity = perms.parity(pieces);
@@ -89,18 +94,14 @@ function randomState() {
 
 function randomZBLL() {
   var result = new Cube();
-
-  // Generate random corners using pocketcube.
   result.corners = pocketcube.randomLastLayer();
 
-  // Compute the corner parity.
   var cornerPerm = [];
   for (var i = 0; i < 8; ++i) {
     cornerPerm[i] = result.corners.corners[i].piece;
   }
   var cornerParity = perms.parity(cornerPerm);
 
-  // Generate the edge permutation.
   var edgePerm = perms.randomPermParity(4, cornerParity);
   var topEdges = [0, 4, 5, 6];
   for (var i = 0; i < 4; ++i) {
@@ -110,6 +111,8 @@ function randomZBLL() {
   return result;
 }
 
+exports.randomCorners = randomCorners;
+exports.randomEdges = randomEdges;
 exports.randomLastLayer = randomLastLayer;
 exports.randomState = randomState;
 exports.randomZBLL = randomZBLL;

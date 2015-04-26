@@ -1,8 +1,12 @@
 var rubikTables = null;
 var rubikTimeouts = null;
 
-function rubikZBLL() {
-  return solveRubikState(rubik.randomZBLL());
+function rubikCorners() {
+  return solveRubikState(rubik.randomCorners());
+}
+
+function rubikEdges() {
+  return solveRubikState(rubik.randomEdges());
 }
 
 function rubikLastLayer() {
@@ -16,6 +20,10 @@ function rubikMoves(count) {
 
 function rubikState() {
   return solveRubikState(rubik.randomState());
+}
+
+function rubikZBLL() {
+  return solveRubikState(rubik.randomZBLL());
 }
 
 function solveRubikState(state) {

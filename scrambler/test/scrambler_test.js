@@ -17,8 +17,12 @@ function test3x3State() {
   scrambler.generateScramble('3x3x3', 'Last Layer', -1);
   scrambler.generateScramble('3x3x3', 'ZBLL', -1);
   scrambler.generateScramble('3x3x3', 'ZBLL', -1);
-  scrambler.generateScramble('3x3x3', 'Moves', -1);
-  scrambler.generateScramble('3x3x3', 'Moves', -1);
+  scrambler.generateScramble('3x3x3', 'Corners', -1);
+  scrambler.generateScramble('3x3x3', 'Corners', -1);
+  scrambler.generateScramble('3x3x3', 'Edges', -1);
+  scrambler.generateScramble('3x3x3', 'Edges', -1);
+  scrambler.generateScramble('3x3x3', 'Moves', 25);
+  scrambler.generateScramble('3x3x3', 'Moves', 25);
 }
 
 function testSkewbState() {

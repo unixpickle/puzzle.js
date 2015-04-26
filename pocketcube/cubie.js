@@ -45,6 +45,43 @@ Cube.prototype.copy = function() {
   return res;
 };
 
+// fixLastCorner makes sure the corner orientation case is valid by twisting
+// corner 7.
+Cube.prototype.fixLastCorner = function() {
+  // Compute the last corner's orientation. This uses the sune combo (which
+  // twists two adjacent corners) to "solve" every corner except the last one.
+  // The twist of the last corner (which started out solved) tells us which
+  // orientation it should have had.
+
+  // All corners in this ordering are adjacent, allowing the sune combo to work.
+  var ordering = [0, 1, 5, 4, 6, 2, 3, 7];
+  var orientations = [];
+  for (var i = 0; i < 8; ++i) {
+    orientations[i] = this.corners[ordering[i]].orientation;
+  }
+  for (var i = 0; i < 7; ++i) {
+    var thisOrientation = orientations[i];
+    var nextOrientation = orientations[i+1];
+    // Twist thisOrientation to be solved, affecting the next corner in the
+    // sequence.
+    if (thisOrientation === 2) {
+      // y -> x, x -> z, z -> y
+      orientations[i+1] = (nextOrientation + 2) % 3;
+    } else if (thisOrientation === 0) {
+      // z -> x, x -> y, y -> z
+      orientations[i+1] = (nextOrientation + 1) % 3;
+    }
+  }
+
+  // The twist of the last corner is the inverse of what it should be in the
+  // scramble.
+  if (orientations[7] === 0) {
+    this.corners[7].orientation = 2;
+  } else if (orientations[7] === 2) {
+    this.corners[7].orientation = 0;
+  }
+};
+
 // halfTurn applies a half turn on a given face.
 Cube.prototype.halfTurn = function(face) {
   switch (face) {

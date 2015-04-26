@@ -56,6 +56,16 @@ function createScramblers() {
           f: rubikLastLayer,
           moves: false,
           name: "Last Layer"
+        },
+        {
+          f: rubikCorners,
+          moves: false,
+          name: "Corners"
+        },
+        {
+          f: rubikEdges,
+          moves: false,
+          name: "Edges"
         }
       ]
     },
