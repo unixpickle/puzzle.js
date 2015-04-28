@@ -3,6 +3,35 @@ var randomPermParity = includeAPI('perms').randomPermParity;
 // Generate this using encodeCornerCases(findCornerCases()).
 var allCornerCases = null;
 
+function SkewbQueue() {
+  this._first = null;
+  this._last = null;
+}
+
+SkewbQueue.prototype.empty = function() {
+  return this._first === null;
+};
+
+SkewbQueue.prototype.push = function(s) {
+  if (this._first === null) {
+    var node = {skewb: s, next: null};
+    this._first = node;
+    this._last = node;
+  } else {
+    var node = {skewb: s, next: this._first};
+    this._first = node;
+  }
+};
+
+SkewbQueue.prototype.shift = function() {
+  var res = this._first.skewb;
+  this._first = this._first.next;
+  if (this._first === null) {
+    this._last = null;
+  }
+  return res;
+};
+
 function decodeCorners(str) {
   var res = [];
   for (var i = 0; i < 8; ++i) {
@@ -30,12 +59,11 @@ function encodeCorners(corners) {
 function findCornerCases() {
   var found = {};
   var cases = [];
-  var nodes = [new Skewb()];
   var moves = allMoves();
-  while (nodes.length > 0) {
-    // Get the next node.
-    var node = nodes[0];
-    nodes.splice(0, 1);
+  var nodes = new SkewbQueue();
+  nodes.push(new Skewb());
+  while (!nodes.empty()) {
+    var node = nodes.shift();
 
     // Mark it as visited or continue if it was already visited.
     var enc = encodeCorners(node.corners);
@@ -44,7 +72,6 @@ function findCornerCases() {
     }
     found[enc] = 1;
 
-    // Branch out.
     cases.push(node.corners);
     for (var i = 0, len = moves.length; i < len; ++i) {
       var newNode = node.copy();
