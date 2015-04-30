@@ -81,6 +81,11 @@ function createScramblers() {
           f: skewbMoves,
           moves: true,
           name: "Moves"
+        },
+        {
+          f: skewbCenters,
+          moves: false,
+          name: "Centers"
         }
       ]
     }

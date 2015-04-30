@@ -29,6 +29,8 @@ function testSkewbState() {
   // Make sure the scrambler doesn't generate an exception.
   scrambler.generateScramble('Skewb', 'State', -1);
   scrambler.generateScramble('Skewb', 'State', -1);
+  scrambler.generateScramble('Skewb', 'Centers', -1);
+  scrambler.generateScramble('Skewb', 'Centers', -1);
 }
 
 test2x2State();
