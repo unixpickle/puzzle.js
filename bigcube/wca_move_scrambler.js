@@ -23,3 +23,5 @@ function wcaMoveScramble(cubeSize, moveCount) {
   }
   return scramble;
 }
+
+exports.wcaMoveScramble = wcaMoveScramble;

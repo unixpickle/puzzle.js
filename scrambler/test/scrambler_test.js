@@ -25,6 +25,14 @@ function test3x3State() {
   scrambler.generateScramble('3x3x3', 'Moves', 25);
 }
 
+function testBigCubes() {
+  // Make sure there's no exceptions.
+  scrambler.generateScramble('4x4x4', 'WCA Moves', 40);
+  scrambler.generateScramble('5x5x5', 'WCA Moves', 60);
+  scrambler.generateScramble('6x6x6', 'WCA Moves', 80);
+  scrambler.generateScramble('7x7x7', 'WCA Moves', 100);
+}
+
 function testSkewbState() {
   // Make sure the scrambler doesn't generate an exception.
   scrambler.generateScramble('Skewb', 'State', -1);

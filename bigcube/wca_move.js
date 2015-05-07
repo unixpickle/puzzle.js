@@ -19,7 +19,7 @@ WCAMove.prototype.axis = function() {
 
 // toString converts this move to a WCA move string.
 WCAMove.prototype.toString = function() {
-  var turnsStr = ['', '2', "'"][this.turns];
+  var turnsStr = ['', '2', "'"][this.turns - 1];
   if (this.width === 1) {
     return this.face + turnsStr;
   }

@@ -70,6 +70,46 @@ function createScramblers() {
       ]
     },
     {
+      name: "4x4x4",
+      scramblers: [
+        {
+          f: wcaMoves4x4,
+          moves: true,
+          name: "WCA Moves"
+        }
+      ]
+    },
+    {
+      name: "5x5x5",
+      scramblers: [
+        {
+          f: wcaMoves5x5,
+          moves: true,
+          name: "WCA Moves"
+        }
+      ]
+    },
+    {
+      name: "6x6x6",
+      scramblers: [
+        {
+          f: wcaMoves6x6,
+          moves: true,
+          name: "WCA Moves"
+        }
+      ]
+    },
+    {
+      name: "7x7x7",
+      scramblers: [
+        {
+          f: wcaMoves7x7,
+          moves: true,
+          name: "WCA Moves"
+        }
+      ]
+    },
+    {
       name: "Skewb",
       scramblers: [
         {
