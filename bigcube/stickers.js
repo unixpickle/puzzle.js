@@ -21,9 +21,9 @@
 
   StickerCube.prototype.move = function(move) {
     var res = this;
-    for (var i = 0; i < move.width; ++i) {
-      for (var j = 0; j < move.turns; ++j) {
-        res = res._turnLayerOnce(move.face, i);
+    for (var i = 0; i < move.turns; ++i) {
+      for (var relativeLayer = 0; relativeLayer < move.width; ++relativeLayer) {
+        res = res._turnLayerOnce(move.face, j);
       }
     }
     return res;
@@ -51,24 +51,20 @@
 
   StickerCube.prototype._rlIndicesForLayer = function(layer) {
     var indices = [];
-
     var faceCount = this.size * this.size;
 
     // Top face indices.
     for (var i = 0; i < this.size; ++i) {
       indices.push(i*this.size + layer);
     }
-
     // Front face indices.
     for (var i = 0; i < this.size; ++i) {
       indices.push(faceCount*2 + i*this.size + layer);
     }
-
     // Bottom face indices.
     for (var i = 0; i < this.size; ++i) {
       indices.push(faceCount + i*this.size + layer);
     }
-
     // Back face indices.
     for (var i = 0; i < this.size; ++i) {
       var backIndex = this.size - (layer + 1);
@@ -92,9 +88,47 @@
       } else {
         return this._permuteBackwards(indices);
       }
+    } else if (face === 'U' || face === 'D') {
+      var udLayer = layer;
+      if (face === 'D') {
+        udLayer = this.size - (layer + 1);
+      }
+      indices = this._udIndicesForLayer(rlLayer);
+      if (face === 'D') {
+        return this._permuteForwards(indices);
+      } else {
+        return this._permuteBackwards(indices);
+      }
     }
     // TODO: the other axes
     throw new Error('NYI');
+  };
+  
+  StickerCube.prototype._udIndicesForLayer = function(layer) {
+    var indices = [];
+    var faceCount = this.size * this.size;
+    
+    // Front face.
+    for (var i = 0; i < this.size; ++i) {
+      indices.push(faceCount*2 + this.size*layer + i);
+    }
+    
+    // Right face.
+    for (var i = 0; i < this.size; ++i) {
+      indices.push(faceCount*4 + this.size*layer + i);
+    }
+    
+    // Back face.
+    for (var i = 0; i < this.size; ++i) {
+      indices.push(faceCount*3 + this.size*layer + i);
+    }
+    
+    // Left face.
+    for (var i = 0; i < this.size; ++i) {
+      indices.push(faceCount*5 + this.size*layer + i);
+    }
+    
+    return indices;
   };
 
 })();
