@@ -25,7 +25,7 @@
       for (var relativeLayer = 0; relativeLayer < move.width; ++relativeLayer) {
         res = res._turnSliceStickersClockwise(move.face, j);
       }
-      res._turnOuterStickersClockwise(move.face);
+      res = res._turnOuterStickersClockwise(move.face);
     }
     return res;
   };
@@ -34,22 +34,25 @@
     var indices = [];
     var faceCount = this.size * this.size;
 
-    // Top indices.
+    // Top face.
     for (var i = 0; i < this.size; ++i) {
       indices.push(this.size*layer + i);
     }
-    // Right indices.
+    
+    var rightFaceStart = faceCount * 4;
     for (var i = 0; i < this.size; ++i) {
-      indices.push(faceCount*4 + this.size*i + (this.size-layer-1));
+      indices.push(rightFaceStart + this.size*i + (this.size-layer-1));
     }
-    // Bottom indices.
+    
     var bottomOffset = this.size * (this.size-layer-1);
+    var bottomFaceStart = faceCount;
     for (var i = 0; i < this.size; ++i) {
-      indices.push(faceCount + bottomOffset + (this.size-i-1));
+      indices.push(bottomFaceStart + bottomOffset + (this.size-i-1));
     }
-    // Left indices.
+    
+    var leftFaceStart = faceCount * 5;
     for (var i = 0; i < this.size; ++i) {
-      indices.push(faceCount*5 + this.size*(this.size-i-1) + layer);
+      indices.push(leftFaceStart + this.size*(this.size-i-1) + layer);
     }
 
     return indices;
@@ -63,18 +66,21 @@
     for (var i = 0; i < this.size; ++i) {
       indices.push(i*this.size + layer);
     }
-    // Front face.
+    
+    var frontFaceStart = faceCount * 2;
     for (var i = 0; i < this.size; ++i) {
-      indices.push(faceCount*2 + i*this.size + layer);
+      indices.push(frontFaceStart + i*this.size + layer);
     }
-    // Bottom face.
+
+    var bottomFaceStart = faceCount;
     for (var i = 0; i < this.size; ++i) {
-      indices.push(faceCount + i*this.size + layer);
+      indices.push(bottomFaceStart + i*this.size + layer);
     }
-    // Back face.
+
+    var backFaceStart = faceCount * 3;
     for (var i = 0; i < this.size; ++i) {
       var backIndex = this.size - (layer + 1);
-      indices.push(faceCount*3 + i*this.size + backIndex);
+      indices.push(backFaceStart + i*this.size + backIndex);
     }
 
     return indices;
@@ -84,21 +90,24 @@
     var indices = [];
     var faceCount = this.size * this.size;
 
-    // Front face.
+    var frontFaceStart = faceCount * 2;
     for (var i = 0; i < this.size; ++i) {
-      indices.push(faceCount*2 + this.size*layer + i);
+      indices.push(frontFaceStart + this.size*layer + i);
     }
-    // Right face.
+
+    var rightFaceStart = faceCount * 4;
     for (var i = 0; i < this.size; ++i) {
-      indices.push(faceCount*4 + this.size*layer + i);
+      indices.push(rightFaceStart + this.size*layer + i);
     }
-    // Back face.
+
+    var backFaceStart = faceCount * 3;
     for (var i = 0; i < this.size; ++i) {
-      indices.push(faceCount*3 + this.size*layer + i);
+      indices.push(backFaceStart + this.size*layer + i);
     }
-    // Left face.
+
+    var leftFaceStart = faceCount * 5;
     for (var i = 0; i < this.size; ++i) {
-      indices.push(faceCount*5 + this.size*layer + i);
+      indices.push(leftFaceStart + this.size*layer + i);
     }
 
     return indices;
@@ -125,8 +134,22 @@
   };
 
   StickerCube.prototype._turnOuterStickersClockwise = function(face) {
-    // TODO: this.
-    throw new Error('NYI');
+    var faceIndex = ['U', 'D', 'F', 'B', 'R', 'L'].indexOf(face);
+    if (faceIndex < 0) {
+      throw new Error('unknown face: ' + face);
+    }
+    var faceCount = this.size * this.size;
+    var stickerStartIndex = faceCount * faceIndex;
+    var res = this.copy();
+    for (var x = 0; x < this.size; ++x) {
+      for (var y = 0; y < this.size; ++y) {
+        var destY = x;
+        var destX = (this.size - y - 1);
+        res.stickers[stickerStartIndex + destX + destY*this.size] =
+          this.stickers[stickerStartIndex + x + y*this.size];
+      }
+    }
+    return res;
   };
 
   StickerCube.prototype._turnSliceStickersClockwise = function(face, layer) {
