@@ -26,6 +26,32 @@ WCAMove.prototype.toString = function() {
   return this.width + this.face + 'w' + turnsStr;
 };
 
+function parseWCAMove(str) {
+  var match = /([0-9]*)(U|D|F|B|R|L)w?(2|')?/.exec(str);
+  if (match === null) {
+    throw new Error('invalid move: ' + str);
+  }
+  var width = parseInt(match[1] || 1);
+  var face = match[2];
+  var countStr = (match[3] || '');
+  var turns = 1;
+  if (countStr === '2') {
+    turns = 2;
+  } else if (countStr === "'") {
+    turns = 3;
+  }
+  return new WCAMove(face, width, turns);
+}
+
+function parseWCAMoves(str) {
+  var moveStrings = str.split(' ');
+  var result = [];
+  for (var i = 0, len = moveStrings.length; i < len; ++i) {
+    result[i] = parseWCAMove(moveStrings[i]);
+  }
+  return result;
+}
+
 function wcaMoveBasis(size) {
   if (size < 2) {
     throw new Error('cube is too small');
@@ -55,5 +81,7 @@ function wcaMovesToString(moves) {
 }
 
 exports.WCAMove = WCAMove;
+exports.parseWCAMove = parseWCAMove;
+exports.parseWCAMoves = parseWCAMoves;
 exports.wcaMoveBasis = wcaMoveBasis;
 exports.wcaMovesToString = wcaMovesToString;
