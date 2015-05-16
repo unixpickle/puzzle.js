@@ -55,7 +55,7 @@ echo "// This is the compiled ${APINAME} API.
 " >$TEMPFILE
 
 # Read the source file and indent it.
-cat $SOURCEFILE | sed -e 's/^/  /g' | sed -e 's/[ \t]*$//g' >>$TEMPFILE
+cat $SOURCEFILE | sed -e 's/^/  /g' | sed -e 's/ *$//g' >>$TEMPFILE
 
 echo "" >>$TEMPFILE
 echo "})();" >>$TEMPFILE
