@@ -1,5 +1,6 @@
 BUILD=./build
 VERSION=$(shell cat VERSION)
+JSBUILD_CMD=jsbuild -includeAPI -license=LICENSE -version=$(VERSION)
 
 .PHONY: all clean test
 
@@ -9,36 +10,28 @@ $(BUILD)/puzzle.web.$(VERSION).js: $(BUILD)/perms.js $(BUILD)/symmetry.js $(BUIL
 	cat $+ webscrambler/main.js webscrambler/worker.js >$@
 
 $(BUILD)/scrambler.js: $(BUILD)/rubik.js $(BUILD)/skewb.js
-	cat scrambler/*.js >$@
-	bash skeletize.sh scrambler $@
+	$(JSBUILD_CMD) -output=$@ -name=puzzlejs.scrambler scrambler/*.js
 
 $(BUILD)/pyraminx.js:
-	cat pyraminx/*.js >$@
-	bash skeletize.sh pyraminx $@
+	$(JSBUILD_CMD) -output=$@ -name=puzzlejs.pyraminx pyraminx/*.js
 
 $(BUILD)/skewb.js: $(BUILD)/perms.js
-	cat skewb/*.js >$@
-	bash skeletize.sh skewb $@
+	$(JSBUILD_CMD) -output=$@ -name=puzzlejs.skewb skewb/*.js
 
 $(BUILD)/rubik.js: $(BUILD)/pocketcube.js
-	cat rubik/*.js >$@
-	bash skeletize.sh rubik $@
+	$(JSBUILD_CMD) -output=$@ -name=puzzlejs.rubik rubik/*.js
 
 $(BUILD)/pocketcube.js:
-	cat pocketcube/*.js >$@
-	bash skeletize.sh pocketcube $@
+	$(JSBUILD_CMD) -output=$@ -name=puzzlejs.pocketcube pocketcube/*.js
 
 $(BUILD)/perms.js:
-	cat perms/*.js >$@
-	bash skeletize.sh perms $@
+	$(JSBUILD_CMD) -output=$@ -name=puzzlejs.perms perms/*.js
 
 $(BUILD)/symmetry.js:
-	cat symmetry/*.js >$@
-	bash skeletize.sh symmetry $@
+	$(JSBUILD_CMD) -output=$@ -name=puzzlejs.symmetry symmetry/*.js
 
 $(BUILD)/bigcube.js:
-	cat bigcube/*.js >$@
-	bash skeletize.sh bigcube $@
+	$(JSBUILD_CMD) -output=$@ -name=puzzlejs.bigcube bigcube/*.js
 
 $(BUILD):
 	mkdir $(BUILD)
