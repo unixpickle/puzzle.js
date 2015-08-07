@@ -1,9 +1,10 @@
 var skewbHeuristic = null;
+var MIN_SKEWB_LENGTH = 7;
 
 function skewbCenters() {
   var state = new skewb.Skewb();
   state.centers = skewb.randomCenters();
-  return solveSkewbState(state);
+  return solveSkewbState(state, 0);
 }
 
 function skewbMoves(count) {
@@ -12,13 +13,21 @@ function skewbMoves(count) {
 }
 
 function skewbState() {
-  return solveSkewbState(skewb.randomState());
+  while (true) {
+    var solution = solveSkewbState(skewb.randomState(), MIN_SKEWB_LENGTH);
+    if (solution !== null) {
+      return solution;
+    }
+  }
 }
 
-function solveSkewbState(state) {
+function solveSkewbState(state, minLength) {
   if (skewbHeuristic === null) {
     skewbHeuristic = new skewb.Heuristic();
   }
   var solution = skewb.solve(state, skewbHeuristic);
+  if (solution.length < minLength) {
+    return null;
+  }
   return skewb.movesToString(solution);
 }
