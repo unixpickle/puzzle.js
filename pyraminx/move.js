@@ -24,7 +24,7 @@ function parseMove(str) {
   if (str.length === 1) {
     var corners = ['R', 'L', 'U', 'B'];
     var corner = corners.indexOf(str);
-    if (face < 0) {
+    if (corner < 0) {
       throw new Error('Invalid move: ' + str);
     }
     return new Move(corner, true);

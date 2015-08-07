@@ -18,87 +18,94 @@ var EDGE_RD = 5;
 // An edge is considered oriented if its secondary sticker is in the same place as the secondary
 // sticker of the physical slot where it is situated.
 function Edge(piece, orientation) {
-  this._piece = piece;
-  this._orientation = orientation;
+  this.piece = piece;
+  this.orientation = orientation;
 }
 
 // Edges stores and manipulates an array of 6 Edge objects.
+// If pieces is undefined, this will construct solved Edges.
 function Edges(pieces) {
-  this._pieces = pieces;
-}
-
-// solved returns a set of solved Edges.
-Edges.solved = function() {
-  var pieces = [];
-  for (var i = 0; i < 6; ++i) {
-    pieces[i] = new Edge(i, true);
+  if (pieces) {
+    this.edges = pieces;
+  } else {
+    this.edges = [];
+    for (var i = 0; i < 6; ++i) {
+      this.edges[i] = new Edge(i, true);
+    }
   }
-  return new Edges(pieces);
-};
+}
 
 // move applies a Move to the Edges.
 Edges.prototype.move = function(m) {
   if (m.clockwise) {
     switch (m.corner) {
     case 0: // R
-      var t = this._pieces[EDGE_RF];
-      this._pieces[EDGE_RF] = this._pieces[EDGE_DF];
-      this._pieces[EDGE_DF] = this._pieces[EDGE_RD];
-      this._pieces[EDGE_RD] = t;
-      this._pieces[EDGE_RF]._orientation = !this._pieces[EDGE_RF]._orientation;
-      this._pieces[EDGE_RD]._orientation = !this._pieces[EDGE_RD]._orientation;
+      var t = this.edges[EDGE_RF];
+      this.edges[EDGE_RF] = this.edges[EDGE_DF];
+      this.edges[EDGE_DF] = this.edges[EDGE_RD];
+      this.edges[EDGE_RD] = t;
+      this.edges[EDGE_RF].orientation = !this.edges[EDGE_RF].orientation;
+      this.edges[EDGE_RD].orientation = !this.edges[EDGE_RD].orientation;
+      break;
     case 1: // L
-      var t = this._pieces[EDGE_LF];
-      this._pieces[EDGE_LF] = this._pieces[EDGE_LD];
-      this._pieces[EDGE_LD] = this._pieces[EDGE_DF];
-      this._pieces[EDGE_DF] = t;
-      this._pieces[EDGE_LF]._orientation = !this._pieces[EDGE_LF]._orientation;
-      this._pieces[EDGE_DF]._orientation = !this._pieces[EDGE_DF]._orientation;
+      var t = this.edges[EDGE_LF];
+      this.edges[EDGE_LF] = this.edges[EDGE_LD];
+      this.edges[EDGE_LD] = this.edges[EDGE_DF];
+      this.edges[EDGE_DF] = t;
+      this.edges[EDGE_LF].orientation = !this.edges[EDGE_LF].orientation;
+      this.edges[EDGE_DF].orientation = !this.edges[EDGE_DF].orientation;
+      break;
     case 2: // U
-      var t = this._pieces[EDGE_LF];
-      this._pieces[EDGE_LF] = this._pieces[EDGE_RF];
-      this._pieces[EDGE_RF] = this._pieces[EDGE_LR];
-      this._pieces[EDGE_LR] = t;
-      this._pieces[EDGE_LF]._orientation = !this._pieces[EDGE_LF]._orientation;
-      this._pieces[EDGE_LR]._orientation = !this._pieces[EDGE_LR]._orientation;
+      var t = this.edges[EDGE_LF];
+      this.edges[EDGE_LF] = this.edges[EDGE_RF];
+      this.edges[EDGE_RF] = this.edges[EDGE_LR];
+      this.edges[EDGE_LR] = t;
+      this.edges[EDGE_LF].orientation = !this.edges[EDGE_LF].orientation;
+      this.edges[EDGE_LR].orientation = !this.edges[EDGE_LR].orientation;
+      break;
     case 3: // B
-      var t = this._pieces[EDGE_LR];
-      this._pieces[EDGE_LR] = this._pieces[EDGE_RD];
-      this._pieces[EDGE_RD] = this._pieces[EDGE_LD];
-      this._pieces[EDGE_LD] = t;
-      this._pieces[EDGE_LD]._orientation = !this._pieces[EDGE_LD]._orientation;
-      this._pieces[EDGE_RD]._orientation = !this._pieces[EDGE_RD]._orientation;
+      var t = this.edges[EDGE_LR];
+      this.edges[EDGE_LR] = this.edges[EDGE_RD];
+      this.edges[EDGE_RD] = this.edges[EDGE_LD];
+      this.edges[EDGE_LD] = t;
+      this.edges[EDGE_LD].orientation = !this.edges[EDGE_LD].orientation;
+      this.edges[EDGE_RD].orientation = !this.edges[EDGE_RD].orientation;
+      break;
     }
   } else {
     switch (m.corner) {
     case 0: // R'
-      var t = this._pieces[EDGE_RF];
-      this._pieces[EDGE_RF] = this._pieces[EDGE_RD];
-      this._pieces[EDGE_RD] = this._pieces[EDGE_DF];
-      this._pieces[EDGE_DF] = t;
-      this._pieces[EDGE_RF]._orientation = !this._pieces[EDGE_RF]._orientation;
-      this._pieces[EDGE_DF]._orientation = !this._pieces[EDGE_DF]._orientation;
+      var t = this.edges[EDGE_RF];
+      this.edges[EDGE_RF] = this.edges[EDGE_RD];
+      this.edges[EDGE_RD] = this.edges[EDGE_DF];
+      this.edges[EDGE_DF] = t;
+      this.edges[EDGE_RF].orientation = !this.edges[EDGE_RF].orientation;
+      this.edges[EDGE_DF].orientation = !this.edges[EDGE_DF].orientation;
+      break;
     case 1: // L'
-      var t = this._pieces[EDGE_LF];
-      this._pieces[EDGE_LF] = this._pieces[EDGE_DF];
-      this._pieces[EDGE_DF] = this._pieces[EDGE_LD];
-      this._pieces[EDGE_LD] = t;
-      this._pieces[EDGE_LF]._orientation = !this._pieces[EDGE_LF]._orientation;
-      this._pieces[EDGE_LD]._orientation = !this._pieces[EDGE_LD]._orientation;
+      var t = this.edges[EDGE_LF];
+      this.edges[EDGE_LF] = this.edges[EDGE_DF];
+      this.edges[EDGE_DF] = this.edges[EDGE_LD];
+      this.edges[EDGE_LD] = t;
+      this.edges[EDGE_LF].orientation = !this.edges[EDGE_LF].orientation;
+      this.edges[EDGE_LD].orientation = !this.edges[EDGE_LD].orientation;
+      break;
     case 2: // U'
-      var t = this._pieces[EDGE_LF];
-      this._pieces[EDGE_LF] = this._pieces[EDGE_LR];
-      this._pieces[EDGE_LR] = this._pieces[EDGE_RF];
-      this._pieces[EDGE_RF] = t;
-      this._pieces[EDGE_LF]._orientation = !this._pieces[EDGE_LF]._orientation;
-      this._pieces[EDGE_RF]._orientation = !this._pieces[EDGE_RF]._orientation;
+      var t = this.edges[EDGE_LF];
+      this.edges[EDGE_LF] = this.edges[EDGE_LR];
+      this.edges[EDGE_LR] = this.edges[EDGE_RF];
+      this.edges[EDGE_RF] = t;
+      this.edges[EDGE_LF].orientation = !this.edges[EDGE_LF].orientation;
+      this.edges[EDGE_RF].orientation = !this.edges[EDGE_RF].orientation;
+      break;
     case 3: // B'
-      var t = this._pieces[EDGE_LR];
-      this._pieces[EDGE_LR] = this._pieces[EDGE_LD];
-      this._pieces[EDGE_LD] = this._pieces[EDGE_RD];
-      this._pieces[EDGE_RD] = t;
-      this._pieces[EDGE_LD]._orientation = !this._pieces[EDGE_LD]._orientation;
-      this._pieces[EDGE_LR]._orientation = !this._pieces[EDGE_LR]._orientation;
+      var t = this.edges[EDGE_LR];
+      this.edges[EDGE_LR] = this.edges[EDGE_LD];
+      this.edges[EDGE_LD] = this.edges[EDGE_RD];
+      this.edges[EDGE_RD] = t;
+      this.edges[EDGE_LD].orientation = !this.edges[EDGE_LD].orientation;
+      this.edges[EDGE_LR].orientation = !this.edges[EDGE_LR].orientation;
+      break;
     }
   }
 };
@@ -106,7 +113,7 @@ Edges.prototype.move = function(m) {
 // solved returns true if all the edges are permuted and oriented properly.
 Edges.prototype.solved = function() {
   for (var i = 0; i < 6; ++i) {
-    if (!this._pieces[i]._orientation || this._pieces[i]._piece !== i) {
+    if (!this.edges[i].orientation || this.edges[i].piece !== i) {
       return false;
     }
   }
@@ -115,3 +122,9 @@ Edges.prototype.solved = function() {
 
 exports.Edge = Edge;
 exports.Edges = Edges;
+exports.EDGE_LF = EDGE_LF;
+exports.EDGE_RF = EDGE_RF;
+exports.EDGE_DF = EDGE_DF;
+exports.EDGE_LR = EDGE_LR;
+exports.EDGE_LD = EDGE_LD;
+exports.EDGE_RD = EDGE_RD;
