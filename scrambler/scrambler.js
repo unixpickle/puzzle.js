@@ -130,6 +130,16 @@ function createScramblers() {
       ]
     },
     {
+      name: "Megaminx",
+      scramblers: [
+        {
+          f: megaminx.pochmannScramble,
+          moves: true,
+          name: "Moves"
+        }
+      ]
+    },
+    {
       name: "Pyraminx",
       scramblers: [
         {

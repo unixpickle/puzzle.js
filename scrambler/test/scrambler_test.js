@@ -50,8 +50,19 @@ function testPyraminxState() {
   scrambler.generateScramble('Pyraminx', 'State', -1);
 }
 
+function testMegaminxMoves() {
+  // Make sure the scrambler doesn't generate an exception.
+  scrambler.generateScramble('Megaminx', 'Moves', 77);
+  scrambler.generateScramble('Megaminx', 'Moves', 77);
+  scrambler.generateScramble('Megaminx', 'Moves', 77);
+  scrambler.generateScramble('Megaminx', 'Moves', 77);
+  scrambler.generateScramble('Megaminx', 'Moves', 77);
+}
+
 test2x2State();
 test3x3State();
+testBigCubes();
 testSkewbState();
 testPyraminxState();
+testMegaminxMoves();
 console.log('PASS');
