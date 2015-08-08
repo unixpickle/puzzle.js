@@ -2,12 +2,12 @@ var MAX_MOVE_COUNT = 11;
 
 function depthFirst(state, heuristic, lastMove, moves, depth) {
   if (depth === 0) {
-    if (pyraminx.solved()) {
+    if (state.solved()) {
       return [];
     } else {
       return null;
     }
-  } else if (heuristic.lowerBound(pyraminx.edges) > depth) {
+  } else if (heuristic.lowerBound(state.edges) > depth) {
     return null;
   }
 

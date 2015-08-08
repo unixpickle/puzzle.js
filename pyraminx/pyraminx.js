@@ -31,7 +31,7 @@ Pyraminx.prototype.move = function(m) {
 // solved returns true if the Pyraminx is solved.
 Pyraminx.prototype.solved = function() {
   for (var i = 0; i < 4; ++i) {
-    if (this.axialTwists !== 0) {
+    if (this.axialTwists[i] !== 0) {
       return false;
     }
   }
