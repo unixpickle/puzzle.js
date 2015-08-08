@@ -5,8 +5,6 @@ var EDGE_LR = 3;
 var EDGE_LD = 4;
 var EDGE_RD = 5;
 
-var PermsAPI = includeAPI('perms');
-
 // An Edge represents a single edge on the pyraminx.
 //
 // The piece is a number between 0 and 5 (inclusive) representing the physical slot where the edge
