@@ -5,6 +5,8 @@ var EDGE_LR = 3;
 var EDGE_LD = 4;
 var EDGE_RD = 5;
 
+var PermsAPI = includeAPI('perms');
+
 // An Edge represents a single edge on the pyraminx.
 //
 // The piece is a number between 0 and 5 (inclusive) representing the physical slot where the edge
@@ -34,6 +36,19 @@ function Edges(pieces) {
     }
   }
 }
+
+// hash returns the perfect hash of the Edges.
+Edges.prototype.hash = function() {
+  var eo = 0;
+  for (var i = 0; i < 5; ++i) {
+    eo |= this.edges[i].orientation ? (1 << i) : 0;
+  }
+  var permutation = [];
+  for (var i = 0; i < 6; ++i) {
+    permutation[i] = this.edges[i].piece;
+  }
+  return PermsAPI.encodeDestructablePerm(permutation);
+};
 
 // move applies a Move to the Edges.
 Edges.prototype.move = function(m) {

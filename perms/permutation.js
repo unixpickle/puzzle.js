@@ -123,6 +123,41 @@ function encodePerm(permutation) {
   return encodeDestructablePerm(permutation.slice());
 }
 
+// encodeDestructablePermIgnoringParity optimally encodes an array of permuted integers, ignoring
+// the last two elements. In the process, it modifies the array. This avoids an extra memory
+// allocation which encodePermIgnoringParity() cannot avoid at the expense of the original array.
+function encodeDestructablePermIgnoringParity(permutation) {
+  if (permutation.length <= 2) {
+    return 0;
+  }
+
+  var result = 0;
+  for (var i = 0, len = permutation.length-1; i < len-1; ++i) {
+    var current = permutation[i];
+
+    // If the first item of the sub-permutation does not belong at the
+    // beginning, we need to offset our result.
+    if (current !== 0) {
+      result += factorial(len-i)*current;
+    }
+
+    // Get rid of any trace of "current" from the sub-permutation .
+    for (var j = i+1; j < len; ++j) {
+      if (permutation[j] > current) {
+        --permutation[j];
+      }
+    }
+  }
+
+  return result / 2;
+}
+
+// encodePermIgnoringParity encodes a permutation optimally without modifying it, ignoring the
+// parity of the permutation.
+function encodePermIgnoringParity(permutation) {
+  return encodeDestructablePermIgnoringParity(permutation.slice());
+}
+
 // factorial returns the product of the numbers up to and including n. For
 // instance, factorial(4) is 4*3*2*1. A special case is that factorial(0) = 1.
 function factorial(n) {
@@ -208,6 +243,8 @@ exports.comparePerms = comparePerms;
 exports.decodePerm = decodePerm;
 exports.encodeDestructablePerm = encodeDestructablePerm;
 exports.encodePerm = encodePerm;
+exports.encodeDestructablePermIgnoringParity = encodeDestructablePermIgnoringParity;
+exports.encodePermIgnoringParity = encodePermIgnoringParity;
 exports.factorial = factorial;
 exports.parity = parity;
 exports.paritySort = paritySort;

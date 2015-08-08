@@ -19,6 +19,33 @@ function testEncodePerm() {
   }
 }
 
+function testEncodePermIgnoringParity() {
+  for (var permSize = 4; permSize < 9; ++permSize) {
+    var testSet = perms.allPerms(permSize);
+    var maxValue = testSet.length / 2;
+    var mapping = {};
+    var revisited = {};
+    for (var i = 0, len = testSet.length; i < len; ++i) {
+      var perm = testSet[i];
+      var permStr = perm.slice(0, perm.length-2).join(' ');
+      var encoded = perms.encodePermIgnoringParity(perm);
+      assert(Math.round(encoded) === encoded);
+      assert(encoded < maxValue);
+      assert(!revisited[encoded]);
+      if (!mapping[encoded]) {
+        mapping[encoded] = permStr;
+      } else {
+        assert.equal(mapping[encoded], permStr);
+        revisited[encoded] = true;
+      }
+    }
+    for (var i = 0, len = testSet.length; i < len; ++i) {
+      var encoded = perms.encodePermIgnoringParity(perm);
+      assert(revisited[encoded] === true);
+    }
+  }
+}
+
 function testFactorial() {
   var product = 1;
   for (var i = 0; i < 15; ++i) {
@@ -75,6 +102,7 @@ function testRandomPermParity() {
 
 testDecodePerm();
 testEncodePerm();
+testEncodePermIgnoringParity();
 testFactorial();
 testParity();
 testRandomPermParity();

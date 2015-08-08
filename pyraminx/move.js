@@ -13,6 +13,11 @@ Move.prototype.toString = function() {
   return cornerName + (this.clockwise ? '' : "'");
 };
 
+// allMoves returns all the possible moves which can be done on a Pyraminx.
+function allMoves() {
+  return parseMoves("R L U B R' L' U' B'");
+}
+
 // movesToString converts an array of moves to a string.
 function movesToString(moves) {
   return moves.join(' ');
@@ -52,6 +57,7 @@ function parseMoves(str) {
 }
 
 exports.Move = Move;
+exports.allMoves = allMoves;
 exports.movesToString = movesToString;
 exports.parseMove = parseMove;
 exports.parseMoves = parseMoves;
