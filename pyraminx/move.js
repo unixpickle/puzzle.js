@@ -56,8 +56,26 @@ function parseMoves(str) {
   return moves;
 }
 
+// randomTipMoves generates moves which create random tip twists.
+function randomTipMoves() {
+  var moves = [];
+  var tipNames = ['u', 'l', 'r', 'b']
+  for (var tipIndex = 0; tipIndex < 4; ++tipIndex) {
+    var count = Math.floor(Math.random() * 3);
+    if (count === 0) {
+      continue;
+    } else if (count === 1) {
+      moves.push(tipNames[tipIndex]);
+    } else {
+      moves.push(tipNames[tipIndex] + "'");
+    }
+  }
+  return moves.join(' ');
+}
+
 exports.Move = Move;
 exports.allMoves = allMoves;
 exports.movesToString = movesToString;
 exports.parseMove = parseMove;
 exports.parseMoves = parseMoves;
+exports.randomTipMoves = randomTipMoves;

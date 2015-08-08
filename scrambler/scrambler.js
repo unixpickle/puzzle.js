@@ -128,6 +128,16 @@ function createScramblers() {
           name: "Centers"
         }
       ]
+    },
+    {
+      name: "Pyraminx",
+      scramblers: [
+        {
+          f: pyraminxState,
+          moves: false,
+          name: "State"
+        }
+      ]
     }
   ];
 }

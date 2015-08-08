@@ -41,7 +41,17 @@ function testSkewbState() {
   scrambler.generateScramble('Skewb', 'Centers', -1);
 }
 
+function testPyraminxState() {
+  // Make sure the scrambler doesn't generate an exception.
+  scrambler.generateScramble('Pyraminx', 'State', -1);
+  scrambler.generateScramble('Pyraminx', 'State', -1);
+  scrambler.generateScramble('Pyraminx', 'State', -1);
+  scrambler.generateScramble('Pyraminx', 'State', -1);
+  scrambler.generateScramble('Pyraminx', 'State', -1);
+}
+
 test2x2State();
 test3x3State();
 testSkewbState();
+testPyraminxState();
 console.log('PASS');
