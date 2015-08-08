@@ -24,6 +24,11 @@ function Edge(piece, orientation) {
   this.orientation = orientation;
 }
 
+// copy returns a copy of the Edge.
+Edge.prototype.copy = function() {
+  return new Edge(this.piece, this.orientation);
+};
+
 // Edges stores and manipulates an array of 6 Edge objects.
 // If pieces is undefined, this will construct solved Edges.
 function Edges(pieces) {
@@ -37,17 +42,29 @@ function Edges(pieces) {
   }
 }
 
+// copy returns a copy of these edges.
+Edges.prototype.copy = function() {
+  var pieces = [];
+  for (var i = 0; i < 6; ++i) {
+    pieces[i] = this.edges[i].copy();
+  }
+  return new Edges(pieces);
+};
+
 // hash returns the perfect hash of the Edges.
 Edges.prototype.hash = function() {
   var eo = 0;
   for (var i = 0; i < 5; ++i) {
     eo |= this.edges[i].orientation ? (1 << i) : 0;
   }
+
   var permutation = [];
   for (var i = 0; i < 6; ++i) {
     permutation[i] = this.edges[i].piece;
   }
-  return PermsAPI.encodeDestructablePerm(permutation);
+  var permEncoded = PermsAPI.encodeDestructablePermIgnoringParity(permutation);
+
+  return (permEncoded << 5) | eo;
 };
 
 // move applies a Move to the Edges.
