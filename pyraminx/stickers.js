@@ -17,6 +17,14 @@ function Stickers() {
   }
 }
 
+// colorAt gets the color of the sticker at a given physical slot (index).
+Stickers.prototype.colorAt = function(index) {
+  if (index < 0 || index >= 36) {
+    throw new Error('sticker index out of bounds: ' + index);
+  }
+  return this._stickers[index];
+};
+
 // move applies a StickerMove to the stickers.
 Stickers.prototype.move = function(stickerMove) {
   this._applyMoveToTip(stickerMove);
@@ -40,8 +48,8 @@ Stickers.prototype._applyMoveToNonTip = function(stickerMove) {
       break;
     case 1: // L
       this._threeCycle(front+5, bottom+1, left+7);
-      this._threeCycle(left+1, bottom+2, left+6);
-      this._threeCycle(left+6, bottom+5, left+3);
+      this._threeCycle(front+1, bottom+2, left+6);
+      this._threeCycle(front+6, bottom+5, left+3);
       break;
     case 2: // U
       this._threeCycle(front+2, left+2, right+2);
@@ -51,7 +59,7 @@ Stickers.prototype._applyMoveToNonTip = function(stickerMove) {
     case 3: // B
       this._threeCycle(left+5, bottom+6, right+7);
       this._threeCycle(left+1, bottom+5, right+6);
-      this._threeCycle(right+3, bottom+7, left+6);
+      this._threeCycle(right+3, left+6, bottom+7);
       break;
     default:
       throw new Error('invalid corner: ' + stickerMove.corner);
@@ -65,8 +73,8 @@ Stickers.prototype._applyMoveToNonTip = function(stickerMove) {
       break;
     case 1: // L'
       this._reverseThreeCycle(front+5, bottom+1, left+7);
-      this._reverseThreeCycle(left+1, bottom+2, left+6);
-      this._reverseThreeCycle(left+6, bottom+5, left+3);
+      this._reverseThreeCycle(front+1, bottom+2, left+6);
+      this._reverseThreeCycle(front+6, bottom+5, left+3);
       break;
     case 2: // U'
       this._reverseThreeCycle(front+2, left+2, right+2);
@@ -76,7 +84,7 @@ Stickers.prototype._applyMoveToNonTip = function(stickerMove) {
     case 3: // B'
       this._reverseThreeCycle(left+5, bottom+6, right+7);
       this._reverseThreeCycle(left+1, bottom+5, right+6);
-      this._reverseThreeCycle(right+3, bottom+7, left+6);
+      this._reverseThreeCycle(right+3, left+6, bottom+7);
       break;
     default:
       throw new Error('invalid corner: ' + stickerMove.corner);
@@ -135,7 +143,8 @@ Stickers.prototype._threeCycle = function(idx1, idx2, idx3) {
 };
 
 Stickers.prototype._reverseThreeCycle = function(idx1, idx2, idx3) {
-  this._threeCycle(idx3, idx2, idx1);
+  this._threeCycle(idx1, idx2, idx3);
+  this._threeCycle(idx1, idx2, idx3);
 };
 
 exports.Stickers = Stickers;
