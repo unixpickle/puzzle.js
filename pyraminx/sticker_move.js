@@ -32,7 +32,7 @@ function parseStickerMove(str) {
   } catch (e) {
     // We catch the error and re-throw it because the move string in the exception from parseMove()
     // will be converted to upper-case.
-    throw new Error('Invalid move: ' + str);
+    throw new Error('invalid move: ' + str);
   }
   var tip = (str !== str.toUpperCase());
   return new StickerMove(regularMove.corner, regularMove.clockwise, tip);

@@ -30,18 +30,18 @@ function parseMove(str) {
     var corners = ['R', 'L', 'U', 'B'];
     var corner = corners.indexOf(str);
     if (corner < 0) {
-      throw new Error('Invalid move: ' + str);
+      throw new Error('invalid move: ' + str);
     }
     return new Move(corner, true);
   } else if (str.length === 2) {
     if (str[1] !== "'") {
-      throw new Error('Invalid move: ' + str);
+      throw new Error('invalid move: ' + str);
     }
     var res = parseMove(str[0]);
     res.clockwise = false;
     return res;
   } else {
-    throw new Error('Invalid move: ' + str);
+    throw new Error('invalid move: ' + str);
   }
 }
 
