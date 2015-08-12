@@ -38,7 +38,7 @@ Stickers.prototype._applyMoveToNonTip = function(stickerMove) {
   var bottom = 9;
   var right = 18;
   var left = 27;
-  
+
   if (stickerMove.clockwise) {
     switch (stickerMove.corner) {
     case 0: // R
@@ -97,7 +97,7 @@ Stickers.prototype._applyMoveToTip = function(stickerMove) {
   var bottom = 9;
   var right = 18;
   var left = 27;
-  
+
   if (stickerMove.clockwise) {
     switch (stickerMove.corner) {
     case 0: // r

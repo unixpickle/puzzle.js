@@ -18,7 +18,6 @@ function stickersToString(stickers) {
   return res;
 }
 
-
 function testMove() {
   var stickers, stickersStr;
 

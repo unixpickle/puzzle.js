@@ -13,13 +13,13 @@ function testParseMoves() {
     new pyraminx.Move(2, false),
     new pyraminx.Move(3, false)
   ];
-  
+
   assert.equal(moves.length, expected.length);
   for (var i = 0; i < 8; ++i) {
     assert.equal(moves[i].corner, expected[i].corner);
     assert.equal(moves[i].clockwise, expected[i].clockwise);
   }
-  
+
   assert.throws(function() {
     pyraminx.parseMoves("R2");
   });
