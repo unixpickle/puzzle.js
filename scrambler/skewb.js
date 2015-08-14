@@ -3,7 +3,9 @@ var MIN_SKEWB_LENGTH = 7;
 
 function skewbCenters() {
   var state = new skewb.Skewb();
-  state.centers = skewb.randomCenters();
+  while (state.solved()) {
+    state.centers = skewb.randomCenters();
+  }
   return solveSkewbState(state, 0);
 }
 

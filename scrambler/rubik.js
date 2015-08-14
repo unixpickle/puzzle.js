@@ -2,15 +2,15 @@ var rubikTables = null;
 var rubikTimeouts = null;
 
 function rubikCorners() {
-  return solveRubikState(rubik.randomCorners());
+  return solveRubikState(rubik.randomCorners);
 }
 
 function rubikEdges() {
-  return solveRubikState(rubik.randomEdges());
+  return solveRubikState(rubik.randomEdges);
 }
 
 function rubikLastLayer() {
-  return solveRubikState(rubik.randomLastLayer());
+  return solveRubikState(rubik.randomLastLayer);
 }
 
 function rubikMoves(count) {
@@ -19,14 +19,19 @@ function rubikMoves(count) {
 }
 
 function rubikState() {
-  return solveRubikState(rubik.randomState());
+  return solveRubikState(rubik.randomState);
 }
 
 function rubikZBLL() {
-  return solveRubikState(rubik.randomZBLL());
+  return solveRubikState(rubik.randomZBLL);
 }
 
-function solveRubikState(state) {
+function solveRubikState(stateGen) {
+  var state = stateGen();
+  while (state.solved()) {
+    state = stateGen();
+  }
+
   // Make sure the needed global variables are there.
   if (rubikTables === null || rubikTimeouts === null) {
     rubikTables = new rubik.SolveTables();

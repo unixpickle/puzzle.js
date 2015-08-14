@@ -22,7 +22,7 @@ function combinedMovesOnSameFace(m1, m2) {
 // original array is not modified.
 function cancelMoves(moves) {
   var res = moves.slice();
-  
+
   for (var i = 0; i < res.length; ++i) {
     var move = res[i];
     if (i > 0 && move.face() === res[i-1].face()) {
