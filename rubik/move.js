@@ -1,35 +1,53 @@
-// cancelMoves performs move cancellation on a sequence of moves. The result is
-// returned and the original array is not modified.
+// combinedMovesOnSameFace takes two moves which affect the same face and returns a move that
+// represents their product.
+// If the moves were inverses, this returns null.
+function combinedMovesOnSameFace(m1, m2) {
+  var turns = m1.turns() + m2.turns();
+  var face = m1.face();
+  if (m2.face() !== m1.face()) {
+    throw new Error('combineMovesOnSameFace only works for moves on the same face');
+  }
+  if (turns === 1) {
+    return new Move(face - 1);
+  } else if (turns === 2 || turns === -2) {
+    return new Move(face + 11);
+  } else if (turns === -1 || turns === 3) {
+    return new Move(face + 5);
+  } else {
+    return null;
+  }
+}
+
+// cancelMoves performs move cancellation on a sequence of moves. The result is returned and the
+// original array is not modified.
 function cancelMoves(moves) {
   var res = moves.slice();
-
-  // TODO: remove redundancy like L R L'.
-
-  // Loop through each move and make sure it has a different face than the move
-  // before it.
-  var lastFace = 0;
+  
   for (var i = 0; i < res.length; ++i) {
-    var face = res[i].face();
-    if (face === lastFace) {
-      // Figure out the new move (or delete the move altogether).
-      var turns = res[i-1].turns() + res[i].turns();
-      res.splice(i, 1);
-      --i;
-      if (turns === 1) {
-        res[i] = new Move(face - 1);
-      } else if (turns === 2 || turns === -2) {
-        res[i] = new Move(face + 11);
-      } else if (turns === -1 || turns === 3) {
-        res[i] = new Move(face + 5);
+    var move = res[i];
+    if (i > 0 && move.face() === res[i-1].face()) {
+      var newMove = combinedMovesOnSameFace(move, res[i-1]);
+      if (newMove === null) {
+        res.splice(i-1, 2);
+        i -= 2;
       } else {
-        // The moves directly cancelled each other out.
+        res[i-1] = newMove;
         res.splice(i, 1);
         --i;
-        lastFace = (i === -1 ? 0 : res[i].face());
-        continue;
       }
+    } else if (i > 1 && move.axis() === res[i-1].axis() && move.axis() === res[i-2].axis()) {
+      // NOTE: this deals with cases like "L R L2" or "U D U'".
+      var newMove = combinedMovesOnSameFace(move, res[i-2]);
+      if (newMove === null) {
+        res.splice(i, 1);
+        res.splice(i-2, 1);
+      } else {
+        res.splice(i, 1);
+        res[i-2] = newMove;
+      }
+      // TODO: see if this could be i -= 2. I think it could be, but I am too lazy to prove it.
+      i -= 3;
     }
-    lastFace = face;
   }
 
   return res;
