@@ -67,7 +67,7 @@ function wcaMoveBasis(size) {
     for (var turns = 1; turns <= 3; ++turns) {
       for (var axis = 0; axis < 3; ++axis) {
         basis.push(new WCAMove(primaryFacesForAxes[axis], width, turns));
-        if (!threeGen) {
+        if (!threeGen || width < maxWidth) {
           basis.push(new WCAMove(secondaryFacesForAxes[axis], width, turns));
         }
       }
