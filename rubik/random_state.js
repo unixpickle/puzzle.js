@@ -111,8 +111,33 @@ function randomZBLL() {
   return result;
 }
 
+function random2GLL() {
+  var result = new Cube();
+  result.corners = pocketcube.randomLastLayer();
+
+  var numCornerTurns = Math.floor(Math.random() * 4);
+  var topCorners = [6, 2, 3, 7];
+  for (var i = 0; i < 4; ++i) {
+    var piece = topCorners[(i+numCornerTurns)%4];
+    var slot = topCorners[i];
+    var corner = result.corners.corners[slot];
+    corner.piece = piece;
+    corner.orientation = Math.floor(Math.random() * 3);
+  }
+  var cornerParity = (numCornerTurns%2 === 0);
+
+  var edgePerm = perms.randomPermParity(4, cornerParity);
+  var topEdges = [0, 4, 5, 6];
+  for (var i = 0; i < 4; ++i) {
+    result.edges.edges[topEdges[i]].piece = topEdges[edgePerm[i]];
+  }
+
+  return result;
+}
+
 exports.randomCorners = randomCorners;
 exports.randomEdges = randomEdges;
 exports.randomLastLayer = randomLastLayer;
 exports.randomState = randomState;
 exports.randomZBLL = randomZBLL;
+exports.random2GLL = random2GLL;

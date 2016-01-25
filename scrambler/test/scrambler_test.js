@@ -17,6 +17,8 @@ function test3x3State() {
   scrambler.generateScramble('3x3x3', 'Last Layer', -1);
   scrambler.generateScramble('3x3x3', 'ZBLL', -1);
   scrambler.generateScramble('3x3x3', 'ZBLL', -1);
+  scrambler.generateScramble('3x3x3', '2-Gen LL', -1);
+  scrambler.generateScramble('3x3x3', '2-Gen LL', -1);
   scrambler.generateScramble('3x3x3', 'Corners', -1);
   scrambler.generateScramble('3x3x3', 'Corners', -1);
   scrambler.generateScramble('3x3x3', 'Edges', -1);

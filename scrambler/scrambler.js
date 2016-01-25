@@ -66,7 +66,12 @@ function createScramblers() {
           f: rubikEdges,
           moves: false,
           name: "Edges"
-        }
+        },
+        {
+          f: rubik2GLL,
+          moves: false,
+          name: "2-Gen LL"
+        },
       ]
     },
     {

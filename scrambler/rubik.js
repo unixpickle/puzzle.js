@@ -26,6 +26,10 @@ function rubikZBLL() {
   return solveRubikState(rubik.randomZBLL);
 }
 
+function rubik2GLL() {
+  return solveRubikState(rubik.random2GLL);
+}
+
 function solveRubikState(stateGen) {
   var state = stateGen();
   while (state.solved()) {
